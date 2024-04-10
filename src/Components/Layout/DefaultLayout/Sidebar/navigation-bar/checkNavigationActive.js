@@ -1,6 +1,5 @@
 // import { appearPageMessage } from './appearPageMessage.js';
 // import { appearPageProfile } from './appearPageProfile.js';
-// import { appearPageSearch } from './appearPageSearch.js';
 // import { appearPageNotification } from './appearPageNotification.js';
 // import { appearPageSeeMore } from './appearPageSeeMore.js';
 import { changeIconWhenActive } from './changeIconWhenActive.js';
@@ -12,14 +11,10 @@ export function checkNavigationActive() {
     const cx = classNames.bind(styles)
 
     const navigation__items = document.querySelectorAll('.'+cx('navigation__item'));
-    if (navigation__items === null)
-        navigation__items = document.querySelectorAll('.navigation__item');
 
     const content = document.querySelector('#content');
 
     var previousActiveElement = document.querySelector('.'+cx('navigation__item-profile'));
-    if (previousActiveElement === null)
-        previousActiveElement = document.querySelector('.navigation__item-profile');
 
     const classActive = cx('active')
 
@@ -61,7 +56,7 @@ export function checkNavigationActive() {
                 }
                 else {
                     activeLevel2 = true;
-                    // value.click();
+                    value.click();
                 }
             });
             previousActiveElements.length = 0;
@@ -99,11 +94,11 @@ export function checkNavigationActive() {
             });
             previousActiveElements.splice(2);
         }
-        item.classList.add(classActive)
+        // item.classList.add(classActive)
     }
 
     document.addEventListener('click', function(event) {
-        const classNavigation__itemSee_more = document.querySelector('.navigation__item-see_more') === null ? cx('navigation__item-see_more') : 'navigation__item-see_more'
+        const classNavigation__itemSee_more = cx('navigation__item-see_more')
         navigation__items.forEach(value => {
             if (content.contains(event.target)) {
                 if (getItemLevel(value) === 2) {
@@ -124,7 +119,6 @@ export function checkNavigationActive() {
     });
 
 
-    // appearPageSearch();
     // appearPageMessage();
     // appearPageNotification();
     // appearPageProfile();

@@ -11,7 +11,7 @@ function Message() {
                     <div className={cx("list_inbox__name_user")}>
                         <span>tp_khanh_</span>
                     </div>
-                    <div className={cx("list_inbox__new_inbox")}>
+                    {/* <div className={cx("list_inbox__new_inbox")}>
                         <svg aria-label="Tin nhắn mới" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="24"
                             role="img" viewBox="0 0 24 24" width="24">
                             <title>Tin nhắn mới</title>
@@ -25,7 +25,7 @@ function Message() {
                             <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
                                 strokeWidth="2" x1="16.848" x2="20.076" y1="3.924" y2="7.153"></line>
                         </svg>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={cx("list_inbox__title")}>
                     <span>Tin nhắn</span>
