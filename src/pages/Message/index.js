@@ -333,10 +333,10 @@ function Message() {
                     </svg>
                 </div>
                 <span className={cx("not_select_inbox__title")}>Tin nhắn của bạn</span>
-                <span className={cx("not_select_inbox__describe")}>Gửi ảnh và tin nhắn riêng tư cho bạn bè hoặc nhóm</span>
-                <div className={cx("not_select_inbox__button")}>
+                <span className={cx("not_select_inbox__describe")}>Gửi ảnh và tin nhắn riêng tư cho bạn bè</span>
+                {/* <div className={cx("not_select_inbox__button")}>
                     <span>Gửi tin nhắn</span>
-                </div>
+                </div> */}
             </div>
             <div className={cx("detail_inbox")}>
                 <div className={cx("detail_inbox__header")}>

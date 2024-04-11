@@ -1,0 +1,46 @@
+.page-see_more {
+    width: 266px;
+    padding: 8px;
+    border-radius: 16px;
+    background-color: #262626;
+    position: absolute;
+    bottom: 54px;
+    display: none;
+}
+
+.page-see_more ul {
+    list-style: none;
+}
+
+.page-see_more ul li {
+    display: flex;
+    padding: 16px;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    user-select: none;
+}
+
+.page-see_more ul li:hover {
+    background-color: #363636;
+}
+
+.page-see_more ul li svg {
+    margin-right: 12px;
+}
+
+@media (max-width: 1263px) {
+    .page-see_more {
+        left: 48px;
+        bottom: 0;
+    }
+}
+
+.page-see_more span {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.page-see_more.active {
+    display: block;
+}

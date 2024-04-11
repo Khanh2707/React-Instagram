@@ -1,3 +1,13 @@
+.navigation__item {
+    display: flex;
+    align-items: center;
+    margin: 12px 0px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
 .search_input_in_page_search {
     position: relative;
     width: 268px;
@@ -163,6 +173,7 @@
 .page-search__recently__body__ul__li-short_info__name_account {
     font-size: 14px;
     font-weight: 600;
+    margin-top: -5px;
 }
 
 .page-search__recently__body__ul__li-short_info__name_real_and_amount_follower {
