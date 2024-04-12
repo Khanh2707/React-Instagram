@@ -1,15 +1,20 @@
+import React from "react";
+import Modal from "./Modal";
 import Sidebar from "./Sidebar";
 
 function DefaultLayout({ children }) {
     return (
-        <div id="main">
-            <div id="allNavigationBar">
-                <Sidebar />
+        <React.Fragment>
+            <div id="main">
+                <div id="allNavigationBar">
+                    <Sidebar />
+                </div>
+                <div id="content">
+                    {children}
+                </div>
             </div>
-            <div id="content">
-                {children}
-            </div>
-        </div>
+            <Modal />
+        </React.Fragment>
     );
 }
 

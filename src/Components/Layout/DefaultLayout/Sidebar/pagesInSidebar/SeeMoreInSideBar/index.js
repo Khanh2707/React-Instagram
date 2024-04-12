@@ -4,7 +4,7 @@ import styles from './SeeMoreInSideBar.module.css';
 const cx = classNames.bind(styles)
 
 function SeeMoreInSideBar({ seeMoreInSidebar }) {
-    console.log(seeMoreInSidebar)
+    
     return (
         <div className={cx("page-see_more", { 'active': seeMoreInSidebar })}>
             <ul>

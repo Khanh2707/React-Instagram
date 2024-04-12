@@ -1,8 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from '~/routes';
 import { DefaultLayout } from '~/Components/Layout';
+import { useStore } from './store';
 
 function App() {
+  const [state, dispatch] = useStore()
+
+  console.log(state)
+
   return (
     <BrowserRouter>
         <Routes>

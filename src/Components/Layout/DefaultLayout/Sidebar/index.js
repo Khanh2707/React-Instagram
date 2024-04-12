@@ -14,7 +14,6 @@ function Sidebar() {
     const [seeMoreInSidebar, setSeeMoreInSidebar] = useState(false)
 
     function checkNavigationActive() {
-        const cx = classNames.bind(styles)
     
         const navigation__items = document.querySelectorAll('.'+cx('navigation__item'));
     
