@@ -1,9 +1,16 @@
 import classNames from 'classnames/bind';
 import styles from './Message.module.css';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles)
 
 function Message() {
+    const navigate = useNavigate();
+    useEffect(() => {
+        navigate('/message');
+    }, []); 
+
     return (
         <div className={cx("main", "page-message")}>
             <div className={cx("list_inbox")}>

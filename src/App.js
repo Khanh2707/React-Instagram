@@ -2,12 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from '~/routes';
 import { DefaultLayout } from '~/Components/Layout';
 import { Fragment } from 'react';
-import { useStore } from './store';
+import { AppProvider } from './Context/AppContext';
 
 function App() {
-  const [state, dispatch] = useStore()
-
-  console.log(state)
 
   return (
     <BrowserRouter>
@@ -20,9 +17,11 @@ function App() {
                     key={index} 
                     path={route.path} 
                     element={
-                      <Layout>
-                        <Page />
-                      </Layout>
+                      <AppProvider>
+                        <Layout>
+                          <Page />
+                        </Layout>
+                      </AppProvider>
                     } 
               />
             )
