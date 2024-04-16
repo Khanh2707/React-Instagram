@@ -23,7 +23,7 @@ function Profile() {
                             Chỉnh sửa trang cá nhân
                         </div>
                     </div>
-                    <div className={cx("info_user-text__line2")}>
+                    {/* <div className={cx("info_user-text__line2")}>
                         <div className={cx("info_user-text__amount", "info_user-text__amount_post")}>
                             <span className={cx("info_user-text__amount-number", "info_user-text__amount_post-number")}>
                                 2
@@ -49,7 +49,7 @@ function Profile() {
                                 người dùng
                             </span>
                         </div>
-                    </div>
+                    </div> */}
                     <div className={cx("info_user-text__line3")}>
                         <div className={cx("info_user-text__real_name")}>
                             Trần Khánh
@@ -62,7 +62,7 @@ function Profile() {
                     </div>
                 </div>
             </div>
-            <div className={cx("post_24h_container")}>
+            {/* <div className={cx("post_24h_container")}>
                 <div className={cx("add_post_container")}>
                     <div className={cx("add_post_container__icon")}>
                         <div className={cx("add_post_container__icon__background")}>
@@ -80,9 +80,9 @@ function Profile() {
                         Mới
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className={cx("navbar_post_page_profile")}>
-                <div className={cx("navbar_post_page_profile__tab", "navbar_post_page_profile__tab-post")}>
+                <div className={cx("navbar_post_page_profile__tab", "navbar_post_page_profile__tab-post", "active")}>
                     <div className={cx("navbar_post_page_profile__tab__icon")}>
                         <svg aria-label="" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="12" role="img"
                             viewBox="0 0 24 24" width="12">
@@ -103,7 +103,7 @@ function Profile() {
                         Bài viết
                     </div>
                 </div>
-                <div className={cx("navbar_post_page_profile__tab", "navbar_post_page_profile__tab-post_save", "active")}>
+                {/* <div className={cx("navbar_post_page_profile__tab", "navbar_post_page_profile__tab-post_save")}>
                     <div className={cx("navbar_post_page_profile__tab__icon")}>
                         <svg aria-label="" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor" height="12" role="img"
                             viewBox="0 0 24 24" width="12">
@@ -136,10 +136,10 @@ function Profile() {
                     <div className={cx("navbar_post_page_profile__tab__text")}>
                         Được gắn thẻ
                     </div>
-                </div>
+                </div> */}
             </div>
             <div className={cx("content_post_container_page_profile")}>
-                <div className={cx("content_post_container__pane")}>
+                <div className={cx("content_post_container__pane", "active")}>
                     <div className={cx("post_no_detail")}>
                         <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
                             alt="" />
@@ -157,7 +157,7 @@ function Profile() {
                             alt="" />
                     </div>
                 </div>
-                <div className={cx("content_post_container__pane", "active")}>
+                {/* <div className={cx("content_post_container__pane")}>
                     <div className={cx("content_post_container__pane__post_save")}>
                         <div className={cx("content_post_container__pane__post_save__header")}>
                             <span className={cx("content_post_container__pane__post_save__header__description")}>Chỉ mình bạn có thể
@@ -180,8 +180,7 @@ function Profile() {
                     </div>
                 </div>
                 <div className={cx("content_post_container__pane")}>
-
-                </div>
+                </div> */}
             </div>
         </div>
     )

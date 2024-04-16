@@ -1,6 +1,8 @@
 import classNames from 'classnames/bind';
 import styles from './Search.module.css';
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles)
 
@@ -9,6 +11,93 @@ function Search({ searchIsActive }) {
     
     if (searchIsActive === true && isFirstActive === false)
         setIsFirstActive(true);
+
+    const pageSearch__recentlyRef = useRef()
+
+    function handleClickInputSearch() {
+        const search_input_in_page_searchPC = document.querySelector('.'+cx('search_input_in_page_search-pc'));
+        const search_input_in_page_searchPC_svg = document.querySelector('.'+cx('search_input_in_page_search-pc')+' svg');
+        const search_input_in_page_searchPC_input = document.querySelector('.'+cx('search_input_in_page_search-pc')+' input');
+        const search_input_in_page_searchPC_i = document.querySelector('.'+cx('search_input_in_page_search-pc')+' i');
+
+        
+        const pageSearch__recently = pageSearch__recentlyRef.current
+        const pageSearch__recently__header = document.querySelector('.'+cx('page-search__recently__header'));
+
+        document.addEventListener('click', function(event) {
+            if (event.target !== search_input_in_page_searchPC_input) {
+                blurInput();
+            }
+        });
+
+        search_input_in_page_searchPC.addEventListener('click', function(event) {
+            search_input_in_page_searchPC_svg.style.display = 'none';
+            search_input_in_page_searchPC_input.style.paddingLeft = '0';
+            search_input_in_page_searchPC_i.style.display = 'block';
+            if (event.target.closest('svg.fa-circle-xmark') !== null || event.target.classList.contains('fa-circle-xmark')) {
+                blurInput();
+                removeAllCharacter();
+            }
+        });
+
+        function blurInput() {
+            search_input_in_page_searchPC_svg.style.display = 'block';
+            search_input_in_page_searchPC_input.style.paddingLeft = '28px';
+            search_input_in_page_searchPC_i.style.display = 'none';
+            search_input_in_page_searchPC_input.value = '';
+        }
+
+        search_input_in_page_searchPC_input.addEventListener('input', function() {
+            changeWhenInputCharacter();
+        });
+
+        var typingTimer; // Biến để lưu trữ thời gian đợi
+        function changeWhenInputCharacter() {
+            clearTimeout(typingTimer); // Xóa bất kỳ độ trễ nào còn tồn tại
+
+            pageSearch__recently.classList.add(cx('hiddenResultInput'));
+            typingTimer = setTimeout(function() {
+                if (search_input_in_page_searchPC_input.value.length > 0) {
+                    pageSearch__recently.style.marginTop = '0';
+                    pageSearch__recently.style.borderTop = '0';
+                    pageSearch__recently__header.style.display = 'none';
+                    pageSearch__recently.classList.remove(cx('hiddenResultInput'));
+                } else {
+                    removeAllCharacter();
+                }
+            }, 500); 
+        }
+
+        function removeAllCharacter() {
+            pageSearch__recently.style.marginTop = '24px';
+            pageSearch__recently.style.borderTop = '1px solid var(--border-navigation_bar)';
+            pageSearch__recently__header.style.display = 'flex';
+            pageSearch__recently.classList.remove(cx('hiddenResultInput'));
+        }
+
+
+        const pageSearch__recently__body__ul__liCancels = document.querySelectorAll('.'+cx('page-search__recently__body__ul__li-cancel'));
+        let originalBackgroundColor = getComputedStyle(pageSearch__recently__body__ul__liCancels[0].parentNode).backgroundColor;
+        window.addEventListener('resize', function() {
+            originalBackgroundColor = getComputedStyle(pageSearch__recently__body__ul__liCancels[0].parentNode).backgroundColor;
+        })
+        // Duyệt qua từng nút "Cancel" để thêm event listener
+        pageSearch__recently__body__ul__liCancels.forEach(function(btn) {
+            btn.addEventListener('mouseover', function() {
+                btn.parentNode.style.backgroundColor = originalBackgroundColor === 'rgb(0, 0, 0)' ? 'var(--background-black)' : '#262626';
+            });
+            btn.addEventListener('mouseout', function() {
+                btn.parentNode.style.backgroundColor = '';
+            });
+            btn.addEventListener('click', function() {
+                //...
+            });
+        });
+    }
+
+    useEffect(() => {
+        handleClickInputSearch()
+    }, [])
     
     
     return (
@@ -29,10 +118,10 @@ function Search({ searchIsActive }) {
                         <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
                             strokeWidth="2" x1="16.511" x2="22" y1="16.511" y2="22"></line>
                     </svg>
-                    <i className={cx("fa-solid fa-circle-xmark")}></i>
+                    <i><FontAwesomeIcon icon={faCircleXmark} /></i>
                 </div>
             </div>
-            <div className={cx("page-search__recently")}>
+            <div className={cx("page-search__recently")} ref={pageSearch__recentlyRef}>
                 <div className={cx("page-search__recently__header")}>
                     <div className={cx("page-search__recently__header__title")}>
                         <span>

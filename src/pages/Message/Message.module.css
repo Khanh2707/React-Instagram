@@ -45,8 +45,8 @@
 }
 
 .list_inbox__content {
-    /* height: calc(100% - 82px - 37.6px); */
-    height: calc(100% - 82px);
+    height: calc(100% - 68.4px - 37.6px);
+    /* height: calc(100% - 82px); */
 }
 
 .list_inbox__content ul {
@@ -304,6 +304,7 @@
     color: #8a8d91;
     font-size: 12px;
     font-weight: 500;
+    margin: 0 3px;
 }
 
 
@@ -332,6 +333,7 @@
 
 .detail_inbox__footer__input_inbox__icon_option-select_emoji {
     padding: 4px;
+    display: flex;
 }
 
 .detail_inbox__footer__input_inbox__icon_option__group_right {

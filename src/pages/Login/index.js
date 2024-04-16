@@ -24,42 +24,42 @@ function Login() {
             <div className={cx("container")} id="container" ref={idContainerRef}>
                 <div className={cx("form-container", "sign-up")}>
                     <form>
-                        <h1>Create Account</h1>
+                        <h1>Tạo tài khoản</h1>
                         <div className={cx("social-icons")}>
                             <a className={cx("icon")}><FontAwesomeIcon icon={faGooglePlusG} /></a>
                         </div>
-                        <span>or use your email for registeration</span>
-                        <input type="text" placeholder="Name" />
-                        <input type="text" placeholder="Id" />
+                        {/* <span>or use your email for registeration</span> */}
+                        <input type="text" placeholder="Tên người dùng" />
+                        <input type="text" placeholder="Id người dùng" />
                         <input type="text" placeholder="Email" />
                         <input type="text" placeholder="Password" />
-                        <button>Sign Up</button>
+                        <button>Đăng ký</button>
                     </form>
                 </div>
                 <div className={cx("form-container", "sign-in")}>
                     <form>
-                        <h1>Sign In</h1>
+                        <h1>Đăng nhập</h1>
                         <div className={cx("social-icons")}>
                             <a className={cx("icon")}><FontAwesomeIcon icon={faGooglePlusG} /></a>
                         </div>
-                        <span>or use your email password</span>
+                        {/* <span>or use your email password</span> */}
                         <input type="text" placeholder="Email" />
                         <input type="text" placeholder="Password" />
-                        <a>Forgot Your Password?</a>
-                        <button>Sign In</button>
+                        <a>Quên mật khẩu?</a>
+                        <button>Đăng nhập</button>
                     </form>
                 </div>
                 <div className={cx("toggle-container")}>
                     <div className={cx("toggle")}>
                         <div className={cx("toggle-panel", "toggle-left")}>
-                            <h1>Welcome Back</h1>
-                            <p>Enter your personal details to use all of site features</p>
-                            <button className={cx("hidden")} id="login" onClick={handleLogin}>Sign In</button>
+                            <h1>Chào mừng trở lại</h1>
+                            <p>Đăng nhập để truy cập Instagram</p>
+                            <button className={cx("hidden")} id="login" onClick={handleLogin}>Đăng nhập</button>
                         </div>
                         <div className={cx("toggle-panel", "toggle-right")}>
-                            <h1>Hello, Friend!</h1>
-                            <p>Register with your personal details to use all of site features</p>
-                            <button className={cx("hidden")} id="register" onClick={handleRegister}>Sign Up</button>
+                            <h1>Chào bạn!</h1>
+                            <p>Đăng ký để sử dụng Instagram</p>
+                            <button className={cx("hidden")} id="register" onClick={handleRegister}>Đăng ký</button>
                         </div>
                     </div>
                 </div>

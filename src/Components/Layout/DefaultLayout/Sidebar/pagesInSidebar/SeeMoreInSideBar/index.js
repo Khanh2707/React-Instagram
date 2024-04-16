@@ -21,7 +21,7 @@ function SeeMoreInSideBar({ seeMoreInSidebar }) {
                     </svg>
                     <span>Cài đặt</span>
                 </li>
-                <li>
+                {/* <li>
                     <svg aria-label="Báo cáo sự cố" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor"
                         height="18" role="img" viewBox="0 0 24 24" width="18">
                         <title>Báo cáo sự cố</title>
@@ -30,8 +30,9 @@ function SeeMoreInSideBar({ seeMoreInSidebar }) {
                         </path>
                     </svg>
                     <span>Báo cáo sự cố</span>
-                </li>
-                <div className={cx("gap_large_in_see_more")}></div>
+                </li> */}
+                {/* <div className={cx("gap_large_in_see_more")}></div> */}
+                <div className={cx("gap_small_in_see_more")}></div>
                 <li>
                     <span>Chuyển tài khoản</span>
                 </li>

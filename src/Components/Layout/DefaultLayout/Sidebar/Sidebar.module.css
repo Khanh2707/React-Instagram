@@ -15,19 +15,7 @@
     background-color: var(--border-navigation_bar);
 }
 
-.gap_large_in_see_more {
-    margin: 8px -8px;
-    width: calc(100% + 16px);
-    height: 6px;
-    background-color: #5555554D;
-}
 
-.gap_small_in_see_more {
-    margin: 8px -8px;
-    width: calc(100% + 16px);
-    height: 0.5px;
-    background-color: #3b3b3b;
-}
 
 .navigation_bar {
     display: flex;

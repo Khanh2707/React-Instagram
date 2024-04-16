@@ -1,15 +1,91 @@
 import classNames from 'classnames/bind';
 import styles from './Message.module.css';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 
 const cx = classNames.bind(styles)
 
 function Message() {
-    const navigate = useNavigate();
+    const detail_inbox__footer__input_inbox__inputRef = useRef()
+
+    function eventInputInbox() {
+        const detail_inbox__footer__input_inbox__input = detail_inbox__footer__input_inbox__inputRef.current
+        const detail_inbox__footer__input_inbox__icon_option__group_right = document.querySelector('.'+cx('detail_inbox__footer__input_inbox__icon_option__group_right'));
+        const detail_inbox__footer__input_inbox__button_submit = document.querySelector('.'+cx('detail_inbox__footer__input_inbox__button_submit'));
+
+        var valueInput = null;
+
+        detail_inbox__footer__input_inbox__input.addEventListener('input', function (event) {
+            checkEmptyInput();
+            valueInput = event.target.value;
+        });
+
+        detail_inbox__footer__input_inbox__button_submit.addEventListener('click', function () {
+            console.log(valueInput);
+            clearInput();
+            checkEmptyInput()
+        });
+
+        detail_inbox__footer__input_inbox__input.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && detail_inbox__footer__input_inbox__input.value.length > 0) {
+                console.log(valueInput);
+                clearInput();
+                checkEmptyInput()
+            }
+        });
+
+
+        function clearInput() {
+            detail_inbox__footer__input_inbox__input.value = '';
+        }
+
+
+        function checkEmptyInput() {
+            if (detail_inbox__footer__input_inbox__input.value.length > 0) {
+                detail_inbox__footer__input_inbox__icon_option__group_right.style.display = 'none';
+                detail_inbox__footer__input_inbox__button_submit.style.display = 'block';
+            }
+            else {
+                detail_inbox__footer__input_inbox__icon_option__group_right.style.display = 'flex';
+                detail_inbox__footer__input_inbox__button_submit.style.display = 'none';
+            }
+        }
+    }
+
+    function eventListenerListUserInbox() {
+        const list_inbox__content__ul__li = document.querySelectorAll('.'+cx('list_inbox__content__ul__li'));
+
+        list_inbox__content__ul__li.forEach((item) => {
+            let not_select_inbox = document.querySelector('.'+cx('not_select_inbox'));
+            let detail_inbox = document.querySelector('.'+cx('detail_inbox'));
+
+            let inbox_has_been_no_read = item.querySelector('.'+cx('list_inbox__content__ul__li-inbox_has_been_no_read'));
+            let icon_notification_new_message = item.querySelector('.'+cx('list_inbox__content__ul__li-icon_notification_new_message'));
+            if (inbox_has_been_no_read) {
+                icon_notification_new_message.classList.add(cx('active'));
+            }
+            item.addEventListener('click', function() {
+                list_inbox__content__ul__li.forEach((childItem) => {
+                    if (childItem.classList.contains(cx('active'))) {
+                        childItem.classList.remove(cx('active'));
+                    }
+                })
+                
+                if (inbox_has_been_no_read) {
+                    inbox_has_been_no_read.classList.remove(cx('list_inbox__content__ul__li-inbox_has_been_no_read'));
+                    inbox_has_been_no_read.classList.add(cx('list_inbox__content__ul__li-inbox_has_been_read'));
+                    icon_notification_new_message.classList.remove(cx('active'));
+                }
+                item.classList.add(cx('active'));
+                not_select_inbox.style.display = 'none';
+                detail_inbox.classList.add(cx('active'));
+            });
+        });
+    }
+
     useEffect(() => {
-        navigate('/message');
-    }, []); 
+        eventInputInbox()
+        eventListenerListUserInbox()
+    }, [])
 
     return (
         <div className={cx("main", "page-message")}>
@@ -362,7 +438,7 @@ function Message() {
                             </div>
                         </div>
                     </div>
-                    <div className={cx("detail_inbox__header__icon_option")}>
+                    {/* <div className={cx("detail_inbox__header__icon_option")}>
                         <div className={cx("detail_inbox__header__icon_option-voice_call")}>
                             <svg aria-label="Gọi thoại" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="24"
                                 role="img" viewBox="0 0 24 24" width="24">
@@ -397,7 +473,7 @@ function Message() {
                                     strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline>
                             </svg>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={cx("detail_inbox__body")}>
                     <div className={cx("detail_inbox__body_wrapper")}>
@@ -421,10 +497,10 @@ function Message() {
                             </svg>
                         </div>
                         <div className={cx("detail_inbox__footer__input_inbox__input")}>
-                            <input type="text" placeholder="Nhắn tin..." />
+                            <input type="text" placeholder="Nhắn tin..." ref={detail_inbox__footer__input_inbox__inputRef} />
                         </div>
                         <div className={cx("detail_inbox__footer__input_inbox__icon_option__group_right")}>
-                            <div className={cx("detail_inbox__footer__input_inbox__icon_option-audio_clip")}>
+                            {/* <div className={cx("detail_inbox__footer__input_inbox__icon_option-audio_clip")}>
                                 <svg aria-label="Clip âm thanh" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor"
                                     height="24" role="img" viewBox="0 0 24 24" width="24">
                                     <title>Clip âm thanh</title>
@@ -439,7 +515,7 @@ function Message() {
                                         strokeWidth="2">
                                     </path>
                                 </svg>
-                            </div>
+                            </div> */}
                             <div className={cx("detail_inbox__footer__input_inbox__icon_option-add_photo_or_video")}>
                                 <svg aria-label="Thêm ảnh hoặc video" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor"
                                     height="24" role="img" viewBox="0 0 24 24" width="24">

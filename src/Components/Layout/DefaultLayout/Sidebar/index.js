@@ -18,6 +18,8 @@ function Sidebar() {
     const location = useLocation()
     const currentPath = location.pathname;
 
+    const navHomeRef = useRef()
+    const navMessageRef = useRef()
     const navProfileRef = useRef()
 
 
@@ -117,7 +119,6 @@ function Sidebar() {
                         }
                     }
                 });
-                console.log(item)
                 if (item.classList.contains(cx('active'))) {
                     if (item.classList.contains(cx('navigation__item-see_more')))
                         setSeeMoreInSidebar(false)
@@ -157,15 +158,15 @@ function Sidebar() {
 
     function handleAnimationSidebarWhenClickNavLevel2() {
         if (window.location.pathname !== '/message') {
-            const navigation__itemSpan = document.querySelectorAll('.'+cx('navigation__item-span'));
+            const navigation__itemSpan = document.querySelectorAll('.' + cx('navigation__item-span'));
             navigation__itemSpan.forEach((item) => {
                 item.classList.toggle(cx('active'));
             });
-            const navigation_bar = document.querySelector('.'+cx('navigation_bar'));
-            document.querySelector('.'+cx('navigation_bar')).classList.toggle(cx('active'));
-            document.querySelector('.'+cx('logo-web-tablet')).classList.toggle(cx('active'));
-            document.querySelector('.'+cx('logo-web-pc')).classList.toggle(cx('active'));
-            document.querySelector('.'+cx('logo-web')).classList.toggle(cx('active'));
+            const navigation_bar = document.querySelector('.' + cx('navigation_bar'));
+            document.querySelector('.' + cx('navigation_bar')).classList.toggle(cx('active'));
+            document.querySelector('.' + cx('logo-web-tablet')).classList.toggle(cx('active'));
+            document.querySelector('.' + cx('logo-web-pc')).classList.toggle(cx('active'));
+            document.querySelector('.' + cx('logo-web')).classList.toggle(cx('active'));
             if (window.innerWidth > 1263) {
                 if (navigation_bar.classList.contains(cx('active'))) {
                     navigation_bar.classList.remove(cx('animationDisappearSideBar'));
@@ -179,6 +180,10 @@ function Sidebar() {
         }
     }
 
+    function handleRouterPageHome() {
+        navigate('/')
+    }
+
     function handleRouterPageMessage() {
         navigate('/message')
     }
@@ -189,35 +194,41 @@ function Sidebar() {
 
     useEffect(() => {
         checkNavigationActive()
-        
+
     }, [])
 
     useEffect(() => {
+        if (currentPath === '/') {
+            navHomeRef.current.click()
+        }
+        if (currentPath === '/message') {
+            navMessageRef.current.click()
+        }
         if (currentPath === '/profile') {
             navProfileRef.current.click()
         }
-    }, [])
+    }, [currentPath])
 
     useEffect(() => {
         if (currentPath === '/message') {
-            const navigation__itemSpan = document.querySelectorAll('.'+cx('navigation__item-span'));
+            const navigation__itemSpan = document.querySelectorAll('.' + cx('navigation__item-span'));
             navigation__itemSpan.forEach((item) => {
                 item.classList.add(cx('active'));
             });
-            document.querySelector('.'+cx('navigation_bar')).classList.add(cx('active'));
-            document.querySelector('.'+cx('logo-web-tablet')).classList.add(cx('active'));
-            document.querySelector('.'+cx('logo-web-pc')).classList.add(cx('active'));
-            document.querySelector('.'+cx('logo-web')).classList.add(cx('active'));
+            document.querySelector('.' + cx('navigation_bar')).classList.add(cx('active'));
+            document.querySelector('.' + cx('logo-web-tablet')).classList.add(cx('active'));
+            document.querySelector('.' + cx('logo-web-pc')).classList.add(cx('active'));
+            document.querySelector('.' + cx('logo-web')).classList.add(cx('active'));
         }
         else {
-            const navigation__itemSpan = document.querySelectorAll('.'+cx('navigation__item-span'));
+            const navigation__itemSpan = document.querySelectorAll('.' + cx('navigation__item-span'));
             navigation__itemSpan.forEach((item) => {
                 item.classList.remove(cx('active'));
             });
-            document.querySelector('.'+cx('navigation_bar')).classList.remove(cx('active'));
-            document.querySelector('.'+cx('logo-web-tablet')).classList.remove(cx('active'));
-            document.querySelector('.'+cx('logo-web-pc')).classList.remove(cx('active'));
-            document.querySelector('.'+cx('logo-web')).classList.remove(cx('active'));
+            document.querySelector('.' + cx('navigation_bar')).classList.remove(cx('active'));
+            document.querySelector('.' + cx('logo-web-tablet')).classList.remove(cx('active'));
+            document.querySelector('.' + cx('logo-web-pc')).classList.remove(cx('active'));
+            document.querySelector('.' + cx('logo-web')).classList.remove(cx('active'));
         }
     }, [currentPath])
 
@@ -248,6 +259,28 @@ function Sidebar() {
                     </div>
                 </div>
                 <div className={cx("navigation-page", "combined")}>
+                    <div className={cx("navigation__item", "navigation__item-home", "active")} data-level="1" onClick={handleRouterPageHome} ref={navHomeRef}>
+                        <div className={cx("navigation__item-logo")}>
+                            <div className={cx("navigation__item-logo--no_active")}>
+                                <svg aria-label="Trang chủ" className={cx("_ab6-")} color="rgb(245, 245, 245)"
+                                    fill="rgb(245, 245, 245)" height="24" role="img" viewBox="0 0 24 24" width="24">
+                                    <path
+                                        d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z"
+                                        fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div className={cx("navigation__item-logo--active")}>
+                                <svg aria-label="Trang chủ" className={cx("_ab6-")} color="rgb(245, 245, 245)"
+                                    fill="rgb(245, 245, 245)" height="24" role="img" viewBox="0 0 24 24" width="24">
+                                    <path
+                                        d="M22 23h-6.001a1 1 0 0 1-1-1v-5.455a2.997 2.997 0 1 0-5.993 0V22a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V11.543a1.002 1.002 0 0 1 .31-.724l10-9.543a1.001 1.001 0 0 1 1.38 0l10 9.543a1.002 1.002 0 0 1 .31.724V22a1 1 0 0 1-1 1Z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <span className={cx("navigation__item-span")}>Trang chủ</span>
+                    </div>
                     <div className={cx("navigation__item", "navigation__item-search_account")} data-level="2">
                         <div className={cx("navigation__item-logo")}>
                             <div className={cx("navigation__item-logo--no_active")}>
@@ -275,7 +308,7 @@ function Sidebar() {
                         </div>
                         <span className={cx("navigation__item-span")}>Tìm kiếm</span>
                     </div>
-                    <div className={cx("navigation__item", "navigation__item-message", "active")} data-level="1" onClick={handleRouterPageMessage}>
+                    <div className={cx("navigation__item", "navigation__item-message")} data-level="1" onClick={handleRouterPageMessage} ref={navMessageRef}>
                         <div className={cx("navigation__item-logo")}>
                             <div className={cx("navigation__item-logo--no_active")}>
                                 <svg aria-label="Messenger" className={cx("_ab6-")} color="rgb(245, 245, 245)"
