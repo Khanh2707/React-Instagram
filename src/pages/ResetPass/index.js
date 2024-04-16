@@ -1,19 +1,15 @@
 import classNames from 'classnames/bind';
 import styles from './Login.module.css';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const cx = classNames.bind(styles)
 
-function Login() {
+function ResetPass() {
     const navigate = useNavigate()
 
-    function handleNavigateResgister() {
-        navigate('/register')
-    }
-
-    function handleNavigateResetPass() {
-        navigate('/reset-pass')
+    function handleNavigateLogin() {
+        navigate('/login')
     }
 
     useEffect(() => {
@@ -193,19 +189,19 @@ function Login() {
             errorSelector: '.'+cx('form-message'),
             rules: [
                 Validator.isRequired('#'+cx('email'), 'Vui lòng nhập Email'),
-                Validator.isRequired('#'+cx('password'), 'Vui lòng nhập Password'),
+                Validator.isRequired('#'+cx('code'), 'Vui lòng nhập Mã xác nhận'),
             ],
             onSubmit: function(data) {
                 console.log(data)
             }
-        });
+        })
     }, []);
 
     return (
         <div className={cx("main")}>
 
             <form action="" method="POST" className={cx("form")} id="form-1">
-                <h3 className={cx("heading")}>Đăng nhập</h3>
+                <h3 className={cx("heading")}>Quên mật khẩu</h3>
                 <p className={cx("desc")}>Kết nối với mọi người qua Instagram ❤️</p>
 
                 <div className={cx("spacer")}></div>
@@ -217,23 +213,20 @@ function Login() {
                 </div>
 
                 <div className={cx("form-group")}>
-                    <label htmlFor="password" className={cx("form-label")}>Mật khẩu</label>
-                    <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" className={cx("form-control")} />
+                    <label htmlFor="code" className={cx("form-label")}>Mã xác nhận</label>
+                    <input id="code" name="code" type="text" placeholder="VD: 123456" className={cx("form-control")} />
+                    <span className={cx("send_code")}>Gửi mã</span>
                     <span className={cx("form-message")}></span>
                 </div>
 
-                <button className={cx("form-submit")}>Đăng nhập</button>
+                <button className={cx("form-submit")}>Gửi</button>
 
                 <div className={cx("spacer")}></div>
 
                 <div className={cx("swap")}>
-                    <span className={cx("swap__title")}>Bạn chưa có tài khoản?</span>
-                    <span className={cx("swap__button")} onClick={handleNavigateResgister}>Đăng ký</span>
+                    <span className={cx("swap__title")}>Bạn đã có tài khoản?</span>
+                    <span className={cx("swap__button")} onClick={handleNavigateLogin}>Đăng nhập</span>
                 </div>
-
-                <div className={cx("or")}>hoặc</div>
-
-                <span className={cx("swap__button")} onClick={handleNavigateResetPass}>Quên mật khẩu?</span>
 
             </form>
 
@@ -241,4 +234,4 @@ function Login() {
     )
 }
 
-export default Login;
+export default ResetPass;

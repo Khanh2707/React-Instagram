@@ -1,15 +1,24 @@
 import classNames from 'classnames/bind';
 import styles from './Modal.module.css';
+import { useModal } from '../../../../Context/ModalContext';
+import React from 'react';
 
 const cx = classNames.bind(styles)
 
 function Modal() {
+    const { isMouthModal, mouthedContent, setIsMouthModal } = useModal();
+
+    const handleCloseModal = () => {
+        setIsMouthModal(false);
+    };
 
     return (
+        <React.Fragment>
+        {isMouthModal && (
         <div className={cx("modal")}>
-            <div className={cx("modal__overlay")}>
+            <div className={cx("modal__overlay")} onClick={handleCloseModal}>
             </div>
-            <div className={cx("modal__xmark")}>
+            <div className={cx("modal__xmark")} onClick={handleCloseModal}>
                 <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x9bdzbf")} fill="currentColor" height="18" role="img"
                     viewBox="0 0 24 24" width="18">
                     <title>Đóng</title>
@@ -20,9 +29,11 @@ function Modal() {
                 </svg>
             </div>
             <div className={cx("modal__body")}>
-                
+                {mouthedContent}
             </div>
         </div>
+        )}
+        </React.Fragment>
     )
 }
 

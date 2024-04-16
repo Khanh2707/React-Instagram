@@ -1,19 +1,15 @@
 import classNames from 'classnames/bind';
 import styles from './Login.module.css';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const cx = classNames.bind(styles)
 
-function Login() {
+function Register() {
     const navigate = useNavigate()
 
-    function handleNavigateResgister() {
-        navigate('/register')
-    }
-
-    function handleNavigateResetPass() {
-        navigate('/reset-pass')
+    function handleNavigateLogin() {
+        navigate('/login')
     }
 
     useEffect(() => {
@@ -192,23 +188,43 @@ function Login() {
             formGroupSelector: '.'+cx('form-group'),
             errorSelector: '.'+cx('form-message'),
             rules: [
+                Validator.isRequired('#'+cx('fullname'), 'Vui lòng nhập tên'),
+                Validator.isRequired('#'+cx('id'), 'Vui lòng nhập Id'),
                 Validator.isRequired('#'+cx('email'), 'Vui lòng nhập Email'),
+                Validator.isEmail('#'+cx('email')),
                 Validator.isRequired('#'+cx('password'), 'Vui lòng nhập Password'),
+                Validator.minLength('#'+cx('password'), 8),
+                Validator.isRequired('#'+cx('password_confirmation'), 'Vui lòng nhập lại Password'),
+                Validator.isConfirmed('#'+cx('password_confirmation'), function() {
+                    return document.querySelector(`#${cx('form-1')} #${cx('password')}`).value;
+                }, 'Mật khẩu nhập lại không chính xác')
             ],
             onSubmit: function(data) {
                 console.log(data)
             }
-        });
+        })
     }, []);
 
     return (
         <div className={cx("main")}>
 
             <form action="" method="POST" className={cx("form")} id="form-1">
-                <h3 className={cx("heading")}>Đăng nhập</h3>
+                <h3 className={cx("heading")}>Đăng ký</h3>
                 <p className={cx("desc")}>Kết nối với mọi người qua Instagram ❤️</p>
 
                 <div className={cx("spacer")}></div>
+
+                <div className={cx("form-group")}>
+                    <label htmlFor="fullname" className={cx("form-label")}>Tên đầy đủ</label>
+                    <input id="fullname" name="fullname" type="text" placeholder="VD: Phúc Khánh" className={cx("form-control")} />
+                    <span className={cx("form-message")}></span>
+                </div>
+
+                <div className={cx("form-group")}>
+                    <label htmlFor="id" className={cx("form-label")}>Id</label>
+                    <input id="id" name="id" type="text" placeholder="VD: tp_khanh" className={cx("form-control")} />
+                    <span className={cx("form-message")}></span>
+                </div>
 
                 <div className={cx("form-group")}>
                     <label htmlFor="email" className={cx("form-label")}>Email</label>
@@ -222,23 +238,25 @@ function Login() {
                     <span className={cx("form-message")}></span>
                 </div>
 
-                <button className={cx("form-submit")}>Đăng nhập</button>
+                <div className={cx("form-group")}>
+                    <label htmlFor="password_confirmation" className={cx("form-label")}>Nhập lại mật khẩu</label>
+                    <input id="password_confirmation" name="password_confirmation" placeholder="Nhập lại mật khẩu"
+                        type="password" className={cx("form-control")} />
+                    <span className={cx("form-message")}></span>
+                </div>
+
+                <button className={cx("form-submit")}>Đăng ký</button>
 
                 <div className={cx("spacer")}></div>
 
                 <div className={cx("swap")}>
-                    <span className={cx("swap__title")}>Bạn chưa có tài khoản?</span>
-                    <span className={cx("swap__button")} onClick={handleNavigateResgister}>Đăng ký</span>
+                    <span className={cx("swap__title")}>Bạn đã có tài khoản?</span>
+                    <span className={cx("swap__button")} onClick={handleNavigateLogin}>Đăng nhập</span>
                 </div>
-
-                <div className={cx("or")}>hoặc</div>
-
-                <span className={cx("swap__button")} onClick={handleNavigateResetPass}>Quên mật khẩu?</span>
-
             </form>
 
         </div>
     )
 }
 
-export default Login;
+export default Register;
