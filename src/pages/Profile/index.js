@@ -1,9 +1,31 @@
 import classNames from 'classnames/bind';
 import styles from './Profile.module.css';
+import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles)
 
 function Profile() {
+    const [width, setWidth] = useState(309);
+    const [widthTabBar, setWidthTabBar] = useState(935)
+
+    useEffect(() => {
+        function handleResize() {
+            if (window.innerWidth <= 1263) {
+                setWidth(width - (1263 - window.innerWidth) / 10)
+                setWidthTabBar(widthTabBar - ((1263 - window.innerWidth) / 10) * 3)
+            }
+            else {
+                setWidth(309)
+                setWidthTabBar(935)
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
     
     return (
         <div className={cx("main", "page-profile")}>
@@ -81,7 +103,7 @@ function Profile() {
                     </div>
                 </div>
             </div> */}
-            <div className={cx("navbar_post_page_profile")}>
+            <div className={cx("navbar_post_page_profile")} style={{width: `${widthTabBar}px`}}>
                 <div className={cx("navbar_post_page_profile__tab", "navbar_post_page_profile__tab-post", "active")}>
                     <div className={cx("navbar_post_page_profile__tab__icon")}>
                         <svg aria-label="" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="12" role="img"
@@ -139,20 +161,20 @@ function Profile() {
                 </div> */}
             </div>
             <div className={cx("content_post_container_page_profile")}>
-                <div className={cx("content_post_container__pane", "active")}>
-                    <div className={cx("post_no_detail")}>
+                <div className={cx("content_post_container__pane", "active")} style={{width: `${widthTabBar + 4}px`}}>
+                    <div className={cx("post_no_detail")} style={{width: `${width}px`, height: `${width}px`}}>
                         <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
                             alt="" />
                     </div>
-                    <div className={cx("post_no_detail")}>
+                    <div className={cx("post_no_detail")} style={{width: `${width}px`, height: `${width}px`}}>
                         <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
                             alt="" />
                     </div>
-                    <div className={cx("post_no_detail")}>
+                    <div className={cx("post_no_detail")} style={{width: `${width}px`, height: `${width}px`}}>
                         <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
                             alt="" />
                     </div>
-                    <div className={cx("post_no_detail")}>
+                    <div className={cx("post_no_detail")} style={{width: `${width}px`, height: `${width}px`}}>
                         <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
                             alt="" />
                     </div>

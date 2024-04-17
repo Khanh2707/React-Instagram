@@ -1,0 +1,32 @@
+.main.page-home {
+    display: flex;
+    margin-top: 24px;
+    margin-left: 245px;
+    justify-content: center;
+}
+
+.container_post {
+    display: flex;
+    flex-wrap: wrap;
+    width: 960px;
+    margin: 0 20px;
+}
+
+.post {
+    width: 316px;
+    height: 316px;
+    margin: 2px;
+    cursor: pointer;
+}
+
+.post img {
+    width: 100%;
+    transform: scale(1);
+    transform-origin: top right;
+}
+
+@media (max-width: 1263px) {
+    .main.page-home {
+        margin-left: 73px;
+    }
+}
