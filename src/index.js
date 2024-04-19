@@ -5,15 +5,18 @@ import reportWebVitals from './reportWebVitals';
 import GlobalStyles from './Components/GlobalStyles';
 import { AppProvider } from './Context/AppContext';
 import { ModalProvider } from './Context/ModalContext';
+import { ToastMessageProvider } from './Context/ToastMessageContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
     <GlobalStyles>
       <AppProvider>
-        <ModalProvider>
-          <App />
-        </ModalProvider>
+        <ToastMessageProvider>
+          <ModalProvider>
+            <App />
+          </ModalProvider>
+        </ToastMessageProvider>
       </AppProvider>
     </GlobalStyles>
   // </React.StrictMode>

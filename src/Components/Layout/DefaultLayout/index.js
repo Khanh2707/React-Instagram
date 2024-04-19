@@ -1,4 +1,5 @@
 import React from "react";
+import ToastMessage from "./ToastMessage";
 import Modal from "./Modal";
 import Sidebar from "./Sidebar";
 
@@ -14,6 +15,7 @@ function DefaultLayout({ children }) {
                 </div>
             </div>
             <Modal />
+            <ToastMessage />
         </React.Fragment>
     );
 }

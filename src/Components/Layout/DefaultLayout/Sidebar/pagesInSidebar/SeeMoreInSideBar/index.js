@@ -1,9 +1,45 @@
 import classNames from 'classnames/bind';
 import styles from './SeeMoreInSideBar.module.css';
+import { useNavigate } from 'react-router-dom';
+import { useToastMessage } from '../../../../../../Context/ToastMessageContext';
 
 const cx = classNames.bind(styles)
 
 function SeeMoreInSideBar({ seeMoreInSidebar }) {
+    const { setToastMessage } = useToastMessage();
+
+    function showToastInfo() {
+        setToastMessage({
+            title: "Thông báo!",
+            message: "Bạn đang đăng xuất.",
+            type: "info",
+            duration: 3000
+        })
+    }
+
+    function logout() {
+        const token = localStorage.getItem('token')
+        fetch('http://localhost:8080/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            if (res.code === 1) {
+                localStorage.removeItem('token')
+                showToastInfo();
+                setTimeout(() => {
+                    window.location.replace('/login');
+                }, 1000);
+            }
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
     
     return (
         <div className={cx("page-see_more", { 'active': seeMoreInSidebar })}>
@@ -37,7 +73,7 @@ function SeeMoreInSideBar({ seeMoreInSidebar }) {
                     <span>Chuyển tài khoản</span>
                 </li>
                 <div className={cx("gap_small_in_see_more")}></div>
-                <li>
+                <li onClick={logout}>
                     <span>Đăng xuất</span>
                 </li>
             </ul>

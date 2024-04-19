@@ -1,11 +1,26 @@
 import classNames from 'classnames/bind';
 import styles from './Login.module.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToastMessage } from '../../Context/ToastMessageContext';
+import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
 
 const cx = classNames.bind(styles)
 
 function Login() {
+    useEffect(() => {
+        document.title = 'Đăng nhập';
+    }, [])
+
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [isDataReady, setIsDataReady] = useState(false)
+
+    const data = {
+        account: username,
+        password: password
+    }
+
     const navigate = useNavigate()
 
     function handleNavigateResgister() {
@@ -196,12 +211,102 @@ function Login() {
                 Validator.isRequired('#'+cx('password'), 'Vui lòng nhập Password'),
             ],
             onSubmit: function(data) {
-                console.log(data)
+                setUsername(data.email)
+                setPassword(data.password)
+                setIsDataReady(true)
             }
         });
     }, []);
 
+    useEffect(() => {
+        if (isDataReady) {
+            login();
+        }
+    }, [isDataReady])
+
+    function login() {
+        fetch('http://localhost:8080/auth/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Unauthenticated');
+            }
+            return res.json()
+        })
+        .then(res => {
+            if (res.code === 1) {
+                console.log(res)
+                localStorage.setItem('token', res.result.token)
+
+                setTimeout(() => refreshToken(), 50 * 60 * 1000)
+
+                showToastSuccess();
+
+                setTimeout(() => {
+                    window.location.replace('/');
+                }, 2000)
+            }
+            setIsDataReady(false);
+        })
+        .catch(error => {
+            showToastError();
+            setIsDataReady(false);
+        });
+    }
+
+    function refreshToken() {
+        const token = localStorage.getItem('token');
+        fetch('http://localhost:8080/auth/refreshToken', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Unauthenticated');
+            }
+            res.json()
+        })
+        .then((res) => {
+            if (res.code === 1) {
+                localStorage.setItem('token', res.result.token)
+                setTimeout(() => refreshToken(), 50 * 60 * 1000)
+            }
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+
+    const { setToastMessage } = useToastMessage();
+
+    function showToastSuccess() {
+        setToastMessage({
+            title: "Thành công!",
+            message: "Chào mừng bạn đến với Instagram.",
+            type: "success",
+            duration: 3000
+        })
+    }
+
+    function showToastError() {
+        setToastMessage({
+            title: "Thất bại!",
+            message: "Thông tin đăng nhập không đúng.",
+            type: "error",
+            duration: 3000
+        })
+    }
+
     return (
+        <>
         <div className={cx("main")}>
 
             <form action="" method="POST" className={cx("form")} id="form-1">
@@ -238,6 +343,8 @@ function Login() {
             </form>
 
         </div>
+        <ToastMessage />
+        </>
     )
 }
 

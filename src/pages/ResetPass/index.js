@@ -6,6 +6,10 @@ import { useEffect } from 'react';
 const cx = classNames.bind(styles)
 
 function ResetPass() {
+    useEffect(() => {
+        document.title = 'Quên mật khẩu';
+    }, [])
+
     const navigate = useNavigate()
 
     function handleNavigateLogin() {

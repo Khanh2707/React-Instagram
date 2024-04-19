@@ -6,6 +6,10 @@ import { useEffect } from 'react';
 const cx = classNames.bind(styles)
 
 function Register() {
+    useEffect(() => {
+        document.title = 'Đăng ký tài khoản';
+    }, [])
+
     const navigate = useNavigate()
 
     function handleNavigateLogin() {

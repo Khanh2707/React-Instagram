@@ -1,14 +1,19 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DefaultLayout } from '~/Components/Layout';
 import { Fragment } from 'react';
-import { privateRoutes } from './routes';
+import { privateRoutes, publicRoutes } from './routes';
+
+const isAuthenticated = () => {
+  const token = localStorage.getItem('token');
+  return !!token; // Chuyển đổi thành boolean
+}
 
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
-        {privateRoutes.map((route, index) => {
+        {publicRoutes.map((route, index) => {
           const Layout = route.layout === null ? Fragment : DefaultLayout;
           const Page = route.component;
           return (
@@ -16,6 +21,21 @@ function App() {
               <Layout>
                 <Page />
               </Layout>
+            } />
+          )
+        })}
+        {privateRoutes.map((route, index) => {
+          const Layout = route.layout === null ? Fragment : DefaultLayout;
+          const Page = route.component;
+          return (
+            <Route key={index} path={route.path} element={
+              isAuthenticated() ? (
+                <Layout>
+                  <Page />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } 
             />
           )
