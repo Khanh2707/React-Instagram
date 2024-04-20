@@ -240,7 +240,6 @@ function Login() {
         })
         .then(res => {
             if (res.code === 1) {
-                console.log(res)
                 localStorage.setItem('token', res.result.token)
 
                 setTimeout(() => refreshToken(), 50 * 60 * 1000)

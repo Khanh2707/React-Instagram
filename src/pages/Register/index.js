@@ -1,7 +1,9 @@
 import classNames from 'classnames/bind';
 import styles from './Login.module.css';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useToastMessage } from '../../Context/ToastMessageContext';
+import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
 
 const cx = classNames.bind(styles)
 
@@ -9,6 +11,17 @@ function Register() {
     useEffect(() => {
         document.title = 'Đăng ký tài khoản';
     }, [])
+
+    const [username, setUsername] = useState('')
+    const [fullName, setFullName] = useState('')
+    const [idUser, setIdUser] = useState('')
+    const [password, setPassword] = useState('')
+    const [isDataReady, setIsDataReady] = useState(false)
+
+    const dataAccount = {
+        account: username,
+        password: password
+    }
 
     const navigate = useNavigate()
 
@@ -204,12 +217,104 @@ function Register() {
                 }, 'Mật khẩu nhập lại không chính xác')
             ],
             onSubmit: function(data) {
-                console.log(data)
+                setUsername(data.email)
+                setPassword(data.password)
+                setIdUser(data.id)
+                setFullName(data.fullname)
+                setIsDataReady(true)
             }
         })
     }, []);
 
+    useEffect(() => {
+        if (isDataReady) {
+            registerAccount();
+        }
+    }, [isDataReady])
+
+    function registerAccount() {
+        fetch('http://localhost:8080/api/accounts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataAccount),
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Unauthenticated');
+            }
+            return res.json()
+        })
+        .then(res => {
+            if (res.code === 1) {
+                createUser(res.result.id_account);
+            }
+            setIsDataReady(false);
+        })
+        .catch(error => {
+            showToastError();
+            setIsDataReady(false);
+        });
+    }
+
+    function createUser(idAccountUser) {
+        fetch('http://localhost:8080/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id_user: idUser,
+                name: fullName,
+                id_account_user: idAccountUser
+            }),
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Unauthenticated');
+            }
+            return res.json()
+        })
+        .then(res => {
+            if (res.code === 1) {
+
+                showToastSuccess();
+
+                setTimeout(() => {
+                    window.location.replace('/login');
+                }, 2000)
+            }
+            setIsDataReady(false);
+        })
+        .catch(error => {
+            showToastError();
+            setIsDataReady(false);
+        });
+    }
+
+    const { setToastMessage } = useToastMessage();
+
+    function showToastSuccess() {
+        setToastMessage({
+            title: "Thành công!",
+            message: "Bạn đã đăng ký tài khoản thành công.",
+            type: "success",
+            duration: 3000
+        })
+    }
+
+    function showToastError() {
+        setToastMessage({
+            title: "Thất bại!",
+            message: "Email đã tồn tại.",
+            type: "error",
+            duration: 3000
+        })
+    }
+
     return (
+        <>
         <div className={cx("main")}>
 
             <form action="" method="POST" className={cx("form")} id="form-1">
@@ -260,6 +365,8 @@ function Register() {
             </form>
 
         </div>
+        <ToastMessage />
+        </>
     )
 }
 
