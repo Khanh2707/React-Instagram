@@ -12,12 +12,9 @@ const publicRoutes = [
 ]
 
 const privateRoutes = [
-    { path: '/login', component: Login, layout: null },
-    { path: '/register', component: Register, layout: null },
-    { path: '/reset-pass', component: ResetPass, layout: null },
     { path: '/', component: Home },
     { path: '/message', component: Message },
-    { path: '/profile', component: Profile}
+    { path: '/:id-user', component: Profile}
 ]
 
 export { publicRoutes, privateRoutes }

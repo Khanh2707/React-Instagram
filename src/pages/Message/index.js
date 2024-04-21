@@ -5,6 +5,10 @@ import { useEffect, useRef } from 'react';
 const cx = classNames.bind(styles)
 
 function Message() {
+    useEffect(() => {
+        document.title = 'Tin nhắn';
+    }, [])
+
     const detail_inbox__footer__input_inbox__inputRef = useRef()
 
     function eventInputInbox() {

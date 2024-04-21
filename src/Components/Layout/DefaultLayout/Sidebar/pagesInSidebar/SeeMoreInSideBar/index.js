@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './SeeMoreInSideBar.module.css';
-import { useNavigate } from 'react-router-dom';
 import { useToastMessage } from '../../../../../../Context/ToastMessageContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
@@ -17,28 +17,19 @@ function SeeMoreInSideBar({ seeMoreInSidebar }) {
         })
     }
 
-    function logout() {
-        const token = localStorage.getItem('token')
-        fetch('http://localhost:8080/auth/logout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token }),
-        })
-        .then((res) => res.json())
-        .then((res) => {
-            if (res.code === 1) {
-                localStorage.removeItem('token')
-                showToastInfo();
-                setTimeout(() => {
-                    window.location.replace('/login');
-                }, 1000);
-            }
-        })
-        .catch(error => {
-            console.log(error)
-        })
+    const logout = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            await http.post('auth/logout', { token })
+            localStorage.removeItem('token')
+            showToastInfo();
+            setTimeout(() => {
+                window.location.replace('/login');
+            }, 1000);
+        }
+        catch (error) {
+
+        }
     }
     
     return (

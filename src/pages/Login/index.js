@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToastMessage } from '../../Context/ToastMessageContext';
 import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
@@ -224,64 +225,34 @@ function Login() {
         }
     }, [isDataReady])
 
-    function login() {
-        fetch('http://localhost:8080/auth/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Unauthenticated');
-            }
-            return res.json()
-        })
-        .then(res => {
-            if (res.code === 1) {
-                localStorage.setItem('token', res.result.token)
+    const login = async () => {
+        try {
+            const res = await http.post('auth/token', data)
+            localStorage.setItem('token', res.result.token)
 
-                setTimeout(() => refreshToken(), 50 * 60 * 1000)
+            setTimeout(() => refreshToken(), 50 * 60 * 1000)
 
-                showToastSuccess();
+            showToastSuccess();
 
-                setTimeout(() => {
-                    window.location.replace('/');
-                }, 2000)
-            }
+            setTimeout(() => {
+                window.location.replace('/');
+            }, 2000)
             setIsDataReady(false);
-        })
-        .catch(error => {
+        } catch (error) {
             showToastError();
             setIsDataReady(false);
-        });
+        }
     }
 
-    function refreshToken() {
-        const token = localStorage.getItem('token');
-        fetch('http://localhost:8080/auth/refreshToken', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token }),
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Unauthenticated');
-            }
-            res.json()
-        })
-        .then((res) => {
-            if (res.code === 1) {
-                localStorage.setItem('token', res.result.token)
-                setTimeout(() => refreshToken(), 50 * 60 * 1000)
-            }
-        })
-        .catch(error => {
-            console.log(error)
-        })
+    const refreshToken = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await http.post('auth/refreshToken', { token })
+            localStorage.setItem('token', res.result.token)
+            setTimeout(() => refreshToken(), 50 * 60 * 1000)
+        } catch (error) {
+
+        }
     }
 
     const { setToastMessage } = useToastMessage();

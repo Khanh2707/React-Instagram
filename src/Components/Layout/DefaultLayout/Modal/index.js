@@ -2,6 +2,8 @@ import classNames from 'classnames/bind';
 import styles from './Modal.module.css';
 import { useModal } from '../../../../Context/ModalContext';
 import React from 'react';
+import DetailPost from '../../../../pages/DetailPost';
+import CreateContent from '../../../../pages/CreateContent'
 
 const cx = classNames.bind(styles)
 
@@ -29,7 +31,8 @@ function Modal() {
                 </svg>
             </div>
             <div className={cx("modal__body")}>
-                {mouthedContent}
+                {mouthedContent === "DetailPost" && <DetailPost />}
+                {mouthedContent === "CreateContent" && <CreateContent />}
             </div>
         </div>
         )}

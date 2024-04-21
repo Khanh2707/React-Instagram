@@ -248,12 +248,12 @@ function Register() {
         })
         .then(res => {
             if (res.code === 1) {
-                createUser(res.result.id_account);
+                createUser(res.result.idAccount);
             }
             setIsDataReady(false);
         })
         .catch(error => {
-            showToastError();
+            showToastError("Email đã tồn tại.");
             setIsDataReady(false);
         });
     }
@@ -265,9 +265,9 @@ function Register() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                id_user: idUser,
+                idUser: idUser,
                 name: fullName,
-                id_account_user: idAccountUser
+                idAccountUser: idAccountUser
             }),
         })
         .then(res => {
@@ -288,7 +288,7 @@ function Register() {
             setIsDataReady(false);
         })
         .catch(error => {
-            showToastError();
+            showToastError("Id User đã tồn tại.");
             setIsDataReady(false);
         });
     }
@@ -304,10 +304,10 @@ function Register() {
         })
     }
 
-    function showToastError() {
+    function showToastError(message) {
         setToastMessage({
             title: "Thất bại!",
-            message: "Email đã tồn tại.",
+            message: message,
             type: "error",
             duration: 3000
         })
