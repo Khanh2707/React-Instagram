@@ -1,0 +1,317 @@
+.edit_account__background {
+    width: calc(100% - 245px);
+    margin-left: 245px;
+    display: flex;
+    justify-content: center;
+    padding: 36px;
+}
+
+@media (max-width: 1263px) {
+    .edit_account__background {
+        width: calc(100% - 73px);
+        margin-left: 73px;
+    }
+}
+
+.edit_account__container {
+    width: 706px;
+    padding: 0 48px;
+}
+
+
+.edit_account__title {
+    padding: 12px 0;
+    margin-bottom: 32px;
+}
+
+.edit_account__title span {
+    font-size: 20px;
+    font-weight: 700;
+    user-select: none;
+}
+
+
+.edit_account__set_avatar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 16px 0;
+    padding: 16px;
+    background-color: rgb(38, 38, 38);
+    border-radius: 20px;
+}
+
+.edit_account__set_avatar__avatar_and_name_and_id {
+    display: flex;
+    align-items: center;
+}
+
+.edit_account__set_avatar__avatar {
+    width: 56px;
+    height: 56px;
+}
+
+.edit_account__set_avatar__avatar img {
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    border-radius: 50%;
+}
+
+.edit_account__set_avatar__name_and_id {
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+}
+
+.edit_account__set_avatar__name {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.edit_account__set_avatar__id {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(168, 168, 168);
+}
+
+.edit_account__set_avatar__set_avatar_button {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 16px;
+    height: 32px;
+    border-radius: 8px;
+    line-height: 32px;
+    cursor: pointer;
+    background-color: rgb(0, 149, 246);
+}
+
+
+.edit_account__description {
+    margin-bottom: 16px;
+}
+
+.edit_account__description__title {
+    padding: 16px 0;
+}
+
+.edit_account__description__title span {
+    font-size: 16px;
+    font-weight: 700;
+    user-select: none;
+}
+
+.edit_account__description__text_area {
+    position: relative;
+}
+
+.edit_account__description__text_area textarea {
+    width: 100%;
+    height: 61.6px;
+    padding: 10px 80px 10px 16px;
+    background-color: #000;
+    border-radius: 12px;
+    resize: none;
+    font-size: 16px;
+    font-weight: 400;
+    outline: 0;
+    border-color: rgb(50, 53, 57);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.edit_account__description__text_area textarea:focus {
+    border-color: rgb(248, 249, 249);
+}
+
+.edit_account__description__text_area textarea:focus.invalid {
+    border-color: #f33a58;
+}
+
+.edit_account__description__text_area textarea:focus::placeholder {
+    color: #fff;
+}
+
+.edit_account__description__text_area__limit_text {
+    position: absolute;
+    right: 16px;
+    line-height: 16px;
+    bottom: 12px;
+}
+
+.edit_account__description__text_area__limit_text span {
+    color: rgb(168, 168, 168);
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 3px;
+}
+
+
+.edit_account__gender {
+    margin-bottom: 16px;
+}
+
+.edit_account__gender__title {
+    padding: 16px 0;
+}
+
+.edit_account__gender__title span {
+    font-size: 16px;
+    font-weight: 700;
+    user-select: none;
+}
+
+.edit_account__gender__input_options {
+    width: 100%;
+    height: 53.6px;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgb(50, 53, 57);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.edit_account__gender__input_options:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit_account__gender__input_options__icon_select svg {
+    transform: rotate(180deg);
+}
+
+.edit_account__gender__input_options__list_radio {
+    position: absolute;
+    width: 366px;
+    padding: 10px 0;
+    border-radius: 16px;
+    top: 53px;
+    right: 0;
+    background-color: rgb(38, 38, 38);
+}
+
+.edit_account__gender__input_options__list_radio.form-group {
+    display: none;
+}
+
+.edit_account__gender__input_options__radio_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 56px;
+    padding: 16px 24px;
+}
+
+.edit_account__gender__input_options__radio_item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit_account__gender__input_options__radio_item span {
+    font-size: 14px;
+    font-weight: 400;
+    user-select: none;
+}
+
+.edit_account__gender__input_options__radio_item input {
+    width: 24px;
+    height: 24px;
+}
+
+.edit_account__gender__description {
+    margin-top: 8px;
+}
+
+.edit_account__gender__description span {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    color: rgb(168, 168, 168);
+    user-select: none;
+}
+
+
+.edit_account__submit {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.edit_account__submit__submit_button {
+    margin-top: 16px;
+    padding: 0 20px;
+    border-radius: 8px;
+    width: 253px;
+    height: 44px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 44px;
+    text-align: center;
+    opacity: 0.5;
+    user-select: none;
+    border: none;
+    background-color: rgb(0, 149, 246);
+}
+
+.edit_account__submit__submit_button.active {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.edit_account__submit__submit_button.active:hover {
+    opacity: 0.9;
+}
+
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    padding: 16px 0;
+    font-size: 16px;
+    font-weight: 700;
+    user-select: none;
+}
+
+.form-control {
+    height: 41.6px;
+    border: 1px solid rgb(50, 53, 57);
+    outline: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #fff;
+    background-color: #000;
+}
+
+.form-control:focus {
+    border-color: rgb(248, 249, 249);
+}
+
+.form-message {
+    font-size: 12px;
+    line-height: 16px;
+    padding: 4px 0 0 4px;
+}
+
+.form-group.invalid .form-control {
+    border-color: #f33a58;
+}
+
+.form-group.invalid .form-message {
+    color: #f33a58;
+}
+
+.form-group.invalid .edit_account__description__text_area__limit_text {
+    bottom: 28px;
+}
+
+.form-group.invalid .edit_account__description__text_area__limit_text span {
+    color: #f33a58;
+}

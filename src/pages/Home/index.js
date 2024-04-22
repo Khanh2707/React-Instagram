@@ -1,17 +1,51 @@
 import classNames from 'classnames/bind';
 import styles from './Home.module.css';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useModal } from '../../Context/ModalContext';
+import { AppContext } from '../../Context/AppContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
 function Home() {
+    const { setIsLoadingLine } = useContext(AppContext);
+    useEffect(() => {
+        setIsLoadingLine(true);
+    }, [])
+    //
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoadingLine(false);
+        }, 500)
+    }, [])
+
     useEffect(() => {
         document.title = 'Trang chủ';
     }, [])
+
+    function refreshToken() {
+        console.log('abc')
+        const token = localStorage.getItem('token');
+        http.post('auth/refreshToken', { token })
+        .then((res) => {
+            localStorage.setItem('token', res.result.token)
+            setTimeout(() => {
+                refreshToken();
+            }, 50 * 60 * 1000)
+        })
+        .catch((error) => {
+            
+        })
+    }
+    useEffect(() => {
+        setTimeout(() => {
+            refreshToken()
+        }, 50 * 60 * 1000)
+    }, [])
+    
 
     const { setIsMouthModal, setMouthedContent } = useModal();
 

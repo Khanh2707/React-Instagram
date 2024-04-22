@@ -1,0 +1,26 @@
+.loading-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 2;
+}
+
+.line {
+    height: 100%;
+    width: 0;
+    /* background: linear-gradient(to right, #FCAF45, #F56040, #ED4956, #9B51E0, #8A3AB9, #8A3AB9, #C13584, #E1306C, #FCAF45); */
+    background: linear-gradient(to right, #FCAF45, #F56040);
+    animation: lineAnimation 0.5s ease-out infinite;
+}
+
+@keyframes lineAnimation {
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
+}

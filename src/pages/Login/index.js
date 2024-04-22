@@ -230,28 +230,15 @@ function Login() {
             const res = await http.post('auth/token', data)
             localStorage.setItem('token', res.result.token)
 
-            setTimeout(() => refreshToken(), 50 * 60 * 1000)
-
             showToastSuccess();
 
             setTimeout(() => {
                 window.location.replace('/');
-            }, 2000)
+            }, 1000)
             setIsDataReady(false);
         } catch (error) {
             showToastError();
             setIsDataReady(false);
-        }
-    }
-
-    const refreshToken = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const res = await http.post('auth/refreshToken', { token })
-            localStorage.setItem('token', res.result.token)
-            setTimeout(() => refreshToken(), 50 * 60 * 1000)
-        } catch (error) {
-
         }
     }
 

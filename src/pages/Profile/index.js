@@ -1,13 +1,59 @@
 import classNames from 'classnames/bind';
 import styles from './Profile.module.css';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import defaultAvatar from '../../assets/images/default_avatar.jpg'
 import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { AppContext } from '../../Context/AppContext';
+import { useNavigate, useParams } from 'react-router-dom';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
 function Profile() {
+    const [idUser, setIdUser] = useState(null);
+    const [nameUser, setNameUser] = useState(null);
+    const [descriptionUser, setDescriptionUser] = useState(null);
+
+
+    const { 'id-user': userId } = useParams();
+
+    const { setIsLoadingLine } = useContext(AppContext);
+    useEffect(() => {
+        setIsLoadingLine(true);
+    }, [])
+    //
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoadingLine(false);
+        }, 500)
+    }, [])
+
+    const getMyInfo = async () => {
+        try {
+            const res = await http.get('api/accounts/myAccount')
+            setIdUser(res.result.user.idUser)
+            setNameUser(res.result.user.name)
+            setDescriptionUser(res.result.user.description)
+            console.log(res)
+        } catch (error) {
+
+        }
+    }
+    useEffect(() => {
+        if (userId)
+            getMyInfo();
+        else {
+
+        }
+    }, [])
+
+    const navigate = useNavigate();
+
+    function handleEditProfile() {
+        navigate('/accounts/edit')
+    }
+
     const [width, setWidth] = useState(window.innerWidth <= 1263 ? 309 - (1263 - window.innerWidth) / 10 : 309);
     const [widthTabBar, setWidthTabBar] = useState(window.innerWidth <= 1263 ? 935 - ((1263 - window.innerWidth) / 10) * 3 : 935)
 
@@ -35,7 +81,7 @@ function Profile() {
             <div className={cx("info_user")}  style={{ width: `${widthTabBar}px` }}>
                 <div className={cx("info_user-img_container")}>
                     <div className={cx("info_user-img")}>
-                        <img src={defaultAvatar} />
+                        <img src={defaultAvatar} alt='' />
                         <div className={cx("info_user-img__iconSetImage")}>
                             <svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor" className="x10l6tqk xtzzx4i xwa60dl x11lhmoz"><path d="M12 9.652a3.54 3.54 0 1 0 3.54 3.539A3.543 3.543 0 0 0 12 9.65zm6.59-5.187h-.52a1.107 1.107 0 0 1-1.032-.762 3.103 3.103 0 0 0-3.127-1.961H10.09a3.103 3.103 0 0 0-3.127 1.96 1.107 1.107 0 0 1-1.032.763h-.52A4.414 4.414 0 0 0 1 8.874v9.092a4.413 4.413 0 0 0 4.408 4.408h13.184A4.413 4.413 0 0 0 23 17.966V8.874a4.414 4.414 0 0 0-4.41-4.41zM12 18.73a5.54 5.54 0 1 1 5.54-5.54A5.545 5.545 0 0 1 12 18.73z"></path></svg>
                         </div>
@@ -44,9 +90,9 @@ function Profile() {
                 <div className={cx("info_user-text")}>
                     <div className={cx("info_user-text__line1")}>
                         <div className={cx("info_user-text__name")}>
-                            tp_khanh_
+                            {idUser}
                         </div>
-                        <div className={cx("info_user-text__edit_profile")}>
+                        <div className={cx("info_user-text__edit_profile")} onClick={handleEditProfile}>
                             Chỉnh sửa trang cá nhân
                         </div>
                     </div>
@@ -79,12 +125,12 @@ function Profile() {
                     </div>
                     <div className={cx("info_user-text__line3")}>
                         <div className={cx("info_user-text__real_name")}>
-                            Trần Khánh
+                            {nameUser}
                         </div>
                     </div>
                     <div className={cx("info_user-text__line4")}>
                         <div className={cx("info_user-text__description")}>
-                            dwg
+                            {descriptionUser}
                         </div>
                     </div>
                 </div>

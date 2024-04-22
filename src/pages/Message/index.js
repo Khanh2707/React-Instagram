@@ -1,10 +1,22 @@
 import classNames from 'classnames/bind';
 import styles from './Message.module.css';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
+import { AppContext } from '../../Context/AppContext';
 
 const cx = classNames.bind(styles)
 
 function Message() {
+    const { setIsLoadingLine } = useContext(AppContext);
+    useEffect(() => {
+        setIsLoadingLine(true);
+    }, [])
+    //
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoadingLine(false);
+        }, 500)
+    }, [])
+
     useEffect(() => {
         document.title = 'Tin nhắn';
     }, [])
