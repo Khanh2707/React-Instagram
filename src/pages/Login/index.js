@@ -104,7 +104,7 @@ function Login() {
                                 
                                 switch(input.type) {
                                     case 'radio':
-                                        values[input.name] = formElement.querySelector('input[name="' +input.name+ '"]:checked');
+                                        values[input.name] = formElement.querySelector('input[name="' +input.name+ '"]:checked').value;
                                         break;
                                     case 'checkbox':
                                         if (!input.matches(':checked')) {

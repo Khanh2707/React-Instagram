@@ -6,14 +6,15 @@ import defaultAvatar from '../../assets/images/default_avatar.jpg'
 import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { AppContext } from '../../Context/AppContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
 function Profile() {
-    const [idUser, setIdUser] = useState(null);
-    const [nameUser, setNameUser] = useState(null);
-    const [descriptionUser, setDescriptionUser] = useState(null);
+    const {
+        idUser,
+        nameUser,
+        descriptionUser,
+    } = useContext(AppContext)
 
 
     const { 'id-user': userId } = useParams();
@@ -29,24 +30,6 @@ function Profile() {
         }, 500)
     }, [])
 
-    const getMyInfo = async () => {
-        try {
-            const res = await http.get('api/accounts/myAccount')
-            setIdUser(res.result.user.idUser)
-            setNameUser(res.result.user.name)
-            setDescriptionUser(res.result.user.description)
-            console.log(res)
-        } catch (error) {
-
-        }
-    }
-    useEffect(() => {
-        if (userId)
-            getMyInfo();
-        else {
-
-        }
-    }, [])
 
     const navigate = useNavigate();
 
@@ -92,7 +75,7 @@ function Profile() {
                         <div className={cx("info_user-text__name")}>
                             {idUser}
                         </div>
-                        <div className={cx("info_user-text__edit_profile")} onClick={handleEditProfile}>
+                        <div className={cx("info_user-text__edit_profile")} onClick={handleEditProfile} style={{display: userId === idUser ? 'block' : 'none'}}>
                             Chỉnh sửa trang cá nhân
                         </div>
                     </div>

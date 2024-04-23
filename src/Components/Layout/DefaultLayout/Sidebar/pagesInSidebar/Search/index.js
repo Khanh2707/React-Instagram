@@ -12,6 +12,15 @@ function Search({ searchIsActive }) {
     if (searchIsActive === true && isFirstActive === false)
         setIsFirstActive(true);
 
+
+    const [searchValue, setSearchValue] = useState('');
+    const [searchResult, setSearchResult] = useState([]);
+
+    useEffect(() => {
+
+    }, [searchValue])
+
+
     const pageSearch__recentlyRef = useRef()
 
     function handleClickInputSearch() {
@@ -44,7 +53,6 @@ function Search({ searchIsActive }) {
             search_input_in_page_searchPC_svg.style.display = 'block';
             search_input_in_page_searchPC_input.style.paddingLeft = '28px';
             search_input_in_page_searchPC_i.style.display = 'none';
-            search_input_in_page_searchPC_input.value = '';
         }
 
         search_input_in_page_searchPC_input.addEventListener('input', function() {
@@ -73,6 +81,7 @@ function Search({ searchIsActive }) {
             pageSearch__recently.style.borderTop = '1px solid var(--border-navigation_bar)';
             pageSearch__recently__header.style.display = 'flex';
             pageSearch__recently.classList.remove(cx('hiddenResultInput'));
+            setSearchValue('');
         }
 
 
@@ -108,7 +117,7 @@ function Search({ searchIsActive }) {
             <div className={cx("page-search__input")}>
                 <div className={cx("navigation__item", "search_input_in_page_search", "search_input_in_page_search-pc")}
                     data-level="3">
-                    <input type="search" placeholder="Tìm kiếm" />
+                    <input type="search" placeholder="Tìm kiếm" onChange={(e) => setSearchValue(e.target.value)} value={searchValue} />
                     <svg aria-label="Tìm kiếm" className={cx("x1lliihq x1n2onr6 x1cp0k07")} fill="currentColor" height="16"
                         role="img" viewBox="0 0 24 24" width="16">
                         <title>Tìm kiếm</title>

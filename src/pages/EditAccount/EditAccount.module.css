@@ -1,17 +1,10 @@
 .edit_account__background {
-    width: calc(100% - 245px);
-    margin-left: 245px;
+    width: 100%;
     display: flex;
     justify-content: center;
-    padding: 36px;
+    padding: 36px 0;
 }
 
-@media (max-width: 1263px) {
-    .edit_account__background {
-        width: calc(100% - 73px);
-        margin-left: 73px;
-    }
-}
 
 .edit_account__container {
     width: 706px;
@@ -175,6 +168,10 @@
 
 .edit_account__gender__input_options:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit_account__gender__input_options__value_selected span {
+    user-select: none;
 }
 
 .edit_account__gender__input_options__icon_select svg {

@@ -1,20 +1,44 @@
 import classNames from 'classnames/bind';
-import styles from './Login.module.css';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import styles from './ChangePassword.module.css';
+import { useContext, useEffect } from 'react';
+import { AppContext } from '../../Context/AppContext';
+import { useToastMessage } from '../../Context/ToastMessageContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
-function ResetPass() {
+function ChangePassword() {
+    const { setIsLoadingLine } = useContext(AppContext);
     useEffect(() => {
-        document.title = 'Quên mật khẩu';
+        setIsLoadingLine(true);
+    }, [])
+    //
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoadingLine(false);
+        }, 500)
     }, [])
 
-    const navigate = useNavigate()
+    useEffect(() => {
+        document.title = 'Thay đổi mật khẩu';
+    }, [])
 
-    function handleNavigateLogin() {
-        navigate('/login')
+    const {
+        idAccount
+    } = useContext(AppContext)
+
+    const changePassword = async (data) => {
+        try {
+            const res = await http.put(`api/accounts/password/${idAccount}`, {
+                password: data.new_password,
+                currentPassword: data.current_password
+            })
+            showToastSuccess()
+        } catch (error) {
+            showToastError()
+        }
     }
+
 
     useEffect(() => {
         function Validator(options) {
@@ -177,6 +201,15 @@ function ResetPass() {
                 }
             }
         }
+
+        Validator.maxLength = function (selector, max, message) {
+            return {
+                selector: selector,
+                test: function (value) {
+                    return value.length <= max ? undefined : message || `Tiểu sử không được vượt quá ${max} ký tự !`
+                }
+            }
+        }
         
         Validator.isConfirmed = function(selector, getConfirmValue, message) {
             return {
@@ -192,50 +225,75 @@ function ResetPass() {
             formGroupSelector: '.'+cx('form-group'),
             errorSelector: '.'+cx('form-message'),
             rules: [
-                Validator.isRequired('#'+cx('email'), 'Vui lòng nhập Email'),
-                Validator.isRequired('#'+cx('code'), 'Vui lòng nhập Mã xác nhận'),
+                Validator.isRequired('#'+cx('current_password'), 'Vui lòng nhập Password hiện tại'),
+                Validator.isRequired('#'+cx('new_password'), 'Vui lòng nhập Password mới'),
+                Validator.minLength('#'+cx('new_password'), 8),
+                Validator.isRequired('#'+cx('new_password_confirmation'), 'Vui lòng nhập lại Password mới'),
+                Validator.isConfirmed('#'+cx('new_password_confirmation'), function() {
+                    return document.querySelector(`#${cx('form-1')} #${cx('new_password')}`).value;
+                }, 'Mật khẩu nhập lại không chính xác')
             ],
             onSubmit: function(data) {
-                console.log(data)
+                changePassword(data)
             }
         })
-    }, []);
+    }, [idAccount]);
+
+    const { setToastMessage } = useToastMessage();
+
+    function showToastSuccess() {
+        setToastMessage({
+            title: "Thành công!",
+            message: "Thay đổi mật khẩu thành công.",
+            type: "success",
+            duration: 3000
+        })
+    }
+
+    function showToastError() {
+        setToastMessage({
+            title: "Thất bại!",
+            message: "Thay đổi mật khẩu thất bại.",
+            type: "error",
+            duration: 3000
+        })
+    }
 
     return (
-        <div className={cx("main")}>
-
-            <form action="" method="POST" className={cx("form")} id="form-1">
-                <h3 className={cx("heading")}>Quên mật khẩu</h3>
-                <p className={cx("desc")}>Kết nối với mọi người qua Instagram ❤️</p>
-
-                <div className={cx("spacer")}></div>
-
-                <div className={cx("form-group")}>
-                    <label htmlFor="email" className={cx("form-label")}>Email</label>
-                    <input id="email" name="email" type="text" placeholder="VD: email@domain.com" className={cx("form-control")} />
-                    <span className={cx("form-message")}></span>
+        <div className={cx("edit_account__background")}>
+            <div className={cx("edit_account__container")}>
+                <div className={cx("edit_account__title")}>
+                    <span>Thay đổi mật khẩu</span>
                 </div>
+                <form action="" method="POST" className={cx("form")} id="form-1">
+                    <div className={cx("form-group")}>
+                        <label htmlFor="current_password" className={cx("form-label")}>Mật khẩu hiện tại</label>
+                        <input id="current_password" name="current_password" type="password" placeholder="Nhập mật khẩu hiện tại" className={cx("form-control")} />
+                        <span className={cx("form-message")}></span>
+                    </div>
 
-                <div className={cx("form-group")}>
-                    <label htmlFor="code" className={cx("form-label")}>Mã xác nhận</label>
-                    <input id="code" name="code" type="text" placeholder="VD: 123456" className={cx("form-control")} />
-                    <span className={cx("send_code")}>Gửi mã</span>
-                    <span className={cx("form-message")}></span>
-                </div>
+                    <div className={cx("form-group")}>
+                        <label htmlFor="new_password" className={cx("form-label")}>Mật khẩu mới</label>
+                        <input id="new_password" name="new_password" type="password" placeholder="Nhập mật khẩu mới" className={cx("form-control")} />
+                        <span className={cx("form-message")}></span>
+                    </div>
 
-                <button className={cx("form-submit")}>Gửi</button>
+                    <div className={cx("form-group")}>
+                        <label htmlFor="new_password_confirmation" className={cx("form-label")}>Nhập lại mật khẩu mới</label>
+                        <input id="new_password_confirmation" name="new_password_confirmation" placeholder="Nhập lại mật khẩu mới"
+                            type="password" className={cx("form-control")} />
+                        <span className={cx("form-message")}></span>
+                    </div>
 
-                <div className={cx("spacer")}></div>
-
-                <div className={cx("swap")}>
-                    <span className={cx("swap__title")}>Bạn đã có tài khoản?</span>
-                    <span className={cx("swap__button")} onClick={handleNavigateLogin}>Đăng nhập</span>
-                </div>
-
-            </form>
-
+                    <div className={cx("edit_account__submit")}>
+                        <button className={cx("edit_account__submit__submit_button", "form-submit", "active")}>
+                            Gửi
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    )
+    );
 }
 
-export default ResetPass;
+export default ChangePassword;

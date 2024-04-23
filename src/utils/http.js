@@ -23,4 +23,9 @@ export const post = async (endpoint, body = {}, params = {}, requireToken = true
     return response.data;
 }
 
+export const put = async (endpoint, body = {}, params = {}, requireToken = true) => {
+    const response = await http.put(endpoint, body, { params, requireToken });
+    return response.data;
+}
+
 export default http;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Sidebar.module.css';
 import { changeIconWhenActive } from './navigation-bar/changeIconWhenActive';
@@ -8,10 +8,13 @@ import SeeMoreInSideBar from './pagesInSidebar/SeeMoreInSideBar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useModal } from '../../../../Context/ModalContext';
 import defaultAvatar from '~/assets/images/default_avatar.jpg'
+import { AppContext } from '../../../../Context/AppContext';
 
 const cx = classNames.bind(styles)
 
 function Sidebar() {
+    const { idUser } = useContext(AppContext)
+
     const [searchIsActive, setSearchIsActive] = useState(false)
     const [notificationIsActive, setNotificationIsActive] = useState(false)
     const [seeMoreInSidebar, setSeeMoreInSidebar] = useState(false)
@@ -199,7 +202,7 @@ function Sidebar() {
     }
 
     function handleRouterPageProfile() {
-        navigate('/profile')
+        navigate(`/${idUser}`)
     }
 
     useEffect(() => {
@@ -214,7 +217,7 @@ function Sidebar() {
         if (currentPath === '/message') {
             navMessageRef.current.click()
         }
-        if (currentPath === '/profile') {
+        if (currentPath === `/${idUser}`) {
             navProfileRef.current.click()
         }
     }, [currentPath])

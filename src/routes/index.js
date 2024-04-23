@@ -4,7 +4,7 @@ import ResetPass from '~/pages/ResetPass'
 import Home from '~/pages/Home'
 import Message from '~/pages/Message';
 import Profile from '~/pages/Profile';
-import EditAccount from '~/pages/EditAccount';
+import SettingAccount from '~/pages/SettingAccount';
 
 const publicRoutes = [
     { path: '/login', component: Login, layout: null },
@@ -16,7 +16,7 @@ const privateRoutes = [
     { path: '/', component: Home },
     { path: '/message', component: Message },
     { path: '/:id-user', component: Profile},
-    { path: '/accounts/edit', component: EditAccount}
+    { path: '/accounts/:params', component: SettingAccount}
 ]
 
 export { publicRoutes, privateRoutes }
