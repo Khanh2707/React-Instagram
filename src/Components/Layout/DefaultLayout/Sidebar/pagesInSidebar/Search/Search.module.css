@@ -155,6 +155,12 @@
     background-color: var(--hover-background-black);
 }
 
+.page-search__recently__body__ul__li-infor {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+}
+
 .page-search__recently__body__ul__li-img {
     width: 44px;
     height: 44px;
@@ -162,8 +168,9 @@
 }
 
 .page-search__recently__body__ul__li-img img {
-    width: 90%;
+    width: 100%;
     border-radius: 50%;
+    transform: scale(1);
 }
 
 .page-search__recently__body__ul__li-short_infor {

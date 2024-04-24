@@ -28,4 +28,9 @@ export const put = async (endpoint, body = {}, params = {}, requireToken = true)
     return response.data;
 }
 
+export const del = async (endpoint, params = {}, requireToken = true) => {
+    const response = await http.delete(endpoint, { params, requireToken });
+    return response.data;
+}
+
 export default http;

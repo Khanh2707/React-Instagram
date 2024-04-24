@@ -1,45 +1,99 @@
 import classNames from 'classnames/bind';
 import styles from './Search.module.css';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import * as http from '~/utils/http';
+import { AppContext } from '../../../../../../Context/AppContext';
+import { useDebounce } from '~/hooks'
 
 const cx = classNames.bind(styles)
 
 function Search({ searchIsActive }) {
     const [isFirstActive, setIsFirstActive] = useState(false)
-    
+
     if (searchIsActive === true && isFirstActive === false)
         setIsFirstActive(true);
+
+    const {
+        idUser
+    } = useContext(AppContext)
 
 
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
+    const [searchHistory, setSearchHistory] = useState([]);
+
+    function reRenderSearchHistory() {
+        http.get(`api/search_history`)
+            .then((res) => {
+                setSearchHistory(res.result)
+            })
+    }
 
     useEffect(() => {
+        reRenderSearchHistory();
+    }, [])
 
-    }, [searchValue])
+    const debounced = useDebounce(searchValue, 500);
+
+    useEffect(() => {
+        if (!debounced) {
+            setSearchResult([])
+            return;
+        }
+
+        http.get(`api/users/${encodeURIComponent(debounced)}/${idUser}`)
+            .then((res) => {
+                console.log(res);
+                setSearchResult(res.result)
+            })
+    }, [debounced])
+
+    function handleSearchItemClick(value) {
+        http.post(`api/search_history`, {
+            id_user_search_history_1: idUser,
+            id_user_search_history_2: value
+        })
+        .then(() => {
+            reRenderSearchHistory()
+        })
+    }
+
+    function handleSearchItemClickRemove(value) {
+        http.del(`api/search_history/${idUser}/${value}`)
+        .then(() => {
+            reRenderSearchHistory()
+        })
+    }
+
+    function handleSearchItemClickRemoveAll() {
+        http.del(`api/search_history`)
+        .then(() => {
+            reRenderSearchHistory()
+        })
+    }
 
 
     const pageSearch__recentlyRef = useRef()
 
     function handleClickInputSearch() {
-        const search_input_in_page_searchPC = document.querySelector('.'+cx('search_input_in_page_search-pc'));
-        const search_input_in_page_searchPC_svg = document.querySelector('.'+cx('search_input_in_page_search-pc')+' svg');
-        const search_input_in_page_searchPC_input = document.querySelector('.'+cx('search_input_in_page_search-pc')+' input');
-        const search_input_in_page_searchPC_i = document.querySelector('.'+cx('search_input_in_page_search-pc')+' i');
+        const search_input_in_page_searchPC = document.querySelector('.' + cx('search_input_in_page_search-pc'));
+        const search_input_in_page_searchPC_svg = document.querySelector('.' + cx('search_input_in_page_search-pc') + ' svg');
+        const search_input_in_page_searchPC_input = document.querySelector('.' + cx('search_input_in_page_search-pc') + ' input');
+        const search_input_in_page_searchPC_i = document.querySelector('.' + cx('search_input_in_page_search-pc') + ' i');
 
-        
+
         const pageSearch__recently = pageSearch__recentlyRef.current
-        const pageSearch__recently__header = document.querySelector('.'+cx('page-search__recently__header'));
+        const pageSearch__recently__header = document.querySelector('.' + cx('page-search__recently__header'));
 
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (event.target !== search_input_in_page_searchPC_input) {
                 blurInput();
             }
         });
 
-        search_input_in_page_searchPC.addEventListener('click', function(event) {
+        search_input_in_page_searchPC.addEventListener('click', function (event) {
             search_input_in_page_searchPC_svg.style.display = 'none';
             search_input_in_page_searchPC_input.style.paddingLeft = '0';
             search_input_in_page_searchPC_i.style.display = 'block';
@@ -55,16 +109,16 @@ function Search({ searchIsActive }) {
             search_input_in_page_searchPC_i.style.display = 'none';
         }
 
-        search_input_in_page_searchPC_input.addEventListener('input', function() {
+        search_input_in_page_searchPC_input.addEventListener('input', function () {
             changeWhenInputCharacter();
         });
 
-        var typingTimer; // Biến để lưu trữ thời gian đợi
+        // var typingTimer; // Biến để lưu trữ thời gian đợi
         function changeWhenInputCharacter() {
-            clearTimeout(typingTimer); // Xóa bất kỳ độ trễ nào còn tồn tại
+            // clearTimeout(typingTimer); // Xóa bất kỳ độ trễ nào còn tồn tại
 
             pageSearch__recently.classList.add(cx('hiddenResultInput'));
-            typingTimer = setTimeout(function() {
+            // typingTimer = setTimeout(function () {
                 if (search_input_in_page_searchPC_input.value.length > 0) {
                     pageSearch__recently.style.marginTop = '0';
                     pageSearch__recently.style.borderTop = '0';
@@ -73,7 +127,7 @@ function Search({ searchIsActive }) {
                 } else {
                     removeAllCharacter();
                 }
-            }, 500); 
+            // }, 500);
         }
 
         function removeAllCharacter() {
@@ -83,34 +137,15 @@ function Search({ searchIsActive }) {
             pageSearch__recently.classList.remove(cx('hiddenResultInput'));
             setSearchValue('');
         }
-
-
-        const pageSearch__recently__body__ul__liCancels = document.querySelectorAll('.'+cx('page-search__recently__body__ul__li-cancel'));
-        let originalBackgroundColor = getComputedStyle(pageSearch__recently__body__ul__liCancels[0].parentNode).backgroundColor;
-        window.addEventListener('resize', function() {
-            originalBackgroundColor = getComputedStyle(pageSearch__recently__body__ul__liCancels[0].parentNode).backgroundColor;
-        })
-        // Duyệt qua từng nút "Cancel" để thêm event listener
-        pageSearch__recently__body__ul__liCancels.forEach(function(btn) {
-            btn.addEventListener('mouseover', function() {
-                btn.parentNode.style.backgroundColor = originalBackgroundColor === 'rgb(0, 0, 0)' ? 'var(--background-black)' : '#262626';
-            });
-            btn.addEventListener('mouseout', function() {
-                btn.parentNode.style.backgroundColor = '';
-            });
-            btn.addEventListener('click', function() {
-                //...
-            });
-        });
     }
 
     useEffect(() => {
         handleClickInputSearch()
     }, [])
-    
-    
+
+
     return (
-        <div className={cx("page-search", { 'animationAppearPageSearch': searchIsActive })} style={{display: isFirstActive ? 'block' : ''}}>
+        <div className={cx("page-search", { 'animationAppearPageSearch': searchIsActive })} style={{ display: isFirstActive ? 'block' : '' }}>
             <div className={cx("page-search__title")}>
                 <span>Tìm kiếm</span>
             </div>
@@ -137,7 +172,7 @@ function Search({ searchIsActive }) {
                             Gần đây
                         </span>
                     </div>
-                    <div className={cx("page-search__recently__header__delete_all")}>
+                    <div className={cx("page-search__recently__header__delete_all")} onClick={handleSearchItemClickRemoveAll}>
                         <span>
                             Xóa tất cả
                         </span>
@@ -145,67 +180,81 @@ function Search({ searchIsActive }) {
                 </div>
                 <div className={cx("page-search__recently__body")}>
                     <ul className={cx("page-search__recently__body__ul")}>
-                        <li>
-                            <div className={cx("page-search__recently__body__ul__li-img", "centerImg")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                            </div>
-                            <div className={cx("page-search__recently__body__ul__li-short_infor")}>
-                                <div className={cx("page-search__recently__body__ul__li-short_info__name_account")}>
-                                    <span>aerichandesu</span>
-                                </div>
-                                <div
-                                    className={cx("page-search__recently__body__ul__li-short_info__name_real_and_amount_follower")}>
-                                    <span
-                                        className={cx("page-search__recently__body__ul__li-short_info__name_real")}>giselle</span>
-                                    {/* <span className={cx("page-search__recently__body__ul__li-short_info__amount_follower")}>•
-                                        5,5
-                                        triệu người theo dõi</span> */}
-                                </div>
-                            </div>
-                            <div className={cx("page-search__recently__body__ul__li-cancel")}>
-                                <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="16" role="img" viewBox="0 0 24 24" width="16">
-                                    <title>Đóng</title>
-                                    <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647"
-                                        stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                        strokeWidth="3"></polyline>
-                                    <line fill="none" stroke="currentColor" strokeLinecap="round"
-                                        strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649"
-                                        y2="3.354"></line>
-                                </svg>
-                            </div>
-                        </li>
-                        <li>
-                            <div className={cx("page-search__recently__body__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                            </div>
-                            <div className={cx("page-search__recently__body__ul__li-short_infor")}>
-                                <div className={cx("page-search__recently__body__ul__li-short_info__name_account")}>
-                                    <span>aerichandesu</span>
-                                </div>
-                                <div
-                                    className={cx("page-search__recently__body__ul__li-short_info__name_real_and_amount_follower")}>
-                                    <span
-                                        className={cx("page-search__recently__body__ul__li-short_info__name_real")}>giselle</span>
-                                    {/* <span className={cx("page-search__recently__body__ul__li-short_info__amount_follower")}>•
-                                        5,5 triệu người theo dõi</span> */}
-                                </div>
-                            </div>
-                            <div className={cx("page-search__recently__body__ul__li-cancel")}>
-                                <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="16" role="img" viewBox="0 0 24 24" width="16">
-                                    <title>Đóng</title>
-                                    <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647"
-                                        stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                        strokeWidth="3"></polyline>
-                                    <line fill="none" stroke="currentColor" strokeLinecap="round"
-                                        strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649"
-                                        y2="3.354"></line>
-                                </svg>
-                            </div>
-                        </li>
+                        {searchValue.length > 0 ? (
+                            searchResult.map((result) => {
+                                return (
+                                    <li key={result.idUser}>
+                                        <div className={cx("page-search__recently__body__ul__li-infor")} onClick={() => handleSearchItemClick(result.idUser)}>
+                                            <div className={cx("page-search__recently__body__ul__li-img")}>
+                                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+                                                    alt="" />
+                                            </div>
+                                            <div className={cx("page-search__recently__body__ul__li-short_infor")}>
+                                                <div className={cx("page-search__recently__body__ul__li-short_info__name_account")}>
+                                                    <span>{result.idUser}</span>
+                                                </div>
+                                                <div
+                                                    className={cx("page-search__recently__body__ul__li-short_info__name_real_and_amount_follower")}>
+                                                    <span
+                                                        className={cx("page-search__recently__body__ul__li-short_info__name_real")}>{result.name}</span>
+                                                    {/* <span className={cx("page-search__recently__body__ul__li-short_info__amount_follower")}>•
+                                                        5,5 triệu người theo dõi</span> */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={cx("page-search__recently__body__ul__li-cancel")} onClick={() => handleSearchItemClickRemove(result.idUser)}>
+                                            <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
+                                                height="16" role="img" viewBox="0 0 24 24" width="16">
+                                                <title>Đóng</title>
+                                                <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647"
+                                                    stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                                    strokeWidth="3"></polyline>
+                                                <line fill="none" stroke="currentColor" strokeLinecap="round"
+                                                    strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649"
+                                                    y2="3.354"></line>
+                                            </svg>
+                                        </div>
+                                    </li>
+                                )
+                            })
+                        ) : (
+                            searchHistory.map((result) => {
+                                return (
+                                    <li key={result.user2.idUser}>
+                                        <div className={cx("page-search__recently__body__ul__li-infor")} onClick={() => handleSearchItemClick(result.user2.idUser)}>
+                                            <div className={cx("page-search__recently__body__ul__li-img")}>
+                                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+                                                    alt="" />
+                                            </div>
+                                            <div className={cx("page-search__recently__body__ul__li-short_infor")}>
+                                                <div className={cx("page-search__recently__body__ul__li-short_info__name_account")}>
+                                                    <span>{result.user2.idUser}</span>
+                                                </div>
+                                                <div
+                                                    className={cx("page-search__recently__body__ul__li-short_info__name_real_and_amount_follower")}>
+                                                    <span
+                                                        className={cx("page-search__recently__body__ul__li-short_info__name_real")}>{result.user2.name}</span>
+                                                    {/* <span className={cx("page-search__recently__body__ul__li-short_info__amount_follower")}>•
+                                                        5,5 triệu người theo dõi</span> */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={cx("page-search__recently__body__ul__li-cancel")} onClick={() => handleSearchItemClickRemove(result.user2.idUser)}>
+                                            <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
+                                                height="16" role="img" viewBox="0 0 24 24" width="16">
+                                                <title>Đóng</title>
+                                                <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647"
+                                                    stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                                    strokeWidth="3"></polyline>
+                                                <line fill="none" stroke="currentColor" strokeLinecap="round"
+                                                    strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649"
+                                                    y2="3.354"></line>
+                                            </svg>
+                                        </div>
+                                    </li>
+                                )
+                            })
+                        )}
                     </ul>
                 </div>
             </div>
