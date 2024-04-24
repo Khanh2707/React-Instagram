@@ -25,15 +25,19 @@ function Search({ searchIsActive }) {
     const [searchHistory, setSearchHistory] = useState([]);
 
     function reRenderSearchHistory() {
-        http.get(`api/search_history`)
+        http.get(`api/search_history/${idUser}`)
             .then((res) => {
                 setSearchHistory(res.result)
             })
     }
 
     useEffect(() => {
+        if (!idUser) {
+            return;
+        }
+
         reRenderSearchHistory();
-    }, [])
+    }, [idUser])
 
     const debounced = useDebounce(searchValue, 500);
 
