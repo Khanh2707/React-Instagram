@@ -1,26 +1,20 @@
 import classNames from 'classnames/bind';
 import styles from './Modal.module.css';
-import { useModal } from '../../../../Context/ModalContext';
 import React from 'react';
-import DetailPost from '../../../../pages/DetailPost';
-import CreateContent from '../../../../pages/CreateContent'
+import { useModal } from '../../../../Context/ModalContext';
 
 const cx = classNames.bind(styles)
 
 function Modal() {
-    const { isMouthModal, mouthedContent, setIsMouthModal } = useModal();
-
-    const handleCloseModal = () => {
-        setIsMouthModal(false);
-    };
+    const { isModalOpen, modalContent, closeModal } = useModal();
 
     return (
-        <React.Fragment>
-        {isMouthModal && (
+        <>
+        {isModalOpen &&
         <div className={cx("modal")}>
-            <div className={cx("modal__overlay")} onClick={handleCloseModal}>
+            <div className={cx("modal__overlay")} onClick={closeModal}>
             </div>
-            <div className={cx("modal__xmark")} onClick={handleCloseModal}>
+            <div className={cx("modal__xmark")} onClick={closeModal}>
                 <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x9bdzbf")} fill="currentColor" height="18" role="img"
                     viewBox="0 0 24 24" width="18">
                     <title>Đóng</title>
@@ -31,12 +25,10 @@ function Modal() {
                 </svg>
             </div>
             <div className={cx("modal__body")}>
-                {mouthedContent === "DetailPost" && <DetailPost />}
-                {mouthedContent === "CreateContent" && <CreateContent />}
+                {modalContent}
             </div>
         </div>
-        )}
-        </React.Fragment>
+        }</>
     )
 }
 

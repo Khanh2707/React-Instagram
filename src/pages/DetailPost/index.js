@@ -7,12 +7,6 @@ import { useModalConfirm } from '../../Context/ModalConfirmContext';
 const cx = classNames.bind(styles)
 
 function DetailPost() {
-    const { setIsMouthModalConfirm, setMouthedContent } = useModalConfirm();
-
-    const handleOpenModalConfirm = (content) => {
-        setIsMouthModalConfirm(true);
-        setMouthedContent(content);
-    };
 
     const submitInputRef = useRef();
     const inputIputRef = useRef();
@@ -69,7 +63,7 @@ function DetailPost() {
                             <span>tp_khanh</span>
                         </div>
                     </div>
-                    <div className={cx("detail_post__engagement__options")} onClick={() => handleOpenModalConfirm("Confirm")}>
+                    <div className={cx("detail_post__engagement__options")}>
                         <svg aria-label="Tùy chọn khác" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tùy chọn khác</title><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
                     </div>
                 </div>

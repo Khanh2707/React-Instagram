@@ -6,7 +6,6 @@ import GlobalStyles from './Components/GlobalStyles';
 import { AppProvider } from './Context/AppContext';
 import { ModalProvider } from './Context/ModalContext';
 import { ToastMessageProvider } from './Context/ToastMessageContext';
-import { ModalConfirmProvider } from './Context/ModalConfirmContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,11 +13,9 @@ root.render(
     <GlobalStyles>
       <AppProvider>
         <ToastMessageProvider>
-          <ModalConfirmProvider>
           <ModalProvider>
-            <App />
+          <App />
           </ModalProvider>
-          </ModalConfirmProvider>
         </ToastMessageProvider>
       </AppProvider>
     </GlobalStyles>

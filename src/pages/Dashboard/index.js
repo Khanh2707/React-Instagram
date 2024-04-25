@@ -2,19 +2,64 @@ import classNames from 'classnames/bind';
 import styles from './Dashboard.module.css';
 import defaultAvatar from '../../assets/images/default_avatar.jpg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAnglesLeft, faAnglesRight, faChevronLeft, faChevronRight, faLock, faUnlock, faUser, faUserLock, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { faAnglesLeft, faAnglesRight, faChevronLeft, faChevronRight, faLock, faUnlock, faUser, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useDebounce } from '~/hooks';
 import * as http from '~/utils/http'
 import { useNavigate } from 'react-router-dom';
 import { useToastMessage } from '../../Context/ToastMessageContext';
 import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
-import { useModalConfirm } from '../../Context/ModalConfirmContext';
-import ModalConfirm from '../../Components/Layout/DefaultLayout/ModalConfirm';
+import Modal from "../../Components/Layout/DefaultLayout/Modal"
+import { useModal } from '../../Context/ModalContext';
+import InputTextarea from '../InputTextarea'
+import Confirm from '../Confirm';
 
 const cx = classNames.bind(styles)
 
 function Dashboard() {
+    const { openModal } = useModal();
+
+    const handleLockAccount = (idAccount) => {
+        const props = {
+            title: 'Lý do khóa tài khoản người dùng',
+            idAccount: idAccount,
+            apiLockAccount: lockAccount,
+        }
+        // Truyền Component B vào modal
+        openModal(<InputTextarea {...props} />);
+    };
+
+    const lockAccount = (idAccount, content) => {
+        http.post(`api/log_lock_accounts`, {
+            "reasonLock": content,
+            "idAccountLogLockAccount": idAccount
+        })
+        .then((res) => {
+            getAllAccount();
+            showToastInfo("Đã khóa tài khoản người dùng.");
+        })
+    }
+
+    const handleUnLockAccount = (idAccount) => {
+        const props = {
+            title: 'Xác nhận bỏ khóa tài khoản người dùng',
+            idAccount: idAccount,
+            apiUnLockAccount: unLockAccount,
+        }
+        // Truyền Component B vào modal
+        openModal(<Confirm {...props} />);
+    };
+
+    const unLockAccount = (idAccount) => {
+        http.post(`api/log_lock_accounts/un_lock`, {
+            "idAccountLogLockAccount": idAccount
+        })
+        .then((res) => {
+            getAllAccount();
+            showToastInfo("Đã mở khóa tài khoản người dùng.");
+        })
+    }
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -98,14 +143,16 @@ function Dashboard() {
         })
     }
 
+    function showToastInfo(message) {
+        setToastMessage({
+            title: "Thông báo!",
+            message: message ? message : "...",
+            type: "info",
+            duration: 3000
+        })
+    }
+
     let index = 1;
-
-    const { setIsMouthModalConfirm, setMouthedContent } = useModalConfirm();
-
-    const handleOpenModalConfirm = (content) => {
-        setIsMouthModalConfirm(true);
-        setMouthedContent(content);
-    };
 
     return (
         <>
@@ -172,20 +219,21 @@ function Dashboard() {
                                     <td>
                                         {res.logLockAccounts.length > 0 && (
                                             <>
-                                                {res.logLockAccounts[0].stateLock === false && (
-                                                    <button onClick={() => handleOpenModalConfirm("InputTextarea")}>
+                                                {res.logLockAccounts.reduce((maxLockAccount, currentLockAccount) => {
+                                                    return currentLockAccount.idLogLockAccount > maxLockAccount.idLogLockAccount ? currentLockAccount : maxLockAccount;
+                                                }, res.logLockAccounts[0]).stateLock === false ? (
+                                                    <button onClick={() => handleLockAccount(res.idAccount)}>
                                                         <FontAwesomeIcon icon={faLock} />
                                                     </button>
-                                                )}
-                                                {res.logLockAccounts[0].stateLock === true && (
-                                                    <button>
+                                                ) : (
+                                                    <button onClick={() => handleUnLockAccount(res.idAccount)}>
                                                         <FontAwesomeIcon icon={faUnlock} />
                                                     </button>
                                                 )}
                                             </>
                                         )}
                                         {res.logLockAccounts.length <= 0 && (
-                                            <button onClick={() => handleOpenModalConfirm("InputTextarea")}>
+                                            <button onClick={() => handleLockAccount(res.idAccount)}>
                                                 <FontAwesomeIcon icon={faLock} />
                                             </button>
                                         )}
@@ -204,7 +252,7 @@ function Dashboard() {
                 <div><FontAwesomeIcon icon={faChevronRight} /></div>
             </div>
         </div>
-        <ModalConfirm />
+        <Modal />
         <ToastMessage />
         </>
     );

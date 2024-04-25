@@ -1,16 +1,26 @@
-import React, { createContext, useState, useContext } from 'react';
+// import React, { createContext, useContext, useState } from 'react';
 
-const ModalConfirmContext = createContext();
+// const ModalConfirmContext = createContext();
 
-export const ModalConfirmProvider = ({ children }) => {
-  const [isMouthModalConfirm, setIsMouthModalConfirm] = useState(false);
-  const [mouthedContent, setMouthedContent] = useState(null);
+// export const useModalConfirm = () => useContext(ModalConfirmContext);
 
-  return (
-    <ModalConfirmContext.Provider value={{ isMouthModalConfirm, setIsMouthModalConfirm, mouthedContent, setMouthedContent }}>
-      {children}
-    </ModalConfirmContext.Provider>
-  );
-};
+// export const ModalConfirmProvider = ({ children }) => {
+//     const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
+//     const [modalConfirmContent, setModalConfirmContent] = useState(null);
 
-export const useModalConfirm = () => useContext(ModalConfirmContext);
+//     const openModalConfirm = (content) => {
+//         setModalConfirmContent(content);
+//         setIsModalConfirmOpen(true);
+//     };
+
+//     const closeModalConfirm = () => {
+//         setIsModalConfirmOpen(false);
+//         setModalConfirmContent(null);
+//     };
+
+//     return (
+//         <ModalConfirmContext.Provider value={{ isModalConfirmOpen, modalConfirmContent, openModalConfirm, closeModalConfirm }}>
+//             {children}
+//         </ModalConfirmContext.Provider>
+//     );
+// };

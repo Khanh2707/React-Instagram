@@ -6,7 +6,6 @@ import Search from './pagesInSidebar/Search';
 import Notification from './pagesInSidebar/Notification';
 import SeeMoreInSideBar from './pagesInSidebar/SeeMoreInSideBar';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useModal } from '../../../../Context/ModalContext';
 import defaultAvatar from '~/assets/images/default_avatar.jpg'
 import { AppContext } from '../../../../Context/AppContext';
 
@@ -30,14 +29,6 @@ function Sidebar() {
     const navMessageRef = useRef()
     const navProfileRef = useRef()
     const navDashboardRef = useRef()
-
-
-    const { setIsMouthModal, setMouthedContent } = useModal();
-
-    const handleOpenModal = (content) => {
-        setIsMouthModal(true);
-        setMouthedContent(content);
-    };
 
 
     function checkNavigationActive() {
@@ -219,7 +210,6 @@ function Sidebar() {
     }, [])
 
     useEffect(() => {
-        console.log(currentPath)
         if (currentPath === '/') {
             navHomeRef.current.click()
         }
@@ -387,7 +377,7 @@ function Sidebar() {
                         </div>
                         <span className={cx("navigation__item-span")}>Thông báo</span>
                     </div>
-                    <div className={cx("navigation__item", "navigation__item-create_content")} onClick={() => handleOpenModal("CreateContent")}>
+                    <div className={cx("navigation__item", "navigation__item-create_content")}>
                         <div className={cx("navigation__item-logo")}>
                             <div className={cx("navigation__item-logo--no_active")}>
                                 <svg aria-label="Bài viết mới" className={cx("_ab6-")} color="rgb(245, 245, 245)"

@@ -228,17 +228,22 @@ function Login() {
     const login = async () => {
         try {
             const res = await http.post('auth/token', data)
+            console.log(res)
             localStorage.setItem('token', res.result.token)
 
             showToastSuccess();
 
             setTimeout(() => {
                 window.location.replace('/');
-            }, 1000)
+            }, 2000)
             setIsDataReady(false);
         } catch (error) {
-            showToastError();
             setIsDataReady(false);
+            console.log(error)
+            if (error.response.data.code !== 1002 && error.response.data.code !== 1003) 
+                showToastError(`Tài khoản của bạn đã bị khóa vì: <br>"${error.response.data}"`, 10000);
+            else
+                showToastError();
         }
     }
 
@@ -253,12 +258,12 @@ function Login() {
         })
     }
 
-    function showToastError() {
+    function showToastError(message, duration) {
         setToastMessage({
             title: "Thất bại!",
-            message: "Thông tin đăng nhập không đúng.",
+            message: message ? message : "Thông tin đăng nhập không đúng.",
             type: "error",
-            duration: 3000
+            duration: duration ? duration : 3000
         })
     }
 
