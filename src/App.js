@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DefaultLayout } from '~/Components/Layout';
-import { Fragment } from 'react';
-import { privateRoutes, publicRoutes } from './routes';
+import { Fragment, useContext } from 'react';
+import { privateRoutes, publicRoutes, dashboardRoutes } from './routes';
+import { AppContext } from './Context/AppContext';
 
 const isAuthenticated = () => {
   const token = localStorage.getItem('token');
@@ -9,6 +10,9 @@ const isAuthenticated = () => {
 }
 
 function App() {
+  const {
+    roles,
+  } = useContext(AppContext)
 
   return (
     <BrowserRouter>
@@ -35,6 +39,22 @@ function App() {
                 </Layout>
               ) : (
                 <Navigate to="/login" replace />
+              )
+            } 
+            />
+          )
+        })}
+        {dashboardRoutes.map((route, index) => {
+          const Layout = route.layout === null ? Fragment : DefaultLayout;
+          const Page = route.component;
+          return (
+            <Route key={index} path={route.path} element={
+              isAuthenticated() && roles === 'ADMIN' ? (
+                <Layout>
+                  <Page />
+                </Layout>
+              ) : (
+                <Navigate to="/" replace />
               )
             } 
             />

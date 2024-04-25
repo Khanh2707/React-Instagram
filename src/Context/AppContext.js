@@ -13,6 +13,8 @@ export const AppProvider = ({ children }) => {
     const [avatar, setAvatar] = useState(null);
 
     const [idAccount, setIdAccount] = useState('')
+
+    const [roles, setRoles] = useState('')
     useEffect(() => {
         const getMyInfo = async () => {
             try {
@@ -23,6 +25,8 @@ export const AppProvider = ({ children }) => {
                 setGenderUser(res.result.user.gender)
 
                 setIdAccount(res.result.idAccount)
+
+                setRoles(res.result.roles[0].name)
                 console.log(res)
             } catch (error) {
 
@@ -40,6 +44,7 @@ export const AppProvider = ({ children }) => {
             genderUser, setGenderUser,
             avatar, setAvatar,
             idAccount, setIdAccount,
+            roles, setRoles
         }}>
             {children}
         </AppContext.Provider>

@@ -30,23 +30,22 @@
     margin: 0 3px;
 }
 
-.table td button:nth-child(1) {
+/* .table td button:nth-child(1) {
     background-color: #1ac7b6;
 }
 
 .table td button:nth-child(2) {
     background-color: #f80000;
-}
+} */
 
 .redirect {
     padding: 10px 20px;
     color: #fff;
-    background-color: #0298cf;
+    background-color: #62baea;
 }
 
 .table input {
     padding: 10px 20px;
-    margin: 0 10px;
     outline: none;
     border: 1px solid #383838;
     border-radius: 6px;
@@ -90,8 +89,12 @@
     z-index: 0;
 }
 
+.table td button {
+    width: 35px;
+    height: 35px;
+}
+
 .table tr:hover td {
-    color: #1ac7b6;
     cursor: pointer;
     background-color: #f6f9fc;
 }
@@ -112,7 +115,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #1ac7b6;
+    background-color: #62baea;
     color: #fff;
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.75);
     margin: 0 5px;
@@ -130,4 +133,106 @@
 
 ::-webkit-scrollbar-thumb {
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+
+
+
+
+.dropdown {
+    position: relative;
+    width: 100%;
+    height: 50px;
+}
+
+.dropdown::before {
+    content: '';
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    z-index: 3;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #333;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    transform: rotate(-45deg);
+    transition: 0.5s;
+    pointer-events: none;
+}
+
+.dropdown.active::before {
+    top: 22px;
+    transform: rotate(-225deg);
+}
+
+.dropdown input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background: #fff;
+    border: none;
+    outline: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 12px 20px;
+    border-radius: 10px;
+}
+
+.dropdown .option {
+    position: absolute;
+    top: 60px;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 30px 30px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+}
+
+.dropdown.active .option {
+    display: block;
+    z-index: 4;
+}
+
+.dropdown .option div {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropdown .option div:not(:nth-child(1)) {
+    border-top: 1px solid #dbdbdb;
+}
+
+.dropdown .option div:hover {
+    background: #62baea;
+    color: #fff;
+}
+
+.dropdown .option div > * {
+    margin: 0 5px;
+}
+
+.dropdown .option div svg {
+    position: relative;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+}
+
+.displayRoleForADMIN > * {
+    margin: 0 5px;
+}
+
+.displayRoleForADMIN svg {
+    font-size: 1.2em;
 }

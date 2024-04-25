@@ -18,7 +18,10 @@ const privateRoutes = [
     { path: '/message', component: Message },
     { path: '/:id-user', component: Profile},
     { path: '/accounts/:params', component: SettingAccount},
+]
+
+const dashboardRoutes = [
     { path: '/dashboard', component: Dashboard, layout: null}
 ]
 
-export { publicRoutes, privateRoutes }
+export { publicRoutes, privateRoutes, dashboardRoutes }

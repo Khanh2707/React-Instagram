@@ -4,6 +4,7 @@ import Modal from "./Modal";
 import Sidebar from "./Sidebar";
 import LoadingLine from "../../../effects/LoadingLine";
 import { AppContext } from "../../../Context/AppContext";
+import ModalConfirm from "./ModalConfirm";
 
 function DefaultLayout({ children }) {
     const { isLoadingLine } = useContext(AppContext);
@@ -20,6 +21,7 @@ function DefaultLayout({ children }) {
                 </div>
             </div>
             <Modal />
+            <ModalConfirm />
             <ToastMessage />
         </React.Fragment>
     );

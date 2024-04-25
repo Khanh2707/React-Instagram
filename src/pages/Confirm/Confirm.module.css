@@ -1,0 +1,18 @@
+.confirm_container {
+    background-color: #262626;
+    border-radius: 12px;
+}
+
+.confirm_item {
+    width: 300px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.confirm_item:not(:nth-child(1)) {
+    border-top: 1px solid #363636;
+}

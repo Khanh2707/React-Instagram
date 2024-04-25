@@ -13,7 +13,10 @@ import { AppContext } from '../../../../Context/AppContext';
 const cx = classNames.bind(styles)
 
 function Sidebar() {
-    const { idUser } = useContext(AppContext)
+    const { 
+        idUser,
+        roles,
+    } = useContext(AppContext)
 
     const [searchIsActive, setSearchIsActive] = useState(false)
     const [notificationIsActive, setNotificationIsActive] = useState(false)
@@ -26,6 +29,7 @@ function Sidebar() {
     const navHomeRef = useRef()
     const navMessageRef = useRef()
     const navProfileRef = useRef()
+    const navDashboardRef = useRef()
 
 
     const { setIsMouthModal, setMouthedContent } = useModal();
@@ -205,20 +209,28 @@ function Sidebar() {
         navigate(`/${idUser}`)
     }
 
+    function handleRouterPageDashboard() {
+        navigate('/dashboard')
+    }
+
     useEffect(() => {
         checkNavigationActive()
 
     }, [])
 
     useEffect(() => {
+        console.log(currentPath)
         if (currentPath === '/') {
             navHomeRef.current.click()
         }
-        if (currentPath === '/message') {
+        else if (currentPath === '/message') {
             navMessageRef.current.click()
         }
-        if (currentPath === `/${idUser}`) {
+        else if (currentPath === `/${idUser}`) {
             navProfileRef.current.click()
+        }
+        else if (currentPath === `/dashboard`) {
+            navDashboardRef.current.click()
         }
     }, [currentPath])
 
@@ -412,6 +424,19 @@ function Sidebar() {
                         </div>
                         <span className={cx("navigation__item-span")}>Trang cá nhân</span>
                     </div>
+                    {roles === 'ADMIN' &&
+                    <div className={cx("navigation__item", "navigation__item-dashboard")} onClick={handleRouterPageDashboard} ref={navDashboardRef}>
+                        <div className={cx("navigation__item-logo")}>
+                            <div className={cx("navigation__item-logo--no_active")}>
+                                <svg aria-label="Tin nhắn mới" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tin nhắn mới</title><path d="M12.202 3.203H5.25a3 3 0 0 0-3 3V18.75a3 3 0 0 0 3 3h12.547a3 3 0 0 0 3-3v-6.952" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M10.002 17.226H6.774v-3.228L18.607 2.165a1.417 1.417 0 0 1 2.004 0l1.224 1.225a1.417 1.417 0 0 1 0 2.004Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="16.848" x2="20.076" y1="3.924" y2="7.153"></line></svg>
+                            </div>
+                            <div className={cx("navigation__item-logo--active")}>
+                                <svg aria-label="Tin nhắn mới" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tin nhắn mới</title><path d="M12.202 3.203H5.25a3 3 0 0 0-3 3V18.75a3 3 0 0 0 3 3h12.547a3 3 0 0 0 3-3v-6.952" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M10.002 17.226H6.774v-3.228L18.607 2.165a1.417 1.417 0 0 1 2.004 0l1.224 1.225a1.417 1.417 0 0 1 0 2.004Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="16.848" x2="20.076" y1="3.924" y2="7.153"></line></svg>
+                            </div>
+                        </div>
+                        <span className={cx("navigation__item-span")}>Quản trị</span>
+                    </div>
+                    }
                 </div>
                 <div className={cx("navigation-see_more")}>
                     <div className={cx("navigation__item", "navigation__item-see_more")} data-level="3">
