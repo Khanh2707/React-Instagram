@@ -28,22 +28,6 @@ function App() {
             } />
           )
         })}
-        {privateRoutes.map((route, index) => {
-          const Layout = route.layout === null ? Fragment : DefaultLayout;
-          const Page = route.component;
-          return (
-            <Route key={index} path={route.path} element={
-              isAuthenticated() ? (
-                <Layout>
-                  <Page />
-                </Layout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            } 
-            />
-          )
-        })}
         {dashboardRoutes.map((route, index) => {
           const Layout = route.layout === null ? Fragment : DefaultLayout;
           const Page = route.component;
@@ -55,6 +39,22 @@ function App() {
                 </Layout>
               ) : (
                 <Navigate to="/" replace />
+              )
+            } 
+            />
+          )
+        })}
+        {privateRoutes.map((route, index) => {
+          const Layout = route.layout === null ? Fragment : DefaultLayout;
+          const Page = route.component;
+          return (
+            <Route key={index} path={route.path} element={
+              isAuthenticated() ? (
+                <Layout>
+                  <Page />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
               )
             } 
             />

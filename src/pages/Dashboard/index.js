@@ -34,10 +34,10 @@ function Dashboard() {
             "reasonLock": content,
             "idAccountLogLockAccount": idAccount
         })
-        .then((res) => {
-            getAllAccount();
-            showToastInfo("Đã khóa tài khoản người dùng.");
-        })
+            .then((res) => {
+                getAllAccount();
+                showToastInfo("Đã khóa tài khoản người dùng.");
+            })
     }
 
     const handleUnLockAccount = (idAccount) => {
@@ -54,10 +54,10 @@ function Dashboard() {
         http.post(`api/log_lock_accounts/un_lock`, {
             "idAccountLogLockAccount": idAccount
         })
-        .then((res) => {
-            getAllAccount();
-            showToastInfo("Đã mở khóa tài khoản người dùng.");
-        })
+            .then((res) => {
+                getAllAccount();
+                showToastInfo("Đã mở khóa tài khoản người dùng.");
+            })
     }
 
     const navigate = useNavigate();
@@ -67,18 +67,38 @@ function Dashboard() {
     }, [])
 
     const [listAllAccount, setListAllAccount] = useState([])
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
 
     function getAllAccount() {
-        http.get(`api/accounts`)
+        http.get(`api/accounts/${currentPage}/3`)
             .then((res) => {
                 console.log(res)
-                setListAllAccount(res.result)
+                setListAllAccount(res.result.content)
+                setTotalPages(res.result.totalPages)
             })
     }
 
     useEffect(() => {
         getAllAccount();
-    }, [])
+    }, [currentPage])
+
+    function handleChangePage(value) {
+        setCurrentPage(value)
+    }
+
+
+    const [pageNumbers, setPageNumbers] = useState([]);
+
+    useEffect(() => {
+        // Tạo một mảng chứa các số từ 1 đến totalPages
+        const newPageNumbers = [];
+        for (let i = 1; i <= totalPages; i++) {
+            newPageNumbers.push(i);
+        }
+        // Cập nhật state pageNumbers
+        setPageNumbers(newPageNumbers);
+    }, [totalPages]);
 
 
     const [searchValue, setSearchValue] = useState('');
@@ -120,10 +140,10 @@ function Dashboard() {
                 nameRole
             ]
         })
-        .then((res) => {
-            getAllAccount();
-            showToastSuccess();
-        })
+            .then((res) => {
+                getAllAccount();
+                showToastSuccess();
+            })
     }
 
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -156,104 +176,117 @@ function Dashboard() {
 
     return (
         <>
-        <div className={cx("table")}>
-            <div className={cx("table_header")}>
-                <p>Danh sách tất cả người dùng</p>
-                <div>
-                    <input type="search" placeholder="Tìm kiếm" onChange={(e) => setSearchValue(e.target.value)} value={searchValue} />
-                    <button className={cx("redirect")} onClick={() => { navigate('/') }}>Quay về trang chủ</button>
+            <div className={cx("table")}>
+                <div className={cx("table_header")}>
+                    <p>Danh sách tất cả người dùng</p>
+                    <div>
+                        <input type="search" placeholder="Tìm kiếm" onChange={(e) => setSearchValue(e.target.value)} value={searchValue} />
+                        <button className={cx("redirect")} onClick={() => { navigate('/') }}>Quay về trang chủ</button>
+                    </div>
                 </div>
-            </div>
-            <div className={cx("table_section")}>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Ảnh đại diện</th>
-                            <th>Id</th>
-                            <th>Tên</th>
-                            <th>Giới tính</th>
-                            <th>Vai trò</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {(searchValue.length <= 0 ? listAllAccount : searchResult).map((res) => {
-                            const isDropdownActive = activeDropdown === res.idAccount;
-                            const shouldDisplayDropdown = res.user.idUser !== 'admin';
-                            return (
-                                <tr key={res.idAccount}>
-                                    <td>{index++}</td>
-                                    <td><img src={res.user.avatar === null ? defaultAvatar : res.user.avatar} alt="" /></td>
-                                    <td>{res.user.idUser}</td>
-                                    <td>{res.user.name}</td>
-                                    <td>
-                                        {res.user.gender === true ? 'Nam' : res.user.gender === false ? 'Nữ' : 'Không muốn tiết lộ'}
-                                    </td>
-                                    <td>
-                                        {shouldDisplayDropdown && (
-                                            <div className={cx("dropdown", { active: isDropdownActive })} onClick={() => handleAppearSelect(res.idAccount)}>
-                                                <input type="text" className={cx("textBox")} placeholder={res.roles[0].name} readOnly />
-                                                <div className={cx("option")}>
-                                                    {allRoles.map((allRoles) => {
-                                                        return (
-                                                            <div key={allRoles.name} onClick={() => putAccountRole(res.idAccount, allRoles.name)}>
-                                                                {
-                                                                    allRoles.name === "ADMIN" ? <FontAwesomeIcon icon={faUserTie} /> :
-                                                                        allRoles.name === "USER" ? <FontAwesomeIcon icon={faUser} /> : ''
-                                                                }
-                                                                <span>{allRoles.name}</span>
-                                                            </div>
-                                                        )
-                                                    })}
+                <div className={cx("table_section")}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Ảnh đại diện</th>
+                                <th>Id</th>
+                                <th>Tên</th>
+                                <th>Giới tính</th>
+                                <th>Vai trò</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(searchValue.length <= 0 ? listAllAccount : searchResult).map((res) => {
+                                const isDropdownActive = activeDropdown === res.idAccount;
+                                const shouldDisplayDropdown = res.user.idUser !== 'admin';
+                                return (
+                                    <tr key={res.idAccount}>
+                                        <td>{index++}</td>
+                                        <td><img src={res.user.avatar === null ? defaultAvatar : res.user.avatar} alt="" /></td>
+                                        <td>{res.user.idUser}</td>
+                                        <td>{res.user.name}</td>
+                                        <td>
+                                            {res.user.gender === true ? 'Nam' : res.user.gender === false ? 'Nữ' : 'Không muốn tiết lộ'}
+                                        </td>
+                                        <td>
+                                            {shouldDisplayDropdown && (
+                                                <div className={cx("dropdown", { active: isDropdownActive })} onClick={() => handleAppearSelect(res.idAccount)}>
+                                                    <input type="text" className={cx("textBox")} placeholder={res.roles[0].name} readOnly />
+                                                    <div className={cx("option")}>
+                                                        {allRoles.map((allRoles) => {
+                                                            return (
+                                                                <div key={allRoles.name} onClick={() => putAccountRole(res.idAccount, allRoles.name)}>
+                                                                    {
+                                                                        allRoles.name === "ADMIN" ? <FontAwesomeIcon icon={faUserTie} /> :
+                                                                            allRoles.name === "USER" ? <FontAwesomeIcon icon={faUser} /> : ''
+                                                                    }
+                                                                    <span>{allRoles.name}</span>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {!shouldDisplayDropdown && (
-                                            <div className={cx("displayRoleForADMIN")}>
-                                                <FontAwesomeIcon icon={faUserTie} />
-                                                <span>{res.roles[0].name}</span>
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td>
-                                        {res.logLockAccounts.length > 0 && (
-                                            <>
-                                                {res.logLockAccounts.reduce((maxLockAccount, currentLockAccount) => {
-                                                    return currentLockAccount.idLogLockAccount > maxLockAccount.idLogLockAccount ? currentLockAccount : maxLockAccount;
-                                                }, res.logLockAccounts[0]).stateLock === false ? (
-                                                    <button onClick={() => handleLockAccount(res.idAccount)}>
-                                                        <FontAwesomeIcon icon={faLock} />
-                                                    </button>
-                                                ) : (
-                                                    <button onClick={() => handleUnLockAccount(res.idAccount)}>
-                                                        <FontAwesomeIcon icon={faUnlock} />
-                                                    </button>
-                                                )}
-                                            </>
-                                        )}
-                                        {res.logLockAccounts.length <= 0 && (
-                                            <button onClick={() => handleLockAccount(res.idAccount)}>
-                                                <FontAwesomeIcon icon={faLock} />
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+                                            )}
+                                            {!shouldDisplayDropdown && (
+                                                <div className={cx("displayRoleForADMIN")}>
+                                                    <FontAwesomeIcon icon={faUserTie} />
+                                                    <span>{res.roles[0].name}</span>
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td>
+                                            {res.logLockAccounts.length > 0 && (
+                                                <>
+                                                    {res.logLockAccounts.reduce((maxLockAccount, currentLockAccount) => {
+                                                        return currentLockAccount.idLogLockAccount > maxLockAccount.idLogLockAccount ? currentLockAccount : maxLockAccount;
+                                                    }, res.logLockAccounts[0]).stateLock === false ? (
+                                                        <button onClick={() => handleLockAccount(res.idAccount)}>
+                                                            <FontAwesomeIcon icon={faLock} />
+                                                        </button>
+                                                    ) : (
+                                                        <button onClick={() => handleUnLockAccount(res.idAccount)}>
+                                                            <FontAwesomeIcon icon={faUnlock} />
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                            {res.logLockAccounts.length <= 0 && (
+                                                <button onClick={() => handleLockAccount(res.idAccount)}>
+                                                    <FontAwesomeIcon icon={faLock} />
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+                <div className={cx("pagination")}>
+                    <div onClick={() => currentPage !== 0 && setCurrentPage(0)} className={currentPage === 0 ? cx("disabled") : ""}>
+                        <FontAwesomeIcon icon={faAnglesLeft} />
+                    </div>
+                    <div onClick={() => currentPage !== 0 && setCurrentPage(currentPage - 1)} className={currentPage === 0 ? cx("disabled") : ""}>
+                        <FontAwesomeIcon icon={faChevronLeft} />
+                    </div>
+                    {pageNumbers.map((pageNumber) => (
+                        <div key={pageNumber} onClick={() => handleChangePage(pageNumber - 1)}>
+                            {pageNumber}
+                        </div>
+                    ))}
+                    <div onClick={() => currentPage !== totalPages - 1 && setCurrentPage(currentPage + 1)} className={currentPage === totalPages - 1 ? cx("disabled") : ""}>
+                        <FontAwesomeIcon icon={faChevronRight} />
+                    </div>
+                    <div onClick={() => currentPage !== totalPages - 1 && setCurrentPage(totalPages - 1)} className={currentPage === totalPages - 1 ? cx("disabled") : ""}>
+                        <FontAwesomeIcon icon={faAnglesRight} />
+                    </div>
+                </div>
+
             </div>
-            <div className={cx("pagination")}>
-                <div><FontAwesomeIcon icon={faAnglesLeft} /></div>
-                <div><FontAwesomeIcon icon={faChevronLeft} /></div>
-                <div>1</div>
-                <div><FontAwesomeIcon icon={faAnglesRight} /></div>
-                <div><FontAwesomeIcon icon={faChevronRight} /></div>
-            </div>
-        </div>
-        <Modal />
-        <ToastMessage />
+            <Modal />
+            <ToastMessage />
         </>
     );
 }

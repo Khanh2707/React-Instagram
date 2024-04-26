@@ -122,6 +122,10 @@
     cursor: pointer;
 }
 
+.pagination div.disabled {
+    background-color: grey;
+}
+
 ::-webkit-scrollbar {
     height: 5px;
     width: 5px;   
