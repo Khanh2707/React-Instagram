@@ -21,6 +21,7 @@ export const AppProvider = ({ children }) => {
                 const res = await http.get('api/accounts/myAccount')
                 setIdUser(res.result.user.idUser)
                 setNameUser(res.result.user.name)
+                setAvatar(res.result.user.avatar)
                 setDescriptionUser(res.result.user.description)
                 setGenderUser(res.result.user.gender)
 

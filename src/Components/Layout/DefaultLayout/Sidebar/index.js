@@ -15,6 +15,7 @@ function Sidebar() {
     const { 
         idUser,
         roles,
+        avatar,
     } = useContext(AppContext)
 
     const [searchIsActive, setSearchIsActive] = useState(false)
@@ -409,7 +410,7 @@ function Sidebar() {
                     <div className={cx("navigation__item", "navigation__item-profile")} data-level="1" onClick={handleRouterPageProfile} ref={navProfileRef}>
                         <div className={cx("navigation__item-logo")}>
                             <div className={cx("navigation__item-img")}>
-                                <img src={defaultAvatar} alt="" />
+                                <img src={(avatar === '' || avatar === null) ? defaultAvatar : avatar} alt="" />
                             </div>
                         </div>
                         <span className={cx("navigation__item-span")}>Trang cá nhân</span>

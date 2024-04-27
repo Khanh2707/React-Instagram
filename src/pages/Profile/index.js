@@ -1,11 +1,15 @@
 import classNames from 'classnames/bind';
 import styles from './Profile.module.css';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import defaultAvatar from '../../assets/images/default_avatar.jpg'
 import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { AppContext } from '../../Context/AppContext';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as http from '~/utils/http';
+import { useToastMessage } from '../../Context/ToastMessageContext';
+import { useModal } from '../../Context/ModalContext';
+import OptionsAvatar from '../OptionsAvatar';
 
 const cx = classNames.bind(styles)
 
@@ -14,6 +18,7 @@ function Profile() {
         idUser,
         nameUser,
         descriptionUser,
+        avatar, setAvatar,
     } = useContext(AppContext)
 
 
@@ -59,15 +64,84 @@ function Profile() {
         };
     }, []);
 
+    const inputSetAvatarRef = useRef();
+
+    function handleClickSetAvatar() {
+        inputSetAvatarRef.current.click();
+    }
+
+    function handleSetAvatar(e) {
+        const file = e.target.files[0]
+
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        fetch(`http://localhost:8080/api/users/avatar/${idUser}`, {
+            method: 'PUT',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
+        })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then((data) => {
+            setAvatar(data.result.avatar)
+            showToastSuccess()
+        })
+        .catch((error) => {
+            showToastError()
+            console.error('Error uploading avatar:', error);
+        });
+    }
+
+    const { openModal } = useModal();
+
+    const handleOpenOptionsAvatar = () => {
+        // Truyền Component B vào modal
+        openModal(<OptionsAvatar />);
+    };
+
+    const { setToastMessage } = useToastMessage();
+
+    function showToastSuccess(message) {
+        setToastMessage({
+            title: "Thành công!",
+            message: message ? message : "Update avatar thành công.",
+            type: "success",
+            duration: 3000
+        })
+    }
+
+    function showToastError(message) {
+        setToastMessage({
+            title: "Thất bại!",
+            message: message ? message : "Có lỗi.",
+            type: "error",
+            duration: 3000
+        })
+    }
+
     return (
         <div className={cx("main", "page-profile")}>
             <div className={cx("info_user")}  style={{ width: `${widthTabBar}px` }}>
                 <div className={cx("info_user-img_container")}>
                     <div className={cx("info_user-img")}>
-                        <img src={defaultAvatar} alt='' />
-                        <div className={cx("info_user-img__iconSetImage")}>
-                            <svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor" className="x10l6tqk xtzzx4i xwa60dl x11lhmoz"><path d="M12 9.652a3.54 3.54 0 1 0 3.54 3.539A3.543 3.543 0 0 0 12 9.65zm6.59-5.187h-.52a1.107 1.107 0 0 1-1.032-.762 3.103 3.103 0 0 0-3.127-1.961H10.09a3.103 3.103 0 0 0-3.127 1.96 1.107 1.107 0 0 1-1.032.763h-.52A4.414 4.414 0 0 0 1 8.874v9.092a4.413 4.413 0 0 0 4.408 4.408h13.184A4.413 4.413 0 0 0 23 17.966V8.874a4.414 4.414 0 0 0-4.41-4.41zM12 18.73a5.54 5.54 0 1 1 5.54-5.54A5.545 5.545 0 0 1 12 18.73z"></path></svg>
-                        </div>
+                        {avatar === '' || avatar === null ? (
+                            <>
+                                <img src={defaultAvatar} alt='' />
+                                <div className={cx("info_user-img__iconSetImage")} onClick={handleClickSetAvatar}>
+                                    <svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor" className="x10l6tqk xtzzx4i xwa60dl x11lhmoz"><path d="M12 9.652a3.54 3.54 0 1 0 3.54 3.539A3.543 3.543 0 0 0 12 9.65zm6.59-5.187h-.52a1.107 1.107 0 0 1-1.032-.762 3.103 3.103 0 0 0-3.127-1.961H10.09a3.103 3.103 0 0 0-3.127 1.96 1.107 1.107 0 0 1-1.032.763h-.52A4.414 4.414 0 0 0 1 8.874v9.092a4.413 4.413 0 0 0 4.408 4.408h13.184A4.413 4.413 0 0 0 23 17.966V8.874a4.414 4.414 0 0 0-4.41-4.41zM12 18.73a5.54 5.54 0 1 1 5.54-5.54A5.545 5.545 0 0 1 12 18.73z"></path></svg>
+                                </div>
+                                <input type='file' onChange={handleSetAvatar} ref={inputSetAvatarRef} style={{display: 'none'}} />
+                            </>
+                        ) : (
+                            <img src={avatar} alt='' onClick={handleOpenOptionsAvatar} />
+                        )}
                     </div>
                 </div>
                 <div className={cx("info_user-text")}>

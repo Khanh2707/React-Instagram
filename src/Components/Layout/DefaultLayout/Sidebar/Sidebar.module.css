@@ -100,7 +100,10 @@ img {
 
 .navigation__item-img img {
     width: 100%;
+    height: 100%;
     border-radius: 50%;
+    transform: scale(1);
+    object-fit: cover;
 }
 
 .navigation-see_more .navigation__item {
@@ -172,22 +175,6 @@ img {
 .navigation__item-profile.active .navigation__item-logo {
     outline: 3px solid #dbdbdb;
     border-radius: 50%;
-}
-
-.navigation__item-home {
-
-}
-
-.navigation__item-message {
-
-}
-
-.navigation__item-create_content {
-
-}
-
-.navigation__item-see_more {
-
 }
 
 @keyframes shrinkRightSidebar {

@@ -1,0 +1,43 @@
+.optionsAvatar__container {
+    width: 400px;
+    border-radius: 12px;
+    background-color: #282828;
+}
+
+.optionsAvatar__title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.optionsAvatar__title span {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 32px;
+}
+
+.optionsAvatar__item {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    height: 48px;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border-top: 1px solid #383838;
+}
+
+.optionsAvatar__item span {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.optionsAvatar__upload span {
+    font-weight: 700;
+    color: rgb(0, 149, 246);
+}
+
+.optionsAvatar__delete span {
+    font-weight: 700;
+    color: rgb(237, 73, 86);
+}

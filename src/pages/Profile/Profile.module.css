@@ -35,6 +35,7 @@
     transform: scale(1);
     position: absolute;
     z-index: 1;
+    object-fit: cover;
 }
 
 .info_user-img__iconSetImage {

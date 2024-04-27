@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import defaultAvatar from '../../assets/images/default_avatar.jpg'
 import * as http from '~/utils/http';
 import { useToastMessage } from '../../Context/ToastMessageContext';
+import { useModal } from '../../Context/ModalContext';
+import OptionsAvatar from '../OptionsAvatar';
 
 const cx = classNames.bind(styles)
 
@@ -30,7 +32,50 @@ function EditAccount() {
         nameUser, setNameUser,
         descriptionUser, setDescriptionUser,
         genderUser, setGenderUser,
+        avatar, setAvatar,
     } = useContext(AppContext)
+
+    const inputSetAvatarRef = useRef();
+
+    function handleClickSetAvatar() {
+        inputSetAvatarRef.current.click();
+    }
+
+    function handleSetAvatar(e) {
+        const file = e.target.files[0]
+
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        fetch(`http://localhost:8080/api/users/avatar/${idUser}`, {
+            method: 'PUT',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
+        })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then((data) => {
+            setAvatar(data.result.avatar)
+            showToastSuccess("Update avatar thành công.")
+        })
+        .catch((error) => {
+            showToastError("Có lỗi khi thiết lập ảnh đại diện.")
+            console.error('Error uploading avatar:', error);
+        });
+    }
+
+    const { openModal } = useModal();
+
+    const handleOpenOptionsAvatar = () => {
+        // Truyền Component B vào modal
+        openModal(<OptionsAvatar />);
+    };
 
     
     const updateInfoUser = async (data) => {
@@ -39,7 +84,7 @@ function EditAccount() {
             setNameUser(res.result.name)
             setDescriptionUser(res.result.description)
             setGenderUser(res.result.gender)
-            showToastSuccess()
+            showToastSuccess("Update thông tin thành công.")
         } catch (error) {
 
         }
@@ -267,11 +312,20 @@ function EditAccount() {
 
     const { setToastMessage } = useToastMessage();
 
-    function showToastSuccess() {
+    function showToastSuccess(message) {
         setToastMessage({
             title: "Thành công!",
-            message: "Update thông tin thành công.",
+            message: message ? message : "Update thông tin thành công.",
             type: "success",
+            duration: 3000
+        })
+    }
+
+    function showToastError(message) {
+        setToastMessage({
+            title: "Thất bại!",
+            message: message ? message : "Có lỗi.",
+            type: "error",
             duration: 3000
         })
     }
@@ -286,14 +340,21 @@ function EditAccount() {
                     <div className={cx("edit_account__set_avatar")}>
                         <div className={cx("edit_account__set_avatar__avatar_and_name_and_id")}>
                             <div className={cx("edit_account__set_avatar__avatar")}>
-                                <img src={defaultAvatar} alt='' />
+                                {avatar === '' || avatar === null ? (
+                                    <>
+                                        <img src={defaultAvatar} alt='' />
+                                        <input type='file' onChange={handleSetAvatar} ref={inputSetAvatarRef} style={{display: 'none'}} />
+                                    </>
+                                ) : (
+                                    <img src={avatar} alt='' onClick={handleOpenOptionsAvatar} />
+                                )}
                             </div>
                             <div className={cx("edit_account__set_avatar__name_and_id")}>
                                 <span className={cx("edit_account__set_avatar__name")}>{idUser}</span>
                                 <span className={cx("edit_account__set_avatar__id")}>{nameUser}</span>
                             </div>
                         </div>
-                        <div className={cx("edit_account__set_avatar__set_avatar_button")}>
+                        <div className={cx("edit_account__set_avatar__set_avatar_button")} onClick={handleOpenOptionsAvatar}>
                             Đổi ảnh
                         </div>
                     </div>
