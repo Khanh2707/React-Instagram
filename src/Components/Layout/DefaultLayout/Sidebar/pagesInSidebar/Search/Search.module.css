@@ -169,8 +169,10 @@
 
 .page-search__recently__body__ul__li-img img {
     width: 100%;
+    height: 100%;
     border-radius: 50%;
     transform: scale(1);
+    object-fit: cover;
 }
 
 .page-search__recently__body__ul__li-short_infor {

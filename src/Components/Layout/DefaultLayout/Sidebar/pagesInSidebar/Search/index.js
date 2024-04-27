@@ -6,17 +6,19 @@ import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import * as http from '~/utils/http';
 import { AppContext } from '../../../../../../Context/AppContext';
 import { useDebounce } from '~/hooks'
+import defaultAvatar from '~/assets/images/default_avatar.jpg'
 
 const cx = classNames.bind(styles)
 
 function Search({ searchIsActive }) {
+
     const [isFirstActive, setIsFirstActive] = useState(false)
 
     if (searchIsActive === true && isFirstActive === false)
         setIsFirstActive(true);
 
     const {
-        idUser
+        idUser,
     } = useContext(AppContext)
 
 
@@ -49,7 +51,6 @@ function Search({ searchIsActive }) {
 
         http.get(`api/users/${encodeURIComponent(debounced)}/${idUser}`)
             .then((res) => {
-                console.log(res);
                 setSearchResult(res.result)
             })
     }, [debounced])
@@ -61,6 +62,8 @@ function Search({ searchIsActive }) {
         })
         .then(() => {
             reRenderSearchHistory()
+            // window.history.pushState({}, '', `/${value}`)
+            window.location.href = `/${value}`
         })
     }
 
@@ -190,8 +193,7 @@ function Search({ searchIsActive }) {
                                     <li key={result.idUser}>
                                         <div className={cx("page-search__recently__body__ul__li-infor")} onClick={() => handleSearchItemClick(result.idUser)}>
                                             <div className={cx("page-search__recently__body__ul__li-img")}>
-                                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                                    alt="" />
+                                                <img src={(result.avatar === null || result.avatar === '') ? defaultAvatar : result.avatar} alt="" />
                                             </div>
                                             <div className={cx("page-search__recently__body__ul__li-short_infor")}>
                                                 <div className={cx("page-search__recently__body__ul__li-short_info__name_account")}>
@@ -206,18 +208,6 @@ function Search({ searchIsActive }) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={cx("page-search__recently__body__ul__li-cancel")} onClick={() => handleSearchItemClickRemove(result.idUser)}>
-                                            <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                                height="16" role="img" viewBox="0 0 24 24" width="16">
-                                                <title>Đóng</title>
-                                                <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647"
-                                                    stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                                    strokeWidth="3"></polyline>
-                                                <line fill="none" stroke="currentColor" strokeLinecap="round"
-                                                    strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649"
-                                                    y2="3.354"></line>
-                                            </svg>
-                                        </div>
                                     </li>
                                 )
                             })
@@ -227,8 +217,7 @@ function Search({ searchIsActive }) {
                                     <li key={result.user2.idUser}>
                                         <div className={cx("page-search__recently__body__ul__li-infor")} onClick={() => handleSearchItemClick(result.user2.idUser)}>
                                             <div className={cx("page-search__recently__body__ul__li-img")}>
-                                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                                    alt="" />
+                                                <img src={(result.user2.avatar === null || result.user2.avatar === '') ? defaultAvatar : result.user2.avatar} alt="" />
                                             </div>
                                             <div className={cx("page-search__recently__body__ul__li-short_infor")}>
                                                 <div className={cx("page-search__recently__body__ul__li-short_info__name_account")}>

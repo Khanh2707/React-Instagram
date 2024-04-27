@@ -18,6 +18,7 @@ function Sidebar() {
         avatar,
     } = useContext(AppContext)
 
+
     const [searchIsActive, setSearchIsActive] = useState(false)
     const [notificationIsActive, setNotificationIsActive] = useState(false)
     const [seeMoreInSidebar, setSeeMoreInSidebar] = useState(false)

@@ -50,6 +50,10 @@
     z-index: 2;
 }
 
+.info_user-text {
+    padding-bottom: 15px;
+}
+
 .info_user-text > * {
     display: flex;
 }

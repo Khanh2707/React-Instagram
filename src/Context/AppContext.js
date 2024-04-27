@@ -11,9 +11,7 @@ export const AppProvider = ({ children }) => {
     const [descriptionUser, setDescriptionUser] = useState('');
     const [genderUser, setGenderUser] = useState(null);
     const [avatar, setAvatar] = useState(null);
-
     const [idAccount, setIdAccount] = useState('')
-
     const [roles, setRoles] = useState('')
     useEffect(() => {
         const getMyInfo = async () => {
@@ -45,7 +43,7 @@ export const AppProvider = ({ children }) => {
             genderUser, setGenderUser,
             avatar, setAvatar,
             idAccount, setIdAccount,
-            roles, setRoles
+            roles, setRoles,
         }}>
             {children}
         </AppContext.Provider>

@@ -14,16 +14,6 @@ import OptionsAvatar from '../OptionsAvatar';
 const cx = classNames.bind(styles)
 
 function Profile() {
-    const {
-        idUser,
-        nameUser,
-        descriptionUser,
-        avatar, setAvatar,
-    } = useContext(AppContext)
-
-
-    const { 'id-user': userId } = useParams();
-
     const { setIsLoadingLine } = useContext(AppContext);
     useEffect(() => {
         setIsLoadingLine(true);
@@ -34,6 +24,39 @@ function Profile() {
             setIsLoadingLine(false);
         }, 500)
     }, [])
+
+
+    const {
+        idUser,
+        nameUser,
+        descriptionUser,
+        avatar, setAvatar,
+    } = useContext(AppContext)
+
+
+    const { 'id-user': userId } = useParams();
+   
+
+    const [idUserOther, setIdUserOther] = useState(null)
+    const [nameUserOther, setNameUserOther] = useState(null)
+    const [descriptionUserOther, setDescriptionUserOther] = useState(null)
+    const [avatarUserOther, setAvatarUserOther] = useState(null)
+
+    const getUserById = () => {
+        http.get(`api/users/${userId}`)
+            .then((res) => {
+                setIdUserOther(res.result.idUser)
+                setNameUserOther(res.result.name)
+                setDescriptionUserOther(res.result.description)
+                setAvatarUserOther(res.result.avatar)
+            })
+    }
+
+    useEffect(() => {
+        if (idUser !== userId) {
+            getUserById()
+        }
+    }, [userId])
 
 
     const navigate = useNavigate();
@@ -131,7 +154,8 @@ function Profile() {
             <div className={cx("info_user")}  style={{ width: `${widthTabBar}px` }}>
                 <div className={cx("info_user-img_container")}>
                     <div className={cx("info_user-img")}>
-                        {avatar === '' || avatar === null ? (
+                        {userId === idUser ? (
+                        avatar === '' || avatar === null ? (
                             <>
                                 <img src={defaultAvatar} alt='' />
                                 <div className={cx("info_user-img__iconSetImage")} onClick={handleClickSetAvatar}>
@@ -141,13 +165,17 @@ function Profile() {
                             </>
                         ) : (
                             <img src={avatar} alt='' onClick={handleOpenOptionsAvatar} />
-                        )}
+                        )
+                        ) : (
+                            <img src={avatarUserOther === null ? defaultAvatar : avatarUserOther} alt='' />
+                        )
+                        }
                     </div>
                 </div>
                 <div className={cx("info_user-text")}>
                     <div className={cx("info_user-text__line1")}>
                         <div className={cx("info_user-text__name")}>
-                            {idUser}
+                            {userId !== idUser ? idUserOther : idUser}
                         </div>
                         <div className={cx("info_user-text__edit_profile")} onClick={handleEditProfile} style={{display: userId === idUser ? 'block' : 'none'}}>
                             Chỉnh sửa trang cá nhân
@@ -182,12 +210,12 @@ function Profile() {
                     </div>
                     <div className={cx("info_user-text__line3")}>
                         <div className={cx("info_user-text__real_name")}>
-                            {nameUser}
+                            {userId !== idUser ? nameUserOther : nameUser}
                         </div>
                     </div>
                     <div className={cx("info_user-text__line4")}>
                         <div className={cx("info_user-text__description")}>
-                            {descriptionUser}
+                            {userId !== idUser ? descriptionUserOther : descriptionUser}
                         </div>
                     </div>
                 </div>
