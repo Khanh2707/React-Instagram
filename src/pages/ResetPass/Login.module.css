@@ -125,4 +125,5 @@ input {
     cursor: pointer;
     font-size: 14px;
     color: #1ac7b6;
+    user-select: none;
 }

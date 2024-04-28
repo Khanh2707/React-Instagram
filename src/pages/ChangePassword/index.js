@@ -24,12 +24,12 @@ function ChangePassword() {
     }, [])
 
     const {
-        idAccount
+        account
     } = useContext(AppContext)
 
     const changePassword = async (data) => {
         try {
-            const res = await http.put(`api/accounts/password/${idAccount}`, {
+            const res = await http.put(`api/accounts/password/${account}`, {
                 password: data.new_password,
                 currentPassword: data.current_password
             })
@@ -237,7 +237,7 @@ function ChangePassword() {
                 changePassword(data)
             }
         })
-    }, [idAccount]);
+    }, [account]);
 
     const { setToastMessage } = useToastMessage();
 

@@ -1,9 +1,10 @@
 import classNames from 'classnames/bind';
 import styles from './Login.module.css';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToastMessage } from '../../Context/ToastMessageContext';
 import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
+import * as http from '~/utils/http'
 
 const cx = classNames.bind(styles)
 
@@ -16,11 +17,13 @@ function Register() {
     const [fullName, setFullName] = useState('')
     const [idUser, setIdUser] = useState('')
     const [password, setPassword] = useState('')
+    const [code, setCode] = useState('')
     const [isDataReady, setIsDataReady] = useState(false)
 
     const dataAccount = {
         account: username,
-        password: password
+        password: password,
+        code: code,
     }
 
     const navigate = useNavigate()
@@ -209,6 +212,7 @@ function Register() {
                 Validator.isRequired('#'+cx('id'), 'Vui lòng nhập Id'),
                 Validator.isRequired('#'+cx('email'), 'Vui lòng nhập Email'),
                 Validator.isEmail('#'+cx('email')),
+                Validator.isRequired('#'+cx('code'), 'Vui lòng nhập mã xác nhận Email'),
                 Validator.isRequired('#'+cx('password'), 'Vui lòng nhập Password'),
                 Validator.minLength('#'+cx('password'), 8),
                 Validator.isRequired('#'+cx('password_confirmation'), 'Vui lòng nhập lại Password'),
@@ -221,6 +225,7 @@ function Register() {
                 setPassword(data.password)
                 setIdUser(data.id)
                 setFullName(data.fullname)
+                setCode(data.code)
                 setIsDataReady(true)
             }
         })
@@ -233,29 +238,42 @@ function Register() {
     }, [isDataReady])
 
     function registerAccount() {
-        fetch('http://localhost:8080/api/accounts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dataAccount),
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Unauthenticated');
-            }
-            return res.json()
-        })
-        .then(res => {
-            if (res.code === 1) {
-                createUser(res.result.idAccount);
-            }
+        http.post('api/accounts', dataAccount)
+        .then((res) => {
+            console.log(res)
+            createUser(res.result.idAccount);
             setIsDataReady(false);
         })
-        .catch(error => {
-            showToastError("Email đã tồn tại.");
+        .catch((error) => {
+            if (error.response.data.code === 1001) {
+                showToastError("Email đã tồn tại.");
+            }
+            else if (error.response.data.code === 1011) {
+                showToastError("Mã xác nhận chưa chính xác.");
+            }
+            else {
+                showToastError("Có lỗi.");
+            }
             setIsDataReady(false);
         });
+    }
+
+    const [email, setEmail] = useState('')
+    const messageInvalidEmail = useRef()
+
+    const verifyEmailGenerate = () => {
+        if (messageInvalidEmail.current.textContent === '' && email !== '') {
+            showToastInfo("Đang gửi mã xác thực đến email của bạn.")
+            http.post(`api/verify_email`, {
+                email: email,
+            })
+            .then((res) => {
+                showToastSuccess("Kiểm tra email của bạn để lấy mã xác thực.")
+            })
+        }
+        else {
+            showToastError("Email chưa nhập đúng định dạng.")
+        }
     }
 
     function createUser(idAccountUser) {
@@ -295,10 +313,10 @@ function Register() {
 
     const { setToastMessage } = useToastMessage();
 
-    function showToastSuccess() {
+    function showToastSuccess(message) {
         setToastMessage({
             title: "Thành công!",
-            message: "Bạn đã đăng ký tài khoản thành công.",
+            message: message ? message : "Bạn đã đăng ký tài khoản thành công.",
             type: "success",
             duration: 3000
         })
@@ -307,8 +325,17 @@ function Register() {
     function showToastError(message) {
         setToastMessage({
             title: "Thất bại!",
-            message: message,
+            message: message ? message : 'Lỗi',
             type: "error",
+            duration: 3000
+        })
+    }
+
+    function showToastInfo(message) {
+        setToastMessage({
+            title: "Thông báo!",
+            message: message ? message : 'Thông báo.',
+            type: "info",
             duration: 3000
         })
     }
@@ -337,7 +364,14 @@ function Register() {
 
                 <div className={cx("form-group")}>
                     <label htmlFor="email" className={cx("form-label")}>Email</label>
-                    <input id="email" name="email" type="text" placeholder="VD: email@domain.com" className={cx("form-control")} />
+                    <input id="email" name="email" type="text" placeholder="VD: email@domain.com" className={cx("form-control")} onChange={(e) => setEmail(e.target.value)} />
+                    <span className={cx("form-message")} ref={messageInvalidEmail}></span>
+                </div>
+
+                <div className={cx("form-group")}>
+                    <label htmlFor="code" className={cx("form-label")}>Mã xác nhận Email</label>
+                    <input id="code" name="code" type="text" placeholder="VD: 123456" className={cx("form-control")} />
+                    <span className={cx("send_code")} onClick={verifyEmailGenerate}>Gửi mã</span>
                     <span className={cx("form-message")}></span>
                 </div>
 

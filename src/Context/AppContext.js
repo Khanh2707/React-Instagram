@@ -12,6 +12,7 @@ export const AppProvider = ({ children }) => {
     const [genderUser, setGenderUser] = useState(null);
     const [avatar, setAvatar] = useState(null);
     const [idAccount, setIdAccount] = useState('')
+    const [account, setAccount] = useState('')
     const [roles, setRoles] = useState('')
     useEffect(() => {
         const getMyInfo = async () => {
@@ -24,6 +25,7 @@ export const AppProvider = ({ children }) => {
                 setGenderUser(res.result.user.gender)
 
                 setIdAccount(res.result.idAccount)
+                setAccount(res.result.account)
 
                 setRoles(res.result.roles[0].name)
                 console.log(res)
@@ -43,6 +45,7 @@ export const AppProvider = ({ children }) => {
             genderUser, setGenderUser,
             avatar, setAvatar,
             idAccount, setIdAccount,
+            account, setAccount,
             roles, setRoles,
         }}>
             {children}
