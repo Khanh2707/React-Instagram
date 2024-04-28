@@ -2,6 +2,11 @@
     width: 481px;
     border-radius: 16px;
     background-color: #262626;
+    display: none;
+}
+
+.modal__create_content.active {
+    display: block;
 }
 
 .modal__create_content-title {
@@ -55,4 +60,143 @@
 
 .modal__create_content-body__button_choose_file button:hover {
     background-color: #1877f2;
+}
+
+
+
+.crop_image {
+    width: 489px;
+    height: 532px;
+    border-radius: 12px;
+    background-color: #282828;
+    display: none;
+}
+
+.crop_image.active {
+    display: block;
+}
+
+
+.crop_image__header {
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(54, 54, 54);
+}
+
+.crop_image__header svg {
+    display: flex;
+    align-items: center;
+}
+
+
+.crop_image__back {
+    padding: 8px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+
+.crop_image__title span {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.crop_image__next {
+    padding: 0 16px;
+    user-select: none;
+}
+
+.crop_image__next span {
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: rgb(0, 149, 246);
+}
+
+.crop_image__next span:hover {
+    color: rgb(224, 241, 255);
+}
+
+
+.crop_image__image {
+    width: 489px;
+    height: 489px;
+    overflow: hidden;
+    position: relative;
+}
+
+.crop_image__image img {
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    object-fit: contain;
+}
+
+
+.crop_image__image__set_ratio {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+}
+
+
+.crop_image__image__set_ratio__select {
+    margin: 8px;
+    border-radius: 8px;
+    background-color: rgba(26, 26, 26, 0.8);
+    display: none;
+}
+
+.crop_image__image__set_ratio__select.active {
+    display: block;
+}
+
+.crop_image__image__set_ratio__select__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.crop_image__image__set_ratio__select__item:not(:nth-child(1)) {
+    border-top: 1px solid rgb(38, 38, 38);
+}
+
+.crop_image__image__set_ratio__select__item__text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    padding-left: 16px;
+}
+
+.crop_image__image__set_ratio__select__item__icon {
+    padding: 12px;
+}
+
+.crop_image__image__set_ratio__select__item__icon svg {
+    display: flex;
+    align-items: center;
+}
+
+
+.crop_image__image__set_ratio__icon {
+    width: 32px;
+    height: 32px;
+    margin: 8px;
+    margin-top: 16px;
+    padding: 8px;
+    border-radius: 50%;
+    z-index: 100;
+    cursor: pointer;
+    background-color: rgba(26, 26, 26, 0.8);
+}
+
+.crop_image__image__set_ratio__icon svg {
+    display: flex;
+    align-items: center;
 }

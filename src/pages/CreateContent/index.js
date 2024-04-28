@@ -1,12 +1,96 @@
 import classNames from 'classnames/bind';
 import styles from './CreateContent.module.css';
+import { useRef, useState } from 'react';
+import ImageCropper from '../ImageCropper';
 
 const cx = classNames.bind(styles)
 
 function CreateContent() {
+    const [image, setImage] = useState('')
+
+    const inputSelectMediaRef = useRef();
+
+    function handleClickSelectMedia() {
+        inputSelectMediaRef.current.click();
+    }
+
+    const modal__create_contentRef = useRef()
+    const crop_imageRef = useRef()
+
+    function handleSelectMedia(e) {
+        if (e.target.files && e.target.files.length > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(e.target.files[0]);
+            reader.onload = function(e) {
+                setImage(reader.result)
+            }
+        }
+
+        modal__create_contentRef.current.classList.remove(cx('active'))
+        crop_imageRef.current.classList.add(cx('active'))
+    }
+
+    const backToSelectMedia = () => {
+        setCurrentPage("choose-img");
+        setImage("");
+
+        modal__create_contentRef.current.classList.add(cx('active'))
+        crop_imageRef.current.classList.remove(cx('active'))
+    }
+
+    const crop_image__image__set_ratio__selectRef = useRef();
+
+    const handleClickSetRatioIcon = () => {
+        crop_image__image__set_ratio__selectRef.current.classList.toggle(cx('active'))
+    }
+
+    const [selectedRatio, setSelectedRatio] = useState(1 / 1);
+
+    const handleSelectRatio = (ratio) => {
+        setSelectedRatio(ratio);
+    }
+
+    const [isConfirmCrop, setIsConfirmCrop] = useState(false);
+
+    const [imgAfterCrop, setImgAfterCrop] = useState('');
+
+    const [currentPage, setCurrentPage] = useState("choose-img");
+
+    const onCropDone = (imgCroppedArea) => {
+        const canvasEle = document.createElement('canvas');
+        canvasEle.width = imgCroppedArea.width;
+        canvasEle.height = imgCroppedArea.height;
+
+        const context = canvasEle.getContext('2d');
+
+        let imageObj1 = new Image();
+        imageObj1.src = image;
+        imageObj1.onload = function() {
+            context.drawImage(
+                imageObj1,
+                imgCroppedArea.x,
+                imgCroppedArea.y,
+                imgCroppedArea.width,
+                imgCroppedArea.height,
+                0,
+                0,
+                imgCroppedArea.width,
+                imgCroppedArea.height
+            );
+
+            const dataURL = canvasEle.toDataURL('image/jpeg');
+
+            setImgAfterCrop(dataURL);
+
+            setCurrentPage("img-cropped")
+        }
+
+        setIsConfirmCrop(false)
+    }
 
     return (
-        <div className={cx("modal__create_content")}>
+        <>
+        <div className={cx("modal__create_content", "active")} ref={modal__create_contentRef}>
             <div className={cx("modal__create_content-title")}>
                 <span>Tạo bài viết mới</span>
             </div>
@@ -31,10 +115,70 @@ function CreateContent() {
                     <span>Kéo ảnh và video vào đây</span>
                 </div>
                 <div className={cx("modal__create_content-body__button_choose_file")}>
-                    <button><span>Chọn từ máy tính</span></button>
+                    <button onClick={handleClickSelectMedia} ><span>Chọn từ máy tính</span></button>
                 </div>
+                <input type='file' onChange={handleSelectMedia} ref={inputSelectMediaRef} style={{display: 'none'}} />
             </div>
         </div>
+        <div className={cx("crop_image")} ref={crop_imageRef}>
+            <div className={cx("crop_image__header")}>
+                <div className={cx("crop_image__back")} onClick={backToSelectMedia}>
+                    <svg aria-label="Quay lại" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Quay lại</title><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="2.909" x2="22.001" y1="12.004" y2="12.004"></line><polyline fill="none" points="9.276 4.726 2.001 12.004 9.276 19.274" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline></svg>
+                </div>
+                <div className={cx("crop_image__title")}>
+                    <span>Cắt</span>
+                </div>
+                <div className={cx("crop_image__next")} onClick={() => setIsConfirmCrop(true)}>
+                    <span>Tiếp</span>
+                </div>
+            </div>
+            <div className={cx("crop_image__image")}>
+            {currentPage === "choose-img" ? (
+                <>
+                <ImageCropper
+                    image={image}
+                    onCropDone={onCropDone}
+                    selectedRatio={selectedRatio}
+                    isConfirmCrop={isConfirmCrop}
+                />
+                <div className={cx("crop_image__image__set_ratio")}>
+                    <div className={cx("crop_image__image__set_ratio__select")} ref={crop_image__image__set_ratio__selectRef}>
+                        <div className={cx("crop_image__image__set_ratio__select__item")} onClick={() => handleSelectRatio(1 / 1)}>
+                            <div className={cx("crop_image__image__set_ratio__select__item__text")}>
+                                <span>1:1</span>
+                            </div>
+                            <div className={cx("crop_image__image__set_ratio__select__item__icon")}>
+                                <svg aria-label="Biểu tượng cắt theo khung hình vuông" className="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Biểu tượng cắt theo khung hình vuông</title><path d="M19 23H5a4.004 4.004 0 0 1-4-4V5a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v14a4.004 4.004 0 0 1-4 4ZM5 3a2.002 2.002 0 0 0-2 2v14a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V5a2.002 2.002 0 0 0-2-2Z"></path></svg>
+                            </div>
+                        </div>
+                        <div className={cx("crop_image__image__set_ratio__select__item")} onClick={() => handleSelectRatio(4 / 5)}>
+                            <div className={cx("crop_image__image__set_ratio__select__item__text")}>
+                                <span>4:5</span>
+                            </div>
+                            <div className={cx("crop_image__image__set_ratio__select__item__icon")}>
+                                <svg aria-label="Biểu tượng cắt theo khung hình dọc" className="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Biểu tượng cắt theo khung hình dọc</title><path d="M16 23H8a4.004 4.004 0 0 1-4-4V5a4.004 4.004 0 0 1 4-4h8a4.004 4.004 0 0 1 4 4v14a4.004 4.004 0 0 1-4 4ZM8 3a2.002 2.002 0 0 0-2 2v14a2.002 2.002 0 0 0 2 2h8a2.002 2.002 0 0 0 2-2V5a2.002 2.002 0 0 0-2-2Z"></path></svg>
+                            </div>
+                        </div>
+                        <div className={cx("crop_image__image__set_ratio__select__item")} onClick={() => handleSelectRatio(16 / 9)}>
+                            <div className={cx("crop_image__image__set_ratio__select__item__text")}>
+                                <span>16:9</span>
+                            </div>
+                            <div className={cx("crop_image__image__set_ratio__select__item__icon")}>
+                                <svg aria-label="Biểu tượng cắt theo khung hình ngang" className="x1lliihq x1n2onr6 x9bdzbf" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Biểu tượng cắt theo khung hình ngang</title><path d="M19 20H5a4.004 4.004 0 0 1-4-4V8a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v8a4.004 4.004 0 0 1-4 4ZM5 6a2.002 2.002 0 0 0-2 2v8a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V8a2.002 2.002 0 0 0-2-2Z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={cx("crop_image__image__set_ratio__icon")} onClick={handleClickSetRatioIcon}>
+                        <svg aria-label="Chọn kích thước cắt" className="x1lliihq x1n2onr6 x9bdzbf" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Chọn kích thước cắt</title><path d="M10 20H4v-6a1 1 0 0 0-2 0v7a1 1 0 0 0 1 1h7a1 1 0 0 0 0-2ZM20.999 2H14a1 1 0 0 0 0 2h5.999v6a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1Z"></path></svg>
+                    </div>
+                </div>
+                </>
+                ) : (
+                    <img src={imgAfterCrop} alt='' />
+                )}
+            </div>
+        </div>
+        </>
     )
 }
 
