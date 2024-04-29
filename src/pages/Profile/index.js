@@ -31,6 +31,8 @@ function Profile() {
         nameUser,
         descriptionUser,
         avatar, setAvatar,
+
+        isReloadPostProfile, setIsReloadPostProfile,
     } = useContext(AppContext)
 
 
@@ -128,6 +130,28 @@ function Profile() {
         // Truyền Component B vào modal
         openModal(<OptionsAvatar />);
     };
+
+
+    const [allPosts, setAllPosts] = useState([])
+
+    const getAllPosts = () => {
+        http.get(`api/posts/by_user/${idUser}`)
+        .then((res) => {
+            console.log(res);
+            setAllPosts(res.result)
+        })
+    }
+
+    useEffect(() => {
+        if (idUser !== '')
+            getAllPosts();
+    }, [idUser])
+
+    useEffect(() => {
+        if (isReloadPostProfile)
+            getAllPosts();
+        setIsReloadPostProfile(false)
+    }, [isReloadPostProfile])
 
     const { setToastMessage } = useToastMessage();
 
@@ -298,62 +322,29 @@ function Profile() {
             </div>
             <div className={cx("content_post_container_page_profile")}>
                 <div className={cx("content_post_container__pane", "active")} style={{ width: `${widthTabBar + 4}px` }}>
-                    <div className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
-                        <img src="https://scontent.cdninstagram.com/v/t39.30808-6/430818351_1034560898030450_5363521448821745273_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xNDI3eDE0Mjcuc2RyLmYzMDgwOCJ9&_nc_ht=scontent.cdninstagram.com&_nc_cat=1&_nc_ohc=wUG0gSfyfJsAb5hVvS_&edm=APs17CUAAAAA&ccb=7-5&ig_cache_key=MzMxNzcwOTkwMTI1NjkxNzE3OA%3D%3D.2-ccb7-5&oh=00_AfDdZx5VohMsOsg58RqPEuk_8ocbQWsueRxINay3rDeQTg&oe=6628AEAE&_nc_sid=10d13b"
-                            alt="" />
-                        <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
-                                <FontAwesomeIcon icon={faHeart} />
-                                <span>0</span>
+                    {userId === idUser ? (
+                    Array.isArray(allPosts) && allPosts.length > 0 ? (
+                        allPosts.map((res) => (
+                            <div key={res.idPost} className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
+                                {Array.isArray(res.mediaPosts) && res.mediaPosts.length > 0 && res.mediaPosts[0].url && <img src={res.mediaPosts[0].url} alt="" />}
+                                <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
+                                    <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
+                                        <FontAwesomeIcon icon={faHeart} />
+                                        <span>0</span>
+                                    </div>
+                                    <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
+                                        <FontAwesomeIcon icon={faComment} />
+                                        <span>0</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
-                                <FontAwesomeIcon icon={faComment} />
-                                <span>0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
-                        <img src="https://scontent.cdninstagram.com/v/t39.30808-6/366922313_18496898416056421_952713132011449003_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xNDQweDE3OTkuc2RyLmYzMDgwOCJ9&_nc_ht=scontent.cdninstagram.com&_nc_cat=101&_nc_ohc=n53fEqZR8ZgAb6qa-PK&edm=APs17CUAAAAA&ccb=7-5&ig_cache_key=MzE2ODAwNTkyMzg4MDA5NzU4Ng%3D%3D.2-ccb7-5&oh=00_AfCJsWxr6URi4F1_RxvFpDMx822lmrPipGrB8L0Cuk7KTA&oe=662AC6CA&_nc_sid=10d13b"
-                            alt="" />
-                        <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
-                                <FontAwesomeIcon icon={faHeart} />
-                                <span>0</span>
-                            </div>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
-                                <FontAwesomeIcon icon={faComment} />
-                                <span>0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
-                        <img src="https://scontent.cdninstagram.com/v/t39.30808-6/421120358_18527565418056421_4962572587029728222_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMDY1eDcxMC5zZHIuZjMwODA4In0&_nc_ht=scontent.cdninstagram.com&_nc_cat=101&_nc_ohc=yRkpg1zYzOQAb4gAlrp&edm=APs17CUAAAAA&ccb=7-5&ig_cache_key=MzI4Mzk0MjA4MjM0NTc4ODgwNw%3D%3D.2-ccb7-5&oh=00_AfA5gE_rQE4c0SiDndNyBVYfcyO3zIyoFFzWwprIU9lzGw&oe=662AB2A8&_nc_sid=10d13b"
-                            alt="" />
-                        <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
-                                <FontAwesomeIcon icon={faHeart} />
-                                <span>0</span>
-                            </div>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
-                                <FontAwesomeIcon icon={faComment} />
-                                <span>0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
-                        <img src="https://scontent.cdninstagram.com/v/t39.30808-6/434173184_18544005880056421_4321319277059046051_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMzc1eDEzNzUuc2RyLmYzMDgwOCJ9&_nc_ht=scontent.cdninstagram.com&_nc_cat=1&_nc_ohc=kmyIGCxY7_QAb5wAix3&edm=APs17CUAAAAA&ccb=7-5&ig_cache_key=MzMzNjA4Mzg4Mzc4OTYyNTY3OA%3D%3D.2-ccb7-5&oh=00_AfAgokXuT0271My8TiC--KbhPil_AwTrlmRtwJTxSZQ9HQ&oe=6628A980&_nc_sid=10d13b"
-                            alt="" />
-                        <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
-                                <FontAwesomeIcon icon={faHeart} />
-                                <span>0</span>
-                            </div>
-                            <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
-                                <FontAwesomeIcon icon={faComment} />
-                                <span>0</span>
-                            </div>
-                        </div>
-                    </div>
+                        ))
+                    ) : (
+                        <div>Không có bài viết.</div>
+                    )
+                    ) : (
+                        <></>
+                    )}
                 </div>
                 {/* <div className={cx("content_post_container__pane")}>
                     <div className={cx("content_post_container__pane__post_save")}>

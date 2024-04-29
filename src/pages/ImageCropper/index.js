@@ -1,9 +1,5 @@
-import classNames from 'classnames/bind';
-import styles from './ImageCropper.module.css';
 import { useEffect, useState } from 'react';
 import Cropper from 'react-easy-crop';
-
-const cx = classNames.bind(styles)
 
 function ImageCropper({ image, onCropDone, selectedRatio, isConfirmCrop }) {
     const [crop, setCrop] = useState({ x: 0, y: 0 });

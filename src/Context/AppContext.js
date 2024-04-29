@@ -5,6 +5,7 @@ export const AppContext = createContext({});
 
 export const AppProvider = ({ children }) => {
     const [isLoadingLine, setIsLoadingLine] = useState(false);
+    const [isReloadPostProfile, setIsReloadPostProfile] = useState(false);
 
     const [idUser, setIdUser] = useState('');
     const [nameUser, setNameUser] = useState('');
@@ -39,6 +40,8 @@ export const AppProvider = ({ children }) => {
     return (
         <AppContext.Provider value={{ 
             isLoadingLine, setIsLoadingLine,
+            isReloadPostProfile, setIsReloadPostProfile,
+            
             idUser, setIdUser,
             nameUser, setNameUser,
             descriptionUser, setDescriptionUser,

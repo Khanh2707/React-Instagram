@@ -28,19 +28,7 @@ function OptionsAvatar() {
         const formData = new FormData();
         formData.append('avatar', file);
 
-        fetch(`http://localhost:8080/api/users/avatar/${idUser}`, {
-            method: 'PUT',
-            body: formData,
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            }
-        })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
+        http.put(`api/users/avatar/${idUser}`, formData)
         .then((data) => {
             setAvatar(data.result.avatar)
             showToastSuccess()

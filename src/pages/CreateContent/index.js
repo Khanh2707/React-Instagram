@@ -1,11 +1,26 @@
 import classNames from 'classnames/bind';
 import styles from './CreateContent.module.css';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import ImageCropper from '../ImageCropper';
+import { AppContext } from '~/Context/AppContext';
+import { useToastMessage } from '../../Context/ToastMessageContext';
+import { useModal } from '../../Context/ModalContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
 function CreateContent() {
+    const {
+        idUser,
+        avatar,
+
+        isReloadPostProfile, setIsReloadPostProfile
+    } = useContext(AppContext)
+
+    const { closeModal } = useModal();
+
+    const [typeMedia, setTypeMedia] = useState()
+
     const [image, setImage] = useState('')
 
     const inputSelectMediaRef = useRef();
@@ -16,22 +31,25 @@ function CreateContent() {
 
     const modal__create_contentRef = useRef()
     const crop_imageRef = useRef()
+    const confirm_postRef = useRef()
 
     function handleSelectMedia(e) {
-        if (e.target.files && e.target.files.length > 0) {
+        if (e.target.files[0].type.includes('image')) {
+            setTypeMedia('image')
             const reader = new FileReader();
             reader.readAsDataURL(e.target.files[0]);
             reader.onload = function(e) {
                 setImage(reader.result)
             }
+            modal__create_contentRef.current.classList.remove(cx('active'))
+            crop_imageRef.current.classList.add(cx('active'))
         }
-
-        modal__create_contentRef.current.classList.remove(cx('active'))
-        crop_imageRef.current.classList.add(cx('active'))
+        else if (e.target.files[0].type.includes('video')) {
+            setTypeMedia('video')
+        }
     }
 
     const backToSelectMedia = () => {
-        setCurrentPage("choose-img");
         setImage("");
 
         modal__create_contentRef.current.classList.add(cx('active'))
@@ -54,38 +72,135 @@ function CreateContent() {
 
     const [imgAfterCrop, setImgAfterCrop] = useState('');
 
-    const [currentPage, setCurrentPage] = useState("choose-img");
+    const handleConfirmEdit = () => {
+        if (typeMedia === 'image')
+            setIsConfirmCrop(true)
+    }
 
     const onCropDone = (imgCroppedArea) => {
-        const canvasEle = document.createElement('canvas');
-        canvasEle.width = imgCroppedArea.width;
-        canvasEle.height = imgCroppedArea.height;
+        if (typeMedia === 'image') {
+            const canvasEle = document.createElement('canvas');
+            canvasEle.width = imgCroppedArea.width;
+            canvasEle.height = imgCroppedArea.height;
 
-        const context = canvasEle.getContext('2d');
+            const context = canvasEle.getContext('2d');
 
-        let imageObj1 = new Image();
-        imageObj1.src = image;
-        imageObj1.onload = function() {
-            context.drawImage(
-                imageObj1,
-                imgCroppedArea.x,
-                imgCroppedArea.y,
-                imgCroppedArea.width,
-                imgCroppedArea.height,
-                0,
-                0,
-                imgCroppedArea.width,
-                imgCroppedArea.height
-            );
+            let imageObj1 = new Image();
+            imageObj1.src = image;
+            imageObj1.onload = function() {
+                context.drawImage(
+                    imageObj1,
+                    imgCroppedArea.x,
+                    imgCroppedArea.y,
+                    imgCroppedArea.width,
+                    imgCroppedArea.height,
+                    0,
+                    0,
+                    imgCroppedArea.width,
+                    imgCroppedArea.height
+                );
 
-            const dataURL = canvasEle.toDataURL('image/jpeg');
+                const dataURL = canvasEle.toDataURL('image/jpeg');
 
-            setImgAfterCrop(dataURL);
+                setImgAfterCrop(dataURL);
+            }
 
-            setCurrentPage("img-cropped")
+            crop_imageRef.current.classList.remove(cx('active'))
+            confirm_postRef.current.classList.add(cx('active'))
         }
 
         setIsConfirmCrop(false)
+    }
+
+    const backToCropImage = () => {
+        crop_imageRef.current.classList.add(cx('active'))
+        confirm_postRef.current.classList.remove(cx('active'))
+    }
+
+    const [valueTextarea, setValueTextarea] = useState('')
+
+    const handleLimitInput = (e) => {
+        if (e.target.value.length <= 255) {
+            setValueTextarea(e.target.value)
+        }
+    }
+
+    const handlePreventInput = (e) => {
+        if (e.target.value.length >= 255 && e.key !== "Backspace") {
+            e.preventDefault();
+        }
+    }
+
+    function generateRandomFileName() {
+        // Tạo một chuỗi ngẫu nhiên từ timestamp để đảm bảo tên tệp không trùng lặp
+        const randomString = Math.random().toString(36).substring(7);
+        // Kết hợp chuỗi ngẫu nhiên với một hậu tố để tạo tên tệp
+        const fileName = `image_${randomString}`;
+        return fileName;
+    }
+    
+    function dataURLtoFile(dataURL) {
+        // Tạo một chuỗi base64 từ data URL bằng cách loại bỏ tiền tố (data:image/jpeg;base64,) và giải mã
+        const base64String = atob(dataURL.split(',')[1]);
+        const byteArray = new Uint8Array(base64String.length);
+        // Tạo một mảng byte từ chuỗi base64
+        for (let i = 0; i < base64String.length; i++) {
+            byteArray[i] = base64String.charCodeAt(i);
+        }
+        // Tạo một blob từ mảng byte
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        // Tạo một tên tệp ngẫu nhiên
+        const randomFileName = generateRandomFileName();
+        // Chuyển blob thành file bằng cách tạo một File mới với tên tệp ngẫu nhiên
+        const file = new File([blob], randomFileName, { type: 'image/jpeg' });
+        return file;
+    }
+
+    const handleSubmitPost = () => {
+        http.post('api/posts', {
+            caption: valueTextarea,
+            user: idUser
+        })
+        .then((res) => {
+            return res.result;
+        })
+        .then((res) => {
+            const formData = new FormData();
+            const file = dataURLtoFile(imgAfterCrop);
+            formData.append('fileMedia', file);
+            formData.append('type', 'image');
+            formData.append('post', res.idPost);
+            http.post(`api/media_posts`, formData)
+                .then((data) => {
+                    setIsReloadPostProfile(true)
+                    confirm_postRef.current.classList.remove(cx('active'))
+                    closeModal()
+                    showToastSuccess('Đăng tải bài viết thành công.')
+                })
+                .catch((error) => {
+                    showToastError('Đăng tải bài viết thất bại.')
+                });
+        })
+    }
+
+    const { setToastMessage } = useToastMessage();
+
+    function showToastSuccess(message) {
+        setToastMessage({
+            title: "Thành công!",
+            message: message ? message : "Update thông tin thành công.",
+            type: "success",
+            duration: 3000
+        })
+    }
+
+    function showToastError(message) {
+        setToastMessage({
+            title: "Thất bại!",
+            message: message ? message : "Có lỗi.",
+            type: "error",
+            duration: 3000
+        })
     }
 
     return (
@@ -112,7 +227,7 @@ function CreateContent() {
                     </svg>
                 </div>
                 <div className={cx("modal__create_content-body__text")}>
-                    <span>Kéo ảnh và video vào đây</span>
+                    <span>Chọn ảnh ở đây</span>
                 </div>
                 <div className={cx("modal__create_content-body__button_choose_file")}>
                     <button onClick={handleClickSelectMedia} ><span>Chọn từ máy tính</span></button>
@@ -128,13 +243,11 @@ function CreateContent() {
                 <div className={cx("crop_image__title")}>
                     <span>Cắt</span>
                 </div>
-                <div className={cx("crop_image__next")} onClick={() => setIsConfirmCrop(true)}>
+                <div className={cx("crop_image__next")} onClick={handleConfirmEdit}>
                     <span>Tiếp</span>
                 </div>
             </div>
             <div className={cx("crop_image__image")}>
-            {currentPage === "choose-img" ? (
-                <>
                 <ImageCropper
                     image={image}
                     onCropDone={onCropDone}
@@ -172,10 +285,47 @@ function CreateContent() {
                         <svg aria-label="Chọn kích thước cắt" className="x1lliihq x1n2onr6 x9bdzbf" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Chọn kích thước cắt</title><path d="M10 20H4v-6a1 1 0 0 0-2 0v7a1 1 0 0 0 1 1h7a1 1 0 0 0 0-2ZM20.999 2H14a1 1 0 0 0 0 2h5.999v6a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1Z"></path></svg>
                     </div>
                 </div>
-                </>
-                ) : (
+            </div>
+        </div>
+        <div className={cx("confirm_post")} ref={confirm_postRef}>
+            <div className={cx("confirm_post__header")}>
+                <div className={cx("confirm_post__back")} onClick={backToCropImage}>
+                    <svg aria-label="Quay lại" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Quay lại</title><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="2.909" x2="22.001" y1="12.004" y2="12.004"></line><polyline fill="none" points="9.276 4.726 2.001 12.004 9.276 19.274" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline></svg>
+                </div>
+                <div className={cx("confirm_post__title")}>
+                    <span>Tạo bài viết mới</span>
+                </div>
+                <div className={cx("confirm_post__submit")} onClick={handleSubmitPost}>
+                    <span>Chia sẻ</span>
+                </div>
+            </div>
+            <div className={cx("confirm_post__body")}>
+                <div className={cx("confirm_post__image")}>
                     <img src={imgAfterCrop} alt='' />
-                )}
+                </div>
+                <div className={cx("confirm_post__info_post")}>
+                    <div className={cx("confirm_post__user")}>
+                        <div className={cx("confirm_post__user__image")}>
+                            <img src={avatar} alt='' />
+                        </div>
+                        <div className={cx("confirm_post__user__id")}>
+                            <span>{idUser}</span>
+                        </div>
+                    </div>
+                    <div className={cx("confirm_post__caption")}>
+                        <div className={cx("confirm_post__caption__textarea")}>
+                            <textarea name="" id="" cols="30" rows="7" placeholder='Viết chú thích...' onChange={handleLimitInput} onKeyDown={handlePreventInput} ></textarea>
+                        </div>
+                        <div className={cx("confirm_post__caption__emoji_and_limit_textarea")}>
+                            <div className={cx("confirm_post__caption__emoji")} style={{display: 'none'}}>
+                                <svg aria-label="Biểu tượng cảm xúc" className="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="20" role="img" viewBox="0 0 24 24" width="20"><title>Biểu tượng cảm xúc</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
+                            </div>
+                            <div className={cx("confirm_post__caption__limit_textarea")}>
+                                <span>{valueTextarea.length ? valueTextarea.length : 0}/255</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         </>
