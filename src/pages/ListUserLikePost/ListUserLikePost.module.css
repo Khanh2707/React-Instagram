@@ -1,0 +1,59 @@
+.list_user_like_post__container {
+    width: 400px;
+    height: 399px;
+    border-radius: 12px;
+    background-color: #282828;
+}
+
+
+.list_user_like_post__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 43px;
+    border-bottom: 1px solid #383838;
+}
+
+.list_user_like_post__title span {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.list_user_like_post__list__container {
+    width: 100%;
+}
+
+.list_user_like_post__list__item {
+    display: flex;
+    padding: 8px 16px;
+}
+
+
+.list_user_like_post__list__item__avatar {
+    width: 44px;
+    height: 44px;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.list_user_like_post__list__item__avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform: scale(1);
+    object-fit: cover;
+}
+
+
+.list_user_like_post__list__item__id span {
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.list_user_like_post__list__item__name span {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(168, 168, 168);
+}

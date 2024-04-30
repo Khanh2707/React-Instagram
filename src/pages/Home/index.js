@@ -12,15 +12,9 @@ import { useModal } from '../../Context/ModalContext';
 const cx = classNames.bind(styles)
 
 function Home() {
-    const { openModal } = useModal();
-
-    const handleOpenModal = () => {
-        // Truyền Component B vào modal
-        openModal(<DetailPost />);
-    };
-
-
+    
     const { setIsLoadingLine } = useContext(AppContext);
+
     useEffect(() => {
         setIsLoadingLine(true);
     }, [])
@@ -81,7 +75,7 @@ function Home() {
     return (
         <div className={cx("main", "page-home")}>
             <div className={cx("container_post")} style={{ width: `${widthContainerPost}px` }}>
-                <div className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }} onClick={handleOpenModal}>
+                <div className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
                     <img src="https://scontent.cdninstagram.com/v/t39.30808-6/436953663_979711753513935_5112126198241591345_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4yMDQ4eDIwNDguc2RyLmYzMDgwOCJ9&_nc_ht=scontent.cdninstagram.com&_nc_cat=103&_nc_ohc=3Ar00JOD2jMAb5Onf2u&edm=APs17CUAAAAA&ccb=7-5&ig_cache_key=MzM0NjcyNjAzMzIzNzQ3Mjg1OQ%3D%3D.2-ccb7-5&oh=00_AfBNeukkopLa6jDm4j0p2QRztT50WpqRvEzkbk-xqUAhRA&oe=662AB9B6&_nc_sid=10d13b"
                         alt="" />
                     <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>

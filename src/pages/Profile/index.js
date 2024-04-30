@@ -3,13 +3,14 @@ import styles from './Profile.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import defaultAvatar from '../../assets/images/default_avatar.jpg'
-import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { AppContext } from '../../Context/AppContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as http from '~/utils/http';
 import { useToastMessage } from '../../Context/ToastMessageContext';
 import { useModal } from '../../Context/ModalContext';
 import OptionsAvatar from '../OptionsAvatar';
+import DetailPost from '../DetailPost'
 
 const cx = classNames.bind(styles)
 
@@ -131,6 +132,10 @@ function Profile() {
         openModal(<OptionsAvatar />);
     };
 
+    const handleOpenDetailPost = (idPost, idUser, avatar, idUserOther, captionPost, timeCreatePost) => {
+        openModal(<DetailPost idPost={idPost} idUser={idUser} avatar={avatar} idUserOther={idUserOther} captionPost={captionPost} timeCreatePost={timeCreatePost} />);
+    }
+
 
     const [allPosts, setAllPosts] = useState([])
 
@@ -152,6 +157,20 @@ function Profile() {
             getAllPosts();
         setIsReloadPostProfile(false)
     }, [isReloadPostProfile])
+
+    const [allPostsOtherUser, setAllPostsOtherUser] = useState()
+
+    const getAllPostsByOtherUser = () => {
+        http.get(`api/posts/by_user/${userId}`)
+        .then((res) => {
+            console.log(res);
+            setAllPostsOtherUser(res.result)
+        })
+    }
+
+    useEffect(() => {
+        getAllPostsByOtherUser()
+    }, [])
 
     const { setToastMessage } = useToastMessage();
 
@@ -323,27 +342,59 @@ function Profile() {
             <div className={cx("content_post_container_page_profile")}>
                 <div className={cx("content_post_container__pane", "active")} style={{ width: `${widthTabBar + 4}px` }}>
                     {userId === idUser ? (
-                    Array.isArray(allPosts) && allPosts.length > 0 ? (
-                        allPosts.map((res) => (
-                            <div key={res.idPost} className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }}>
-                                {Array.isArray(res.mediaPosts) && res.mediaPosts.length > 0 && res.mediaPosts[0].url && <img src={res.mediaPosts[0].url} alt="" />}
-                                <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
-                                    <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
-                                        <FontAwesomeIcon icon={faHeart} />
-                                        <span>0</span>
-                                    </div>
-                                    <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
-                                        <FontAwesomeIcon icon={faComment} />
-                                        <span>0</span>
+                        Array.isArray(allPosts) && allPosts.length > 0 ? (
+                            allPosts.map((res) => (
+                                <div key={res.idPost} className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }} onClick={() => handleOpenDetailPost(res.idPost, idUser, avatar, undefined, res.caption, res.dateTimeCreate)}>
+                                    {Array.isArray(res.mediaPosts) && res.mediaPosts.length > 0 && res.mediaPosts[0].url && <img src={res.mediaPosts[0].url} alt="" />}
+                                    <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
+                                        <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
+                                            <FontAwesomeIcon icon={faHeart} />
+                                            <span>0</span>
+                                        </div>
+                                        <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
+                                            <FontAwesomeIcon icon={faComment} />
+                                            <span>0</span>
+                                        </div>
                                     </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className={cx('no_post')}>
+                                <div className={cx('no_post__icon')}>
+                                    <FontAwesomeIcon icon={faCamera} />
+                                </div>
+                                <div className={cx('no_post__text')}>
+                                    <span>Chưa có bài viết</span>
+                                </div>
                             </div>
-                        ))
+                        )
                     ) : (
-                        <div>Không có bài viết.</div>
-                    )
-                    ) : (
-                        <></>
+                        Array.isArray(allPostsOtherUser) && allPostsOtherUser.length > 0 ? (
+                            allPostsOtherUser.map((res) => (
+                                <div key={res.idPost} className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }} onClick={() => handleOpenDetailPost(res.idPost, idUser, avatarUserOther, idUserOther, res.caption, res.dateTimeCreate)}>
+                                    {Array.isArray(res.mediaPosts) && res.mediaPosts.length > 0 && res.mediaPosts[0].url && <img src={res.mediaPosts[0].url} alt="" />}
+                                    <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
+                                        <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
+                                            <FontAwesomeIcon icon={faHeart} />
+                                            <span>0</span>
+                                        </div>
+                                        <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
+                                            <FontAwesomeIcon icon={faComment} />
+                                            <span>0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className={cx('no_post')}>
+                                <div className={cx('no_post__icon')}>
+                                    <FontAwesomeIcon icon={faCamera} />
+                                </div>
+                                <div className={cx('no_post__text')}>
+                                    <span>Chưa có bài viết</span>
+                                </div>
+                            </div>
+                        )
                     )}
                 </div>
                 {/* <div className={cx("content_post_container__pane")}>

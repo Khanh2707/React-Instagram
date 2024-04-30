@@ -1,20 +1,20 @@
 import classNames from 'classnames/bind';
 import styles from './Modal.module.css';
 import React from 'react';
-import { useModal } from '../../../../Context/ModalContext';
+import { useModalTwo } from '../../../../Context/ModalTwoContext';
 
 const cx = classNames.bind(styles)
 
-function Modal() {
-    const { isModalOpen, modalContent, closeModal } = useModal();
+function ModalTwo() {
+    const { isModalTwoOpen, modalTwoContent, closeModalTwo } = useModalTwo()
 
     return (
         <>
-            {isModalOpen &&
+            {isModalTwoOpen &&
                 <div className={cx("modal")}>
-                    <div className={cx("modal__overlay")} onClick={closeModal}>
+                    <div className={cx("modal__overlay")} onClick={closeModalTwo}>
                     </div>
-                    <div className={cx("modal__xmark")} onClick={closeModal}>
+                    <div className={cx("modal__xmark")} onClick={closeModalTwo}>
                         <svg aria-label="Đóng" className={cx("x1lliihq x1n2onr6 x9bdzbf")} fill="currentColor" height="18" role="img"
                             viewBox="0 0 24 24" width="18">
                             <title>Đóng</title>
@@ -25,7 +25,7 @@ function Modal() {
                         </svg>
                     </div>
                     <div className={cx("modal__body")}>
-                        {modalContent}
+                        {modalTwoContent}
                     </div>
                 </div>
             }
@@ -33,4 +33,4 @@ function Modal() {
     )
 }
 
-export default Modal;
+export default ModalTwo;

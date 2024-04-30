@@ -43,6 +43,7 @@
     width: 32px;
     height: 32px;
     cursor: pointer;
+    margin-top: 5px;
 }
 
 .detail_post__engagement__avatar img {
@@ -50,6 +51,7 @@
     height: 100%;
     transform: scale(1);
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .detail_post__engagement__name {
@@ -100,11 +102,31 @@
     font-weight: 400;
 }
 
+.detail_post__engagement__time_create_comment_and_option_comment {
+    display: flex;
+    align-items: center;
+}
+
 .detail_post__engagement__time_create_comment {
     font-size: 12px;
     font-weight: 400;
     color: rgb(168, 168, 168);
     user-select: none;
+}
+
+.detail_post__engagement__option_comment {
+    padding: 0 8px;
+    visibility: hidden;
+    height: 24px;
+}
+
+.detail_post__engagement__option_comment.active {
+    visibility: visible;
+}
+
+.detail_post__engagement__option_comment svg {
+    display: flex;
+    align-items: center;
 }
 
 
@@ -152,6 +174,7 @@
 
 .detail_post__engagement__total_like {
     padding: 0 16px;
+    cursor: pointer;
 }
 
 .detail_post__engagement__total_like span {
