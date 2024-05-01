@@ -6,6 +6,9 @@ import * as http from '~/utils/http';
 import { useModalTwo } from '../../Context/ModalTwoContext';
 import ListUserLikePost from '../ListUserLikePost';
 import OptionsComment from './OptionsComment';
+import OptionsPost from './OptionsPost';
+import { useModal } from '../../Context/ModalContext';
+import { useToastMessage } from '../../Context/ToastMessageContext';
 
 const cx = classNames.bind(styles)
 
@@ -78,14 +81,14 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
         openModalTwo(<ListUserLikePost idPost={idPost} />);
     };
 
+    const handleOpenOptionsPost = () => {
+        openModalTwo(<OptionsPost idPost={idPost} />);
+    };
+
     const [hoveredCommentIndex, setHoveredCommentIndex] = useState(null);
 
     const handleMouseEnterComment = (idCommentPost) => {
         setHoveredCommentIndex(idCommentPost);
-    };
-
-    const handleMouseLeaveComment = () => {
-        setHoveredCommentIndex(null);
     };
 
     const [listAllUserCommentPostByPost, setListAllUserCommentPostByPost] = useState([])
@@ -170,7 +173,7 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
                             <span>{idUserOther === undefined ? idUser : idUserOther}</span>
                         </div>
                     </div>
-                    <div className={cx("detail_post__engagement__options")}>
+                    <div className={cx("detail_post__engagement__options")} onClick={handleOpenOptionsPost}>
                         <svg aria-label="Tùy chọn khác" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tùy chọn khác</title><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
                     </div>
                 </div>
