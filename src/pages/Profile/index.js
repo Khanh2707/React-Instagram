@@ -172,6 +172,34 @@ function Profile() {
         getAllPostsByOtherUser()
     }, [])
 
+    const [quantityLike, setQuantityLike] = useState(0)
+    const [quantityComment, setQuantityComment] = useState(0)
+
+    const getCountUserLikeAndComment = (idPost) => {
+        http.get(`api/user_like_post/count_user/${idPost}`)
+        .then((res) => {
+            setQuantityLike(res.result)
+        })
+
+        http.get(`api/user_comment_post/count_user/${idPost}`)
+        .then((res) => {
+            setQuantityComment(res.result)
+        })
+    }
+
+    const [quantityPost, setQuantityPost] = useState(0)
+
+    const getCountPostByUser = () => {
+        http.get(`api/posts/count_post/${userId}`)
+        .then((res) => {
+            setQuantityPost(res.result)
+        })
+    }
+
+    useEffect(() => {
+        getCountPostByUser()
+    }, [userId])
+
     const { setToastMessage } = useToastMessage();
 
     function showToastSuccess(message) {
@@ -227,7 +255,7 @@ function Profile() {
                     <div className={cx("info_user-text__line2")}>
                         <div className={cx("info_user-text__amount", "info_user-text__amount_post")}>
                             <span className={cx("info_user-text__amount-number", "info_user-text__amount_post-number")}>
-                                4
+                                {quantityPost}
                             </span>
                             <span className={cx("info_user-text__amount-post", "info_user-text__amount_post-post")}>
                                 bài viết
@@ -346,14 +374,14 @@ function Profile() {
                             allPosts.map((res) => (
                                 <div key={res.idPost} className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }} onClick={() => handleOpenDetailPost(res.idPost, idUser, avatar, undefined, res.caption, res.dateTimeCreate)}>
                                     {Array.isArray(res.mediaPosts) && res.mediaPosts.length > 0 && res.mediaPosts[0].url && <img src={res.mediaPosts[0].url} alt="" />}
-                                    <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
+                                    <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }} onMouseEnter={() => getCountUserLikeAndComment(res.idPost)}>
                                         <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
                                             <FontAwesomeIcon icon={faHeart} />
-                                            <span>0</span>
+                                            <span>{quantityLike}</span>
                                         </div>
                                         <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
                                             <FontAwesomeIcon icon={faComment} />
-                                            <span>0</span>
+                                            <span>{quantityComment}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -373,14 +401,14 @@ function Profile() {
                             allPostsOtherUser.map((res) => (
                                 <div key={res.idPost} className={cx("post_no_detail")} style={{ width: `${width}px`, height: `${width}px` }} onClick={() => handleOpenDetailPost(res.idPost, idUser, avatarUserOther, idUserOther, res.caption, res.dateTimeCreate)}>
                                     {Array.isArray(res.mediaPosts) && res.mediaPosts.length > 0 && res.mediaPosts[0].url && <img src={res.mediaPosts[0].url} alt="" />}
-                                    <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }}>
+                                    <div className={cx("post_no_detail__hover")} style={{ width: `${width}px`, height: `${width}px` }} onMouseEnter={() => getCountUserLikeAndComment(res.idPost)}>
                                         <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-heart")}>
                                             <FontAwesomeIcon icon={faHeart} />
-                                            <span>0</span>
+                                            <span>{quantityLike}</span>
                                         </div>
                                         <div className={cx("post_no_detail__hover__li", "post_no_detail__hover__li-comment")}>
                                             <FontAwesomeIcon icon={faComment} />
-                                            <span>0</span>
+                                            <span>{quantityComment}</span>
                                         </div>
                                     </div>
                                 </div>

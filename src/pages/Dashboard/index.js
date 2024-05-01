@@ -237,26 +237,29 @@ function Dashboard() {
                                             )}
                                         </td>
                                         <td>
-                                            {res.logLockAccounts.length > 0 && (
-                                                <>
-                                                    {res.logLockAccounts.reduce((maxLockAccount, currentLockAccount) => {
-                                                        return currentLockAccount.idLogLockAccount > maxLockAccount.idLogLockAccount ? currentLockAccount : maxLockAccount;
-                                                    }, res.logLockAccounts[0]).stateLock === false ? (
-                                                        <button onClick={() => handleLockAccount(res.idAccount)}>
-                                                            <FontAwesomeIcon icon={faLock} />
-                                                        </button>
-                                                    ) : (
-                                                        <button onClick={() => handleUnLockAccount(res.idAccount)}>
-                                                            <FontAwesomeIcon icon={faUnlock} />
-                                                        </button>
-                                                    )}
-                                                </>
-                                            )}
-                                            {res.logLockAccounts.length <= 0 && (
-                                                <button onClick={() => handleLockAccount(res.idAccount)}>
-                                                    <FontAwesomeIcon icon={faLock} />
-                                                </button>
-                                            )}
+                                        {shouldDisplayDropdown && (
+                                            <>
+                                                {res.logLockAccounts.length > 0 ? (
+                                                    <>
+                                                        {res.logLockAccounts.reduce((maxLockAccount, currentLockAccount) => {
+                                                            return currentLockAccount.idLogLockAccount > maxLockAccount.idLogLockAccount ? currentLockAccount : maxLockAccount;
+                                                        }, res.logLockAccounts[0]).stateLock === false ? (
+                                                            <button onClick={() => handleLockAccount(res.idAccount)}>
+                                                                <FontAwesomeIcon icon={faLock} />
+                                                            </button>
+                                                        ) : (
+                                                            <button onClick={() => handleUnLockAccount(res.idAccount)}>
+                                                                <FontAwesomeIcon icon={faUnlock} />
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <button onClick={() => handleLockAccount(res.idAccount)}>
+                                                        <FontAwesomeIcon icon={faLock} />
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
                                         </td>
                                     </tr>
                                 )

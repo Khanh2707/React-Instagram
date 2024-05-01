@@ -57,6 +57,7 @@
 .detail_post__engagement__name {
     margin-left: 14px;
     margin-bottom: 3px;
+    cursor: pointer;
 }
 
 .detail_post__engagement__name span {
@@ -95,6 +96,7 @@
     font-size: 14px;
     font-weight: 600;
     margin-right: 4px;
+    cursor: pointer;
 }
 
 .detail_post__engagement__comment {
@@ -118,6 +120,7 @@
     padding: 0 8px;
     visibility: hidden;
     height: 24px;
+    cursor: pointer;
 }
 
 .detail_post__engagement__option_comment.active {

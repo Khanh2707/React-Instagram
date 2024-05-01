@@ -5,10 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 import * as http from '~/utils/http';
 import { useModalTwo } from '../../Context/ModalTwoContext';
 import ListUserLikePost from '../ListUserLikePost';
+import OptionsComment from './OptionsComment';
 
 const cx = classNames.bind(styles)
 
 function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCreatePost }) {
+    const timeCreatePost_Date = new Date(timeCreatePost)
 
     const [image, setImage] = useState('')
 
@@ -78,13 +80,31 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
 
     const [hoveredCommentIndex, setHoveredCommentIndex] = useState(null);
 
-    const handleMouseEnterComment = (idUser) => {
-        setHoveredCommentIndex(idUser);
+    const handleMouseEnterComment = (idCommentPost) => {
+        setHoveredCommentIndex(idCommentPost);
     };
 
     const handleMouseLeaveComment = () => {
         setHoveredCommentIndex(null);
-      };
+    };
+
+    const [listAllUserCommentPostByPost, setListAllUserCommentPostByPost] = useState([])
+
+    const getAllUserCommentPostByPost = () => {
+        http.get(`api/user_comment_post/by_post/${idPost}`)
+        .then((res) => {
+            console.log(res);
+            setListAllUserCommentPostByPost(res.result)
+        })
+    }
+
+    useEffect(() => {
+        getAllUserCommentPostByPost()
+    }, [])
+
+    const handleOpenOptionsComment = (idUser, idCommentPost) => {
+        openModalTwo(<OptionsComment idUser={idUser} idCommentPost={idCommentPost} idPost={idPost} getAllUserCommentPostByPost={getAllUserCommentPostByPost} />)
+    }
 
     const submitInputRef = useRef();
     const inputIputRef = useRef();
@@ -111,8 +131,22 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
 
         submitInputRef.current.classList.remove(cx('active'))
 
-        if (inputValue !== '')
-        console.log(inputValue);
+        if (inputValue !== '') {
+            http.post(`api/comment_post`, {
+                content: inputValue
+            })
+            .then((res) => {
+                http.post(`api/user_comment_post`, {
+                    id_user_user_comment_post: idUser,
+                    id_comment_post_user_comment_post: res.result.idCommentPost,
+                    id_post_user_comment_post: idPost
+                })
+                .then((res) => {
+                    console.log(res);
+                    setListAllUserCommentPostByPost(prevComments => [res.result, ...prevComments]);
+                })
+            })
+        }
     }
 
     function handleKeyDown(event) {
@@ -120,8 +154,6 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
             handleSubmitValue();
         }
     }
-
-    const targetDate = new Date(timeCreatePost)
 
     return (
         <div className={cx("container_detail_post")}>
@@ -131,10 +163,10 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
             <div className={cx("detail_post__engagement")}>
                 <div className={cx("detail_post__engagement__header")}>
                     <div className={cx("detail_post__engagement__avatar_and_name")}>
-                        <div className={cx("detail_post__engagement__avatar")}>
+                        <div className={cx("detail_post__engagement__avatar")} onClick={() => window.location.href = `/${idUserOther === undefined ? idUser : idUserOther}`}>
                             <img src={avatar === '' || avatar === null ? defaultAvatar : avatar} alt='' />
                         </div>
-                        <div className={cx("detail_post__engagement__name")}>
+                        <div className={cx("detail_post__engagement__name")} onClick={() => window.location.href = `/${idUserOther === undefined ? idUser : idUserOther}`}>
                             <span>{idUserOther === undefined ? idUser : idUserOther}</span>
                         </div>
                     </div>
@@ -145,17 +177,17 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
                 <div className={cx("detail_post__engagement__list_comment")}>
                     {/* caption */}
                     <div className={cx("detail_post__engagement__comment_container")}>
-                        <div className={cx("detail_post__engagement__avatar")}>
+                        <div className={cx("detail_post__engagement__avatar")} onClick={() => window.location.href = `/${idUserOther === undefined ? idUser : idUserOther}`}>
                             <img src={avatar === '' || avatar === null ? defaultAvatar : avatar} alt='' />
                         </div>
                         <div className={cx("detail_post__engagement__content_comment")}>
                             <div className={cx("detail_post__engagement__id_and_comment")}>
-                                <span className={cx("detail_post__engagement__id")}>{idUserOther === undefined ? idUser : idUserOther}</span>
+                                <span className={cx("detail_post__engagement__id")} onClick={() => window.location.href = `/${idUserOther === undefined ? idUser : idUserOther}`}>{idUserOther === undefined ? idUser : idUserOther}</span>
                                 <span className={cx("detail_post__engagement__comment")}>{captionPost}</span>
                             </div>
                             <div className={cx("detail_post__engagement__time_create_comment_and_option_comment")}>
                                 <span className={cx("detail_post__engagement__time_create_comment")}>
-                                    6 ngày
+                                    {timeCreatePost_Date.toLocaleString()}
                                 </span>
                                 <div className={cx("detail_post__engagement__option_comment")} style={{visibility: 'hidden'}}>
                                     
@@ -164,25 +196,29 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
                         </div>
                     </div>
                     {/* caption */}
-                    <div className={cx("detail_post__engagement__comment_container")} onMouseEnter={handleMouseEnterComment}>
-                        <div className={cx("detail_post__engagement__avatar")}>
-                            <img src={defaultAvatar} alt='' />
-                        </div>
-                        <div className={cx("detail_post__engagement__content_comment")}>
-                            <div className={cx("detail_post__engagement__id_and_comment")}>
-                                <span className={cx("detail_post__engagement__id")}>trang23_10</span>
-                                <span className={cx("detail_post__engagement__comment")}>Biển không cô đơn, người cô đơn là người ngắm biển 🌊</span>
-                            </div>
-                            <div className={cx("detail_post__engagement__time_create_comment_and_option_comment")}>
-                                <span className={cx("detail_post__engagement__time_create_comment")}>
-                                    6 ngày
-                                </span>
-                                <div className={cx("detail_post__engagement__option_comment")}>
-                                    <svg aria-label="Tùy chọn bình luận" className="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tùy chọn bình luận</title><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+                    {listAllUserCommentPostByPost.map((res) => {
+                        return (
+                            <div key={res.commentPost.idCommentPost} className={cx("detail_post__engagement__comment_container")} onMouseEnter={() => handleMouseEnterComment(res.commentPost.idCommentPost)}>
+                                <div className={cx("detail_post__engagement__avatar")} onClick={() => window.location.href = `/${res.user.idUser}`}>
+                                    <img src={(res.user.avatar === null || res.user.avatar === '') ? defaultAvatar : res.user.avatar} alt='' />
+                                </div>
+                                <div className={cx("detail_post__engagement__content_comment")}>
+                                    <div className={cx("detail_post__engagement__id_and_comment")}>
+                                        <span className={cx("detail_post__engagement__id")} onClick={() => window.location.href = `/${res.user.idUser}`}>{res.user.idUser}</span>
+                                        <span className={cx("detail_post__engagement__comment")}>{res.commentPost.content}</span>
+                                    </div>
+                                    <div className={cx("detail_post__engagement__time_create_comment_and_option_comment")}>
+                                        <span className={cx("detail_post__engagement__time_create_comment")}>
+                                            {new Date(res.commentPost.dateTimeComment).toLocaleString()}
+                                        </span>
+                                        <div className={cx("detail_post__engagement__option_comment")} style={{visibility: (hoveredCommentIndex === res.commentPost.idCommentPost) && (idUser === res.user.idUser || idUserOther === undefined) ? 'visible' : 'hidden'}} onClick={() => handleOpenOptionsComment(res.user.idUser, res.commentPost.idCommentPost)}>
+                                            <svg aria-label="Tùy chọn bình luận" className="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tùy chọn bình luận</title><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        )
+                    })}
                 </div>
                 <div className={cx("detail_post__engagement__button_engagement")}>
                     <div className={cx("detail_post__engagement__like")} style={{display: isLikePost === false ? 'flex' : 'none'}} onClick={handleLikePost}>
@@ -199,7 +235,7 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
                     <span>{quantityUser} lượt thích</span>
                 </div>
                 <div className={cx("detail_post__engagement__time_create")}>
-                    <span>{targetDate.toLocaleString()}</span>
+                    <span>{timeCreatePost_Date.toLocaleString()}</span>
                 </div>
                 <div className={cx("detail_post__engagement__footer")}>
                     <div className={cx("detail_post__engagement__icon")}>
