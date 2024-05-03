@@ -4,10 +4,70 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../Context/AppContext';
 import { useParams } from 'react-router-dom';
 import * as http from '~/utils/http';
+import {over} from 'stompjs';
+import SockJS from 'sockjs-client';
 
 const cx = classNames.bind(styles)
 
+var stompClient = null;
 function Message() {
+    const {
+        idUser,
+        quantityMessageNotCheck, setQuantityMessageNotCheck
+    } = useContext(AppContext)
+
+    const { params } = useParams();
+
+    const [userTargetMessage, setUserTargetMessage] = useState('')
+
+    const getUserById = (idUser) => {
+        http.get(`api/users/${idUser}`)
+        .then((res) => {
+            console.log(res);
+            setUserTargetMessage(res.result)
+        })
+    }
+
+    useEffect(() => {
+        if (params !== 'inbox')
+            getUserById(params)
+    }, [params])
+
+
+
+    const connect = () => {
+        let Sock = new SockJS('http://localhost:8080/ws');
+        stompClient = over(Sock);
+        stompClient.connect({}, onConnected, onError);
+    }
+
+    useEffect(() => {
+        if (idUser !== '')
+            connect()
+    }, [idUser])
+
+    const onConnected = () => {
+        stompClient.subscribe(`/user/${idUser}/private`, onPrivateMessage);
+    }
+
+    const onError = () => {
+
+    }
+
+    const onPrivateMessage = (payload) => {
+        console.log(payload)
+        var payloadData = JSON.parse(payload.body);
+        getMessagesWithOtherUser(payloadData.senderName, payloadData.receiverName)
+        getRecentUserMessagesWithOtherUsers()
+        getQuantityMessageNotCheck()
+    }
+
+
+
+
+
+
+
     const { setIsLoadingLine } = useContext(AppContext);
     useEffect(() => {
         setIsLoadingLine(true);
@@ -22,13 +82,6 @@ function Message() {
     useEffect(() => {
         document.title = 'Tin nhắn';
     }, [])
-
-    const {
-        idUser,
-        quantityMessageNotCheck, setQuantityMessageNotCheck
-    } = useContext(AppContext)
-
-    const { params } = useParams();
 
     
     const [inputValue, setInputValue] = useState('')
@@ -56,6 +109,8 @@ function Message() {
         setInputValue('')
         submitInputRef.current.style.display = 'none'
 
+        updateMessageIsCheck(userTargetMessage.idUser, idUser)
+
         if (idUser !== '') {
             http.post(`api/user_message`, {
                 message: inputValue,
@@ -63,8 +118,16 @@ function Message() {
                 user2: userTargetMessage.idUser,
             })
             .then((res) => {
-                getRecentUserMessagesWithOtherUsers()
                 getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
+
+                if (stompClient) {
+                    var chatMessage = {
+                        senderName: idUser,
+                        receiverName: userTargetMessage.idUser,
+                        message: inputValue
+                    }
+                    stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+                }
             })
         }
     }
@@ -128,25 +191,11 @@ function Message() {
         })
     }
 
-    const [userTargetMessage, setUserTargetMessage] = useState('')
-
-    const getUserById = (idUser) => {
-        http.get(`api/users/${idUser}`)
-        .then((res) => {
-            console.log(res);
-            setUserTargetMessage(res.result)
-        })
-    }
-
-    useEffect(() => {
-        if (params !== 'inbox')
-            getUserById(params)
-    }, [params])
-
     useEffect(() => {
         if (params !== 'inbox' && idUser !== '') {
             getMessagesWithOtherUser(idUser, params)
             activeDetailInbox()
+            updateMessageIsCheck(idUser, params)
         }
     }, [idUser])
 
@@ -154,7 +203,15 @@ function Message() {
         http.del(`api/user_message/${idUserMessage}`)
         .then((res) => {
             getRecentUserMessagesWithOtherUsers()
-                getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
+            getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
+            if (stompClient) {
+                var chatMessage = {
+                    senderName: idUser,
+                    receiverName: userTargetMessage.idUser,
+                    message: inputValue
+                }
+                stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+            }
         })
     }
 

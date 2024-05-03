@@ -202,7 +202,10 @@ function Sidebar() {
     }
 
     function handleRouterPageMessage() {
-        navigate('/message/inbox')
+        if (!currentPath.startsWith('/message/'))
+            navigate('/message/inbox')
+        else
+            navMessageRef.current.click()
     }
 
     function handleRouterPageProfile() {
@@ -223,6 +226,9 @@ function Sidebar() {
             navHomeRef.current.click()
         }
         else if (currentPath === '/message/inbox') {
+            navMessageRef.current.click()
+        }
+        else if (currentPath.startsWith('/message/')) {
             navMessageRef.current.click()
         }
         else if (currentPath === `/${idUser}`) {
