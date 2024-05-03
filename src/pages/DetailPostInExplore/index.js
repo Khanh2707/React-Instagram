@@ -131,12 +131,6 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
         }
     }
 
-    function handleKeyDown(event) {
-        if (event.key === 'Enter' && inputValue !== '') {
-            handleSubmitValue();
-        }
-    }
-
 
     function handleSubmitValue() {
         setInputValue('')

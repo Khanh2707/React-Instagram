@@ -1,7 +1,9 @@
 import classNames from 'classnames/bind';
 import styles from './Message.module.css';
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../Context/AppContext';
+import { useParams } from 'react-router-dom';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
@@ -21,94 +23,133 @@ function Message() {
         document.title = 'Tin nhắn';
     }, [])
 
-    const detail_inbox__footer__input_inbox__inputRef = useRef()
+    const {
+        idUser
+    } = useContext(AppContext)
 
-    function eventInputInbox() {
-        const detail_inbox__footer__input_inbox__input = detail_inbox__footer__input_inbox__inputRef.current
-        const detail_inbox__footer__input_inbox__icon_option__group_right = document.querySelector('.'+cx('detail_inbox__footer__input_inbox__icon_option__group_right'));
-        const detail_inbox__footer__input_inbox__button_submit = document.querySelector('.'+cx('detail_inbox__footer__input_inbox__button_submit'));
+    const { params } = useParams();
 
-        var valueInput = null;
+    
+    const [inputValue, setInputValue] = useState('')
 
-        detail_inbox__footer__input_inbox__input.addEventListener('input', function (event) {
-            checkEmptyInput();
-            valueInput = event.target.value;
-        });
+    const submitInputRef = useRef()
 
-        detail_inbox__footer__input_inbox__button_submit.addEventListener('click', function () {
-            console.log(valueInput);
-            clearInput();
-            checkEmptyInput()
-        });
+    const handleEventInput = (e) => {
+        setInputValue(e.target.value)
 
-        detail_inbox__footer__input_inbox__input.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter' && detail_inbox__footer__input_inbox__input.value.length > 0) {
-                console.log(valueInput);
-                clearInput();
-                checkEmptyInput()
-            }
-        });
-
-
-        function clearInput() {
-            detail_inbox__footer__input_inbox__input.value = '';
+        if (e.target.value !== '') {
+            submitInputRef.current.style.display = 'block'
         }
-
-
-        function checkEmptyInput() {
-            if (detail_inbox__footer__input_inbox__input.value.length > 0) {
-                detail_inbox__footer__input_inbox__icon_option__group_right.style.display = 'none';
-                detail_inbox__footer__input_inbox__button_submit.style.display = 'block';
-            }
-            else {
-                detail_inbox__footer__input_inbox__icon_option__group_right.style.display = 'flex';
-                detail_inbox__footer__input_inbox__button_submit.style.display = 'none';
-            }
+        else {
+            submitInputRef.current.style.display = 'none'
         }
     }
 
-    function eventListenerListUserInbox() {
-        const list_inbox__content__ul__li = document.querySelectorAll('.'+cx('list_inbox__content__ul__li'));
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && inputValue !== '') {
+            handleSubmitMessage();
+        }
+    }
 
-        list_inbox__content__ul__li.forEach((item) => {
-            let not_select_inbox = document.querySelector('.'+cx('not_select_inbox'));
-            let detail_inbox = document.querySelector('.'+cx('detail_inbox'));
+    const handleSubmitMessage = () => {
+        setInputValue('')
+        submitInputRef.current.style.display = 'none'
 
-            let inbox_has_been_no_read = item.querySelector('.'+cx('list_inbox__content__ul__li-inbox_has_been_no_read'));
-            let icon_notification_new_message = item.querySelector('.'+cx('list_inbox__content__ul__li-icon_notification_new_message'));
-            if (inbox_has_been_no_read) {
-                icon_notification_new_message.classList.add(cx('active'));
-            }
-            item.addEventListener('click', function() {
-                list_inbox__content__ul__li.forEach((childItem) => {
-                    if (childItem.classList.contains(cx('active'))) {
-                        childItem.classList.remove(cx('active'));
-                    }
-                })
-                
-                if (inbox_has_been_no_read) {
-                    inbox_has_been_no_read.classList.remove(cx('list_inbox__content__ul__li-inbox_has_been_no_read'));
-                    inbox_has_been_no_read.classList.add(cx('list_inbox__content__ul__li-inbox_has_been_read'));
-                    icon_notification_new_message.classList.remove(cx('active'));
-                }
-                item.classList.add(cx('active'));
-                not_select_inbox.style.display = 'none';
-                detail_inbox.classList.add(cx('active'));
-            });
-        });
+        if (idUser !== '') {
+            http.post(`api/user_message`, {
+                message: inputValue,
+                user1: idUser,
+                user2: userTargetMessage.idUser,
+            })
+            .then((res) => {
+                getRecentUserMessagesWithOtherUsers()
+                getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
+            })
+        }
+    }
+
+    const [recentUserMessagesWithOtherUsers, setRecentUserMessagesWithOtherUsers] = useState([])
+    
+    const getRecentUserMessagesWithOtherUsers = () => {
+        http.get(`api/user_message/all_latest_message_by_user_1/${idUser}`)
+        .then((res) => {
+            setRecentUserMessagesWithOtherUsers(res.result)
+        })
     }
 
     useEffect(() => {
-        eventInputInbox()
-        eventListenerListUserInbox()
-    }, [])
+        if (idUser !== '')
+            getRecentUserMessagesWithOtherUsers()
+    }, [idUser])
+
+    const activeDetailInbox = () => {
+        not_select_inboxRef.current.style.display = 'none'
+        detail_inboxRef.current.classList.add(cx('active'))
+    }
+
+
+    const not_select_inboxRef = useRef()
+    const detail_inboxRef = useRef()
+
+    const [activeItemMessage, setActiveItemMessage] = useState(null);
+    const [hoveredMessage, setHoveredMessage] = useState(null)
+    const [isOptionsMessageCLicked, setIsOptionsMessageClicked] = useState(null)
+    const [activeOptionsMessage, setActiveOptionsMessage] = useState(null)
+
+    const [messagesWithOtherUser, setMessagesWithOtherUser] = useState([])
+
+    const handleClickItemMessage = (idUserMessage, idUser1, idUser2) => {
+        getMessagesWithOtherUser(idUser1, idUser2)
+        setActiveItemMessage(idUserMessage)
+        getUserById(idUser === idUser1 ? idUser2 : idUser1)
+        window.history.pushState({}, "", idUser === idUser1 ? idUser2 : idUser1)
+        activeDetailInbox()
+    }
+
+    const getMessagesWithOtherUser = (idUser1, idUser2) => {
+        http.get(`api/user_message/${idUser1}/${idUser2}`)
+        .then((res) => {
+            console.log(res)
+            setMessagesWithOtherUser(res.result)
+        })
+    }
+
+    const [userTargetMessage, setUserTargetMessage] = useState('')
+
+    const getUserById = (idUser) => {
+        http.get(`api/users/${idUser}`)
+        .then((res) => {
+            console.log(res);
+            setUserTargetMessage(res.result)
+        })
+    }
+
+    useEffect(() => {
+        if (params !== 'inbox')
+            getUserById(params)
+    }, [params])
+
+    useEffect(() => {
+        if (params !== 'inbox' && idUser !== '') {
+            getMessagesWithOtherUser(idUser, params)
+            activeDetailInbox()
+        }
+    }, [idUser])
+
+    const recallMessage = (idUserMessage) => {
+        http.del(`api/user_message/${idUserMessage}`)
+        .then((res) => {
+            getRecentUserMessagesWithOtherUsers()
+                getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
+        })
+    }
 
     return (
         <div className={cx("main", "page-message")}>
             <div className={cx("list_inbox")}>
                 <div className={cx("list_inbox__name_user_and_new_inbox")}>
                     <div className={cx("list_inbox__name_user")}>
-                        <span>tp_khanh_</span>
+                        <span>{idUser}</span>
                     </div>
                     {/* <div className={cx("list_inbox__new_inbox")}>
                         <svg aria-label="Tin nhắn mới" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="24"
@@ -131,297 +172,43 @@ function Message() {
                 </div>
                 <div className={cx("list_inbox__content")}>
                     <ul>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_no_read")}>Chu đã gửi 1
-                                        ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_no_read")}>Hàng SALE mẫu này còn rất ít và lượng đơn đặt mẫu này rất đông. B mua hàng thì nhắn TÊN + SĐT+ ĐỊA CHỈ cụ thể để shop tạo đơn và send hàng nha^^</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
-                        <li className={cx("list_inbox__content__ul__li")}>
-                            <div className={cx("list_inbox__content__ul__li-img")}>
-                                <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                    alt="" />
-                                <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
-                                <div className={cx("list_inbox__content__ul__li-name_user")}>
-                                    <span>Chu Thụy Điển</span>
-                                </div>
-                                <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                    <span className={cx("list_inbox__content__ul__li-inbox_has_been_read")}>Chu đã gửi 1 ảnh.</span>
-                                    <span className={cx("list_inbox__content__ul__li-time_inbox")}> · 3 giờ</span>
-                                </div>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
-                                <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
-                                    height="15" role="img" viewBox="0 0 24 24" width="15">
-                                    <title>Đã tắt tiếng</title>
-                                    <path
-                                        d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div className={cx("list_inbox__content__ul__li-icon_notification_new_message")}></div>
-                        </li>
+                        {recentUserMessagesWithOtherUsers.slice().reverse().map((res) => {
+                            const isActive = activeItemMessage === res.idUserMessage;
+
+                            return (
+                                <li key={res.idUserMessage} className={cx("list_inbox__content__ul__li", isActive ? "active" : "")} onClick={() => handleClickItemMessage(res.idUserMessage, res.user1.idUser, res.user2.idUser)}>
+                                    <div className={cx("list_inbox__content__ul__li-img")}>
+                                        <img src={idUser === res.user1.idUser ? res.user2.avatar : res.user1.avatar} alt="" />
+                                        <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
+                                    </div>
+                                    <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
+                                        <div className={cx("list_inbox__content__ul__li-name_user")}>
+                                            <span>{idUser === res.user1.idUser ? res.user2.name : res.user1.name}</span>
+                                        </div>
+                                        <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
+                                            <span className={cx((idUser === res.user1.idUser) ? "list_inbox__content__ul__li-inbox_has_been_read" : "list_inbox__content__ul__li-inbox_has_been_no_read")}>
+                                                {res.message}
+                                            </span>
+                                            {/* <span className={cx("list_inbox__content__ul__li-time_inbox")}> · {new Date(res.dateTimeMessage).toLocaleString()}</span> */}
+                                        </div>
+                                    </div>
+                                    <div className={cx("list_inbox__content__ul__li-icon_turn_off_notification_message")}>
+                                        <svg aria-label="Đã tắt tiếng" className={cx("x1lliihq x1n2onr6 x1roi4f4")} fill="currentColor"
+                                            height="15" role="img" viewBox="0 0 24 24" width="15">
+                                            <title>Đã tắt tiếng</title>
+                                            <path
+                                                d="M15.209 18.294a1 1 0 0 0-.707-.293H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.34 8.34 0 0 0 1.093-4.174c0-.159.005-.316.017-.471a1 1 0 1 0-1.994-.15 8.093 8.093 0 0 0-.023.63 6.341 6.341 0 0 1-.83 3.175l-.47.822a4.001 4.001 0 0 0 3.477 5.983h1.944a4 4 0 0 0 7.827-.382 1 1 0 0 0-.282-.86Zm-3.207 2.708a2 2 0 0 1-1.732-1.001h3.463a2.017 2.017 0 0 1-1.731 1.001Zm11.205.291-2.521-2.521a4.04 4.04 0 0 0 .976-1.629 3.957 3.957 0 0 0-.356-3.123l-.484-.853A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.972 3.972 0 0 0-6.51.002 8.011 8.011 0 0 0-2.438 1.697L2.707.793a1 1 0 0 0-1.414 1.414l20.5 20.5a1 1 0 0 0 1.414-1.414Zm-3.46-4.728a2.042 2.042 0 0 1-.468.8L7.72 5.805a6.004 6.004 0 0 1 2.068-1.377.998.998 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.975 1.975 0 0 1 .181 1.558Z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div className={cx("list_inbox__content__ul__li-icon_notification_new_message", (idUser !== res.user1.idUser ? "active" : ""))}></div>
+                                </li>
+                            )
+                        })}
                     </ul>
                 </div>
             </div>
-            <div className={cx("not_select_inbox")}>
+            <div className={cx("not_select_inbox")} ref={not_select_inboxRef}>
                 <div className={cx("not_select_inbox__svg")}>
                     <svg aria-label="" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="96" role="img"
                         viewBox="0 0 96 96" width="96">
@@ -432,26 +219,25 @@ function Message() {
                     </svg>
                 </div>
                 <span className={cx("not_select_inbox__title")}>Tin nhắn của bạn</span>
-                <span className={cx("not_select_inbox__describe")}>Gửi ảnh và tin nhắn riêng tư cho bạn bè</span>
+                <span className={cx("not_select_inbox__describe")}>Gửi tin nhắn riêng tư cho bạn bè</span>
                 {/* <div className={cx("not_select_inbox__button")}>
                     <span>Gửi tin nhắn</span>
                 </div> */}
             </div>
-            <div className={cx("detail_inbox")}>
+            <div className={cx("detail_inbox")} ref={detail_inboxRef}>
                 <div className={cx("detail_inbox__header")}>
                     <div className={cx("detail_inbox__header__user")}>
-                        <div className={cx("detail_inbox__header__user-img")}>
-                            <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
-                                alt="" />
+                        <div className={cx("detail_inbox__header__user-img")} onClick={() => window.location.href = `/${userTargetMessage.idUser}`}>
+                            <img src={userTargetMessage.avatar} alt="" />
                             <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
                         </div>
                         <div className={cx("detail_inbox__header__user-name_user_and_active_state")}>
-                            <div className={cx("detail_inbox__header__user-name_user")}>
-                                <span>Chu Thụy Điển</span>
+                            <div className={cx("detail_inbox__header__user-name_user")} onClick={() => window.location.href = `/${userTargetMessage.idUser}`}>
+                                <span>{userTargetMessage.name}</span>
                             </div>
-                            <div className={cx("detail_inbox__header__user-active_state")}>
+                            {/* <div className={cx("detail_inbox__header__user-active_state")}>
                                 <span>Hoạt động 33 phút trước</span>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     {/* <div className={cx("detail_inbox__header__icon_option")}>
@@ -492,18 +278,62 @@ function Message() {
                     </div> */}
                 </div>
                 <div className={cx("detail_inbox__body")}>
-                    <div className={cx("detail_inbox__body_wrapper")}>
-                        <div className={cx("detail_inbox__body__time_message")}>
+                    <div className={cx("detail_inbox__body__message__container")}>
+                        {/* <div className={cx("detail_inbox__body__time_message")}>
                             <span className={cx("detail_inbox__body__time_message-day_of_week")}>T3</span>
                             <span className={cx("detail_inbox__body__time_message-hour_and_minute")}>18:03</span>
-                        </div>
-
-                        .detail_inbox__body__
+                        </div> */}
+                        {messagesWithOtherUser.slice().reverse().map((res) => {
+                            if (res.user1.idUser === idUser) {
+                                return (
+                                    <div key={res.idUserMessage} className={cx("detail_inbox__body__message__item")} onMouseEnter={() => isOptionsMessageCLicked === null && setHoveredMessage(res.idUserMessage)}>
+                                        <div className={cx("detail_inbox__body__message__item__message", "detail_inbox__body__message__item__message-me")}>
+                                            <span>{res.message}</span>
+                                            <div className={cx("detail_inbox__body__message__item__options_message", hoveredMessage === res.idUserMessage ? "active" : "")} onClick={() => {
+                                                                                                                                                                                if (isOptionsMessageCLicked === null) {      
+                                                                                                                                                                                    setActiveOptionsMessage(res.idUserMessage)
+                                                                                                                                                                                    setIsOptionsMessageClicked(res.idUserMessage)
+                                                                                                                                                                                }
+                                                                                                                                                                                else {
+                                                                                                                                                                                    setActiveOptionsMessage(null)
+                                                                                                                                                                                    setIsOptionsMessageClicked(null)
+                                                                                                                                                                                }
+                                                                                                                                                                            }}>
+                                                <svg aria-label="Xem thêm" className="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Xem thêm</title><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="6" r="1.5"></circle><circle cx="12" cy="18" r="1.5"></circle></svg>
+                                                <div className={cx("detail_inbox__body__message__item__options_message__container", activeOptionsMessage === res.idUserMessage ? "active" : "")} onClick={(e) => {
+                                                                                                                                                                                                    e.stopPropagation()
+                                                                                                                                                                                                }}>
+                                                    <div className={cx("detail_inbox__body__message__item__options_message__item", "detail_inbox__body__message__item__options_message__item-time")}>
+                                                        <span>{new Date(res.dateTimeMessage).toLocaleString()}</span>
+                                                    </div>
+                                                    <div className={cx("detail_inbox__body__message__item__options_message__item", "detail_inbox__body__message__item__options_message__item-recall")} onClick={() => {
+                                                                                                                                                                                                            setIsOptionsMessageClicked(null)
+                                                                                                                                                                                                            recallMessage(res.idUserMessage)
+                                                                                                                                                                                                        }}>
+                                                        <span>Thu hồi</span>
+                                                        <svg aria-label="Thu hồi" className="x1lliihq x1n2onr6 xkmlbd1" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Thu hồi</title><path d="M12 .5C5.659.5.5 5.66.5 12S5.659 23.5 12 23.5c6.34 0 11.5-5.16 11.5-11.5S18.34.5 12 .5Zm0 21c-5.238 0-9.5-4.262-9.5-9.5S6.762 2.5 12 2.5s9.5 4.262 9.5 9.5-4.262 9.5-9.5 9.5Z"></path><path d="M14.5 10H9.414l1.293-1.293a1 1 0 1 0-1.414-1.414l-3 2.999a1 1 0 0 0 0 1.414l3 3.001a.997.997 0 0 0 1.414 0 1 1 0 0 0 0-1.414L9.415 12H14.5c.827 0 1.5.674 1.5 1.501 0 .395-.157.794-.431 1.096-.227.249-.508.403-.735.403L14 14.999a1 1 0 0 0-.001 2l.833.001h.002c.796 0 1.604-.386 2.215-1.059a3.625 3.625 0 0 0 .951-2.44C18 11.571 16.43 10 14.5 10Z"></path></svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            else {
+                                return (
+                                    <div key={res.idUserMessage} className={cx("detail_inbox__body__message__item")}>
+                                        <div className={cx("detail_inbox__body__message__item__message", "detail_inbox__body__message__item__message-you")}>
+                                            <span>{res.message}</span>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        })}
                     </div>
                 </div>
                 <div className={cx("detail_inbox__footer")}>
                     <div className={cx("detail_inbox__footer__input_inbox")}>
-                        <div className={cx("detail_inbox__footer__input_inbox__icon_option-select_emoji")}>
+                        {/* <div className={cx("detail_inbox__footer__input_inbox__icon_option-select_emoji")}>
                             <svg aria-label="Chọn biểu tượng cảm xúc" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor"
                                 height="24" role="img" viewBox="0 0 24 24" width="24">
                                 <title>Chọn biểu tượng cảm xúc</title>
@@ -511,9 +341,9 @@ function Message() {
                                     d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z">
                                 </path>
                             </svg>
-                        </div>
+                        </div> */}
                         <div className={cx("detail_inbox__footer__input_inbox__input")}>
-                            <input type="text" placeholder="Nhắn tin..." ref={detail_inbox__footer__input_inbox__inputRef} />
+                            <input type="text" placeholder="Nhắn tin..." value={inputValue} onChange={handleEventInput} onKeyDown={handleKeyDown} />
                         </div>
                         <div className={cx("detail_inbox__footer__input_inbox__icon_option__group_right")}>
                             {/* <div className={cx("detail_inbox__footer__input_inbox__icon_option-audio_clip")}>
@@ -532,7 +362,7 @@ function Message() {
                                     </path>
                                 </svg>
                             </div> */}
-                            <div className={cx("detail_inbox__footer__input_inbox__icon_option-add_photo_or_video")}>
+                            {/* <div className={cx("detail_inbox__footer__input_inbox__icon_option-add_photo_or_video")}>
                                 <svg aria-label="Thêm ảnh hoặc video" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor"
                                     height="24" role="img" viewBox="0 0 24 24" width="24">
                                     <title>Thêm ảnh hoặc video</title>
@@ -546,8 +376,8 @@ function Message() {
                                         fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
                                         strokeWidth="2"></path>
                                 </svg>
-                            </div>
-                            <div className={cx("detail_inbox__footer__input_inbox__icon_option-like")}>
+                            </div> */}
+                            {/* <div className={cx("detail_inbox__footer__input_inbox__icon_option-like")}>
                                 <svg aria-label="Thích" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor" height="24"
                                     role="img" viewBox="0 0 24 24" width="24">
                                     <title>Thích</title>
@@ -555,9 +385,9 @@ function Message() {
                                         d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z">
                                     </path>
                                 </svg>
-                            </div>
+                            </div> */}
                         </div>
-                        <div className={cx("detail_inbox__footer__input_inbox__button_submit")}>
+                        <div className={cx("detail_inbox__footer__input_inbox__button_submit")} onClick={handleSubmitMessage} ref={submitInputRef}>
                             <span>Gửi</span>
                         </div>
                     </div>

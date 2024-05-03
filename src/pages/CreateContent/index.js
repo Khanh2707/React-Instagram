@@ -14,7 +14,8 @@ function CreateContent() {
         idUser,
         avatar,
 
-        isReloadPostProfile, setIsReloadPostProfile
+        isReloadPostProfile, setIsReloadPostProfile,
+        isReloadQuantityPost, setIsReloadQuantityPost
     } = useContext(AppContext)
 
     const { closeModal } = useModal();
@@ -173,6 +174,7 @@ function CreateContent() {
             http.post(`api/media_posts`, formData)
                 .then((data) => {
                     setIsReloadPostProfile(true)
+                    setIsReloadQuantityPost(true)
                     confirm_postRef.current.classList.remove(cx('active'))
                     closeModal()
                     showToastSuccess('Đăng tải bài viết thành công.')

@@ -2,10 +2,13 @@ import classNames from 'classnames/bind';
 import styles from './SeeMoreInSideBar.module.css';
 import { useToastMessage } from '../../../../../../Context/ToastMessageContext';
 import * as http from '~/utils/http';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles)
 
 function SeeMoreInSideBar({ seeMoreInSidebar }) {
+    const navigate = useNavigate();
+
     const { setToastMessage } = useToastMessage();
 
     function showToastInfo() {
@@ -35,7 +38,7 @@ function SeeMoreInSideBar({ seeMoreInSidebar }) {
     return (
         <div className={cx("page-see_more", { 'active': seeMoreInSidebar })}>
             <ul>
-                <li>
+                <li onClick={() => navigate('/accounts/edit')}>
                     <svg aria-label="Cài đặt" className={cx("x1lliihq x1n2onr6 x5n08af")} fill="currentColor"
                         height="18" role="img" viewBox="0 0 24 24" width="18">
                         <title>Cài đặt</title>
@@ -59,10 +62,6 @@ function SeeMoreInSideBar({ seeMoreInSidebar }) {
                     <span>Báo cáo sự cố</span>
                 </li> */}
                 {/* <div className={cx("gap_large_in_see_more")}></div> */}
-                <div className={cx("gap_small_in_see_more")}></div>
-                <li>
-                    <span>Chuyển tài khoản</span>
-                </li>
                 <div className={cx("gap_small_in_see_more")}></div>
                 <li onClick={logout}>
                     <span>Đăng xuất</span>

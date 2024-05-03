@@ -175,7 +175,6 @@ function Sidebar() {
     }
 
     function handleAnimationSidebarWhenClickNavLevel2() {
-        if (window.location.pathname !== '/message') {
             const navigation__itemSpan = document.querySelectorAll('.' + cx('navigation__item-span'));
             navigation__itemSpan.forEach((item) => {
                 item.classList.toggle(cx('active'));
@@ -195,7 +194,6 @@ function Sidebar() {
                     navigation_bar.classList.add(cx('animationDisappearSideBar'));
                 }
             }
-        }
     }
 
     function handleRouterPageHome() {
@@ -203,7 +201,7 @@ function Sidebar() {
     }
 
     function handleRouterPageMessage() {
-        navigate('/message')
+        navigate('/message/inbox')
     }
 
     function handleRouterPageProfile() {
@@ -223,7 +221,7 @@ function Sidebar() {
         if (currentPath === '/') {
             navHomeRef.current.click()
         }
-        else if (currentPath === '/message') {
+        else if (currentPath === '/message/inbox') {
             navMessageRef.current.click()
         }
         else if (currentPath === `/${idUser}`) {
@@ -231,29 +229,6 @@ function Sidebar() {
         }
         else if (currentPath === `/dashboard`) {
             navDashboardRef.current.click()
-        }
-    }, [currentPath])
-
-    useEffect(() => {
-        if (currentPath === '/message') {
-            const navigation__itemSpan = document.querySelectorAll('.' + cx('navigation__item-span'));
-            navigation__itemSpan.forEach((item) => {
-                item.classList.add(cx('active'));
-            });
-            document.querySelector('.' + cx('navigation_bar')).classList.add(cx('active'));
-            document.querySelector('.' + cx('logo-web-tablet')).classList.add(cx('active'));
-            document.querySelector('.' + cx('logo-web-pc')).classList.add(cx('active'));
-            document.querySelector('.' + cx('logo-web')).classList.add(cx('active'));
-        }
-        else {
-            const navigation__itemSpan = document.querySelectorAll('.' + cx('navigation__item-span'));
-            navigation__itemSpan.forEach((item) => {
-                item.classList.remove(cx('active'));
-            });
-            document.querySelector('.' + cx('navigation_bar')).classList.remove(cx('active'));
-            document.querySelector('.' + cx('logo-web-tablet')).classList.remove(cx('active'));
-            document.querySelector('.' + cx('logo-web-pc')).classList.remove(cx('active'));
-            document.querySelector('.' + cx('logo-web')).classList.remove(cx('active'));
         }
     }, [currentPath])
 

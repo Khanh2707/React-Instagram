@@ -1,7 +1,7 @@
 .main.page-message {
     display: flex;
     position: relative;
-    margin-left: 73px;
+    margin-left: 245px;
     /* display: none; */
 }
 
@@ -85,6 +85,10 @@
 }
 
 .list_inbox__content__ul__li-img img {
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    object-fit: cover;
     border-radius: 50%;
 }
 
@@ -244,6 +248,10 @@
 }
 
 .detail_inbox__header__user-img img {
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    object-fit: cover;
     border-radius: 50%;
 }
 
@@ -288,11 +296,9 @@
 
 
 .detail_inbox__body {
-    flex: 1;
+    flex-grow: 1;
     overflow: auto;
     padding-top: 20px;
-    display: flex;
-    flex-direction: column-reverse;
 }
 
 .detail_inbox__body__time_message {
@@ -305,6 +311,105 @@
     font-size: 12px;
     font-weight: 500;
     margin: 0 3px;
+}
+
+.detail_inbox__body__message__container {
+    display: flex;
+    flex-direction: column;
+    margin: 16px;
+}
+
+.detail_inbox__body__message__item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail_inbox__body__message__item__message {
+    padding: 7px 12px;
+    border-radius: 18px;
+    margin-bottom: 2px;
+    position: relative;
+    display: flex;
+}
+
+.detail_inbox__body__message__item__message span {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.detail_inbox__body__message__item__message-me {
+    align-self: flex-end;
+    background-color: rgb(55, 151, 240);
+}
+
+.detail_inbox__body__message__item__message-you {
+    max-width: 70%;
+    align-self: flex-start;
+    background-color: rgb(38, 38, 38); /* Màu nền cho tin nhắn của đối phương */
+}
+
+.detail_inbox__body__message__item__options_message {
+    position: absolute;
+    left: -20px;
+    cursor: pointer;
+    display: none;
+}
+
+.detail_inbox__body__message__item__options_message.active {
+    display: block;
+}
+
+.detail_inbox__body__message__item__options_message__container {
+    width: 180px;
+    background-color: #282828;
+    position: absolute;
+    top: 0;
+    left: -180px;
+    border-radius: 8px;
+    display: none;
+    z-index: 10;
+}
+
+.detail_inbox__body__message__item__options_message__container.active {
+    display: block;
+}
+
+.detail_inbox__body__message__item__options_message__item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 16px;
+}
+
+.detail_inbox__body__message__item__options_message__item:not(:nth-child(1)) {
+    border-top: 1px solid #383838;
+}
+
+.detail_inbox__body__message__item__options_message__item-time {
+    height: 36px;
+}
+
+.detail_inbox__body__message__item__options_message__item-time span {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgb(168, 168, 168);
+}
+
+.detail_inbox__body__message__item__options_message__item-recall {
+    display: flex;
+    height: 42px;
+    justify-content: space-between;
+}
+
+.detail_inbox__body__message__item__options_message__item-recall span {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(237, 73, 86);
+}
+
+.detail_inbox__body__message__item__options_message__item-recall svg {
+    color: rgb(237, 73, 86);
 }
 
 
@@ -486,6 +591,12 @@ input:checked + .information_detail_inbox__body__turn_off_ring_inbox__switch_but
     cursor: pointer;
 }
 
+
+@media (max-width: 1263px) {
+    .main.page-message {
+        margin-left: 73px;
+    }
+}
 
 
 @media (max-width: 899px) {

@@ -34,6 +34,7 @@ function Profile() {
         avatar, setAvatar,
 
         isReloadPostProfile, setIsReloadPostProfile,
+        isReloadQuantityPost, setIsReloadQuantityPost
     } = useContext(AppContext)
 
 
@@ -193,12 +194,14 @@ function Profile() {
         http.get(`api/posts/count_post/${userId}`)
         .then((res) => {
             setQuantityPost(res.result)
+            setIsReloadQuantityPost(false)
         })
     }
 
     useEffect(() => {
+        console.log('abc');
         getCountPostByUser()
-    }, [userId])
+    }, [isReloadQuantityPost])
 
     const { setToastMessage } = useToastMessage();
 
@@ -250,6 +253,9 @@ function Profile() {
                         </div>
                         <div className={cx("info_user-text__edit_profile")} onClick={handleEditProfile} style={{display: userId === idUser ? 'block' : 'none'}}>
                             Chỉnh sửa trang cá nhân
+                        </div>
+                        <div className={cx("info_user-text__edit_profile")} style={{display: userId !== idUser ? 'block' : 'none'}} onClick={() => navigate(`/message/${idUserOther}`)}>
+                            Nhắn tin
                         </div>
                     </div>
                     <div className={cx("info_user-text__line2")}>

@@ -12,6 +12,7 @@ const cx = classNames.bind(styles)
 function OptionsPost({ idPost }) {
     const {
         isReloadPostProfile, setIsReloadPostProfile,
+        isReloadQuantityPost, setIsReloadQuantityPost
     } = useContext(AppContext)
 
     const { closeModal } = useModal();
@@ -25,6 +26,7 @@ function OptionsPost({ idPost }) {
             await http.del(`api/posts/${idPost}`)
             showToastSuccess('Xóa bài viết thành công.')
             setIsReloadPostProfile(true)
+            setIsReloadQuantityPost(true)
             closeModalTwo()
             closeModal()
         } catch (error) {

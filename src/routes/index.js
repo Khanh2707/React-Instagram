@@ -15,7 +15,7 @@ const publicRoutes = [
 
 const privateRoutes = [
     { path: '/', component: Home },
-    { path: '/message', component: Message },
+    { path: '/message/:params', component: Message },
     { path: '/:id-user', component: Profile},
     { path: '/accounts/:params', component: SettingAccount},
 ]
