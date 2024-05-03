@@ -38,6 +38,9 @@ export const AppProvider = ({ children }) => {
         getMyInfo()
     }, [])
 
+
+    const [quantityMessageNotCheck, setQuantityMessageNotCheck] = useState(0)
+
     return (
         <AppContext.Provider value={{ 
             isLoadingLine, setIsLoadingLine,
@@ -52,6 +55,8 @@ export const AppProvider = ({ children }) => {
             idAccount, setIdAccount,
             account, setAccount,
             roles, setRoles,
+
+            quantityMessageNotCheck, setQuantityMessageNotCheck,
         }}>
             {children}
         </AppContext.Provider>

@@ -18,6 +18,7 @@ function Sidebar() {
         idUser,
         roles,
         avatar,
+        quantityMessageNotCheck,
     } = useContext(AppContext)
 
 
@@ -330,8 +331,8 @@ function Sidebar() {
                                     </path>
                                 </svg>
                             </div>
-                            <div className={cx("icon-amountNotification")}>
-                                <span>1</span>
+                            <div className={cx("icon-amountNotification")} style={{display: quantityMessageNotCheck === 0 ? 'none' : 'flex'}}>
+                                <span>{quantityMessageNotCheck}</span>
                             </div>
                         </div>
                         <span className={cx("navigation__item-span")}>Tin nhắn</span>

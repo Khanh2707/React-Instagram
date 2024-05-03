@@ -24,7 +24,8 @@ function Message() {
     }, [])
 
     const {
-        idUser
+        idUser,
+        quantityMessageNotCheck, setQuantityMessageNotCheck
     } = useContext(AppContext)
 
     const { params } = useParams();
@@ -73,6 +74,7 @@ function Message() {
     const getRecentUserMessagesWithOtherUsers = () => {
         http.get(`api/user_message/all_latest_message_by_user_1/${idUser}`)
         .then((res) => {
+            console.log(res);
             setRecentUserMessagesWithOtherUsers(res.result)
         })
     }
@@ -100,10 +102,22 @@ function Message() {
 
     const handleClickItemMessage = (idUserMessage, idUser1, idUser2) => {
         getMessagesWithOtherUser(idUser1, idUser2)
+        updateMessageIsCheck(idUser2, idUser1)
         setActiveItemMessage(idUserMessage)
         getUserById(idUser === idUser1 ? idUser2 : idUser1)
         window.history.pushState({}, "", idUser === idUser1 ? idUser2 : idUser1)
         activeDetailInbox()
+    }
+
+    const updateMessageIsCheck = (idUser1, idUser2) => {
+        http.put(`api/user_message/is_check`, {
+            user1: idUser1,
+            user2: idUser2
+        })
+        .then((res) => {
+            getRecentUserMessagesWithOtherUsers()
+            getQuantityMessageNotCheck()
+        })
     }
 
     const getMessagesWithOtherUser = (idUser1, idUser2) => {
@@ -143,6 +157,19 @@ function Message() {
                 getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
         })
     }
+
+    const getQuantityMessageNotCheck = () => {
+        http.get(`api/user_message/count_message_not_check_by_user_1/${idUser}`)
+        .then((res) => {
+            console.log(res);
+            setQuantityMessageNotCheck(res.result)
+        })
+    }
+
+    useEffect(() => {
+        if (idUser !== '')
+            getQuantityMessageNotCheck()
+    }, [idUser])
 
     return (
         <div className={cx("main", "page-message")}>
@@ -186,7 +213,7 @@ function Message() {
                                             <span>{idUser === res.user1.idUser ? res.user2.name : res.user1.name}</span>
                                         </div>
                                         <div className={cx("list_inbox__content__ul__li-inbox_and_time")}>
-                                            <span className={cx((idUser === res.user1.idUser) ? "list_inbox__content__ul__li-inbox_has_been_read" : "list_inbox__content__ul__li-inbox_has_been_no_read")}>
+                                            <span className={cx((idUser !== res.user1.idUser) && (res.isCheck === false) ? "list_inbox__content__ul__li-inbox_has_been_no_read" : "list_inbox__content__ul__li-inbox_has_been_read")}>
                                                 {res.message}
                                             </span>
                                             {/* <span className={cx("list_inbox__content__ul__li-time_inbox")}> · {new Date(res.dateTimeMessage).toLocaleString()}</span> */}
@@ -201,7 +228,7 @@ function Message() {
                                             </path>
                                         </svg>
                                     </div>
-                                    <div className={cx("list_inbox__content__ul__li-icon_notification_new_message", (idUser !== res.user1.idUser ? "active" : ""))}></div>
+                                    <div className={cx("list_inbox__content__ul__li-icon_notification_new_message", ((idUser !== res.user1.idUser) && (res.isCheck === false) ? "active" : ""))}></div>
                                 </li>
                             )
                         })}
