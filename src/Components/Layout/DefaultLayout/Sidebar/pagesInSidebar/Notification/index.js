@@ -55,6 +55,12 @@ function Notification({ notificationIsActive }) {
         }
     }, [idUser])
 
+    useEffect(() => {
+        if (idUser !== '') {
+            getListPostNotification()
+        }
+    }, [notificationIsActive])
+
     return (
         <div className={cx("page-notification", { 'animationAppearPageSearch': notificationIsActive })} style={{display: isFirstActive ? 'block' : ''}}>
             <div className={cx("page-notification__title")}>

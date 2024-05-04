@@ -1,15 +1,19 @@
 import classNames from 'classnames/bind';
 import styles from './DetailPostInExplore.module.css';
 import * as http from '~/utils/http';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useModalTwo } from '../../Context/ModalTwoContext';
 import ListUserLikePost from '../ListUserLikePost';
 import defaultAvatar from '../../assets/images/default_avatar.jpg';
 import OptionsComment from '../DetailPost/OptionsComment';
+import { AppContext } from '../../Context/AppContext';
 
 const cx = classNames.bind(styles)
 
 function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
+    const { 
+        sendPostNotification
+    } = useContext(AppContext)
 
     const [idUserOther, setIdUserOther] = useState('')
     const [avatarUserOther, setAvatarUserOther] = useState('')
@@ -83,6 +87,7 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
             setIsLikePost(true)
             getCheckUserLike()
             getCountUserLike()
+            sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
         })
     }
 
@@ -96,6 +101,7 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
             setIsLikePost(false)
             getCheckUserLike()
             getCountUserLike()
+            sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
         })
     }
 
@@ -173,6 +179,8 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
                 .then((res) => {
 
                 })
+
+                sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
             })
         }
     }

@@ -35,6 +35,7 @@ function DetailPostPage() {
 
     const { 
         idUser,
+        sendPostNotification
     } = useContext(AppContext)
 
     const [image, setImage] = useState('')
@@ -127,6 +128,7 @@ function DetailPostPage() {
             setIsLikePost(true)
             getCheckUserLike()
             getCountUserLike()
+            sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
         })
     }
 
@@ -140,6 +142,7 @@ function DetailPostPage() {
             setIsLikePost(false)
             getCheckUserLike()
             getCountUserLike()
+            sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
         })
     }
 
@@ -217,6 +220,8 @@ function DetailPostPage() {
                 .then((res) => {
 
                 })
+
+                sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
             })
         }
     }

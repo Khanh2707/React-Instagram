@@ -8,6 +8,7 @@
     position: fixed;
     animation: disappearPageSearch ease-in-out .4s;
     transform: translateX(-100%);
+    overflow: auto;
     display: none;
 }
 

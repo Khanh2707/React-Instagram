@@ -1,8 +1,11 @@
 import { createContext, useEffect, useState } from "react";
+import SockJS from "sockjs-client";
+import { over } from "stompjs";
 import * as http from '~/utils/http';
 
 export const AppContext = createContext({});
 
+var stompClient = null;
 export const AppProvider = ({ children }) => {
     const [isLoadingLine, setIsLoadingLine] = useState(false);
     const [isReloadPostProfile, setIsReloadPostProfile] = useState(false);
@@ -68,6 +71,48 @@ export const AppProvider = ({ children }) => {
             getQuantityPostNotificationCheck()
     }, [idUser])
 
+    const connect = () => {
+        let Sock = new SockJS('http://localhost:8080/ws');
+        stompClient = over(Sock);
+        stompClient.connect({}, onConnected, onError);
+    }
+
+    useEffect(() => {
+        if (idUser !== '')
+            connect()
+    }, [idUser])
+
+    const onConnected = () => {
+        stompClient.subscribe(`/user/${idUser}/private`, onPrivateMessage);
+        stompClient.subscribe(`/user/${idUser}/notification`, onNotification)
+    }
+
+    const onError = () => {
+
+    }
+
+    const onPrivateMessage = (payload) => {
+        console.log(payload)
+        var payloadData = JSON.parse(payload.body);
+    }
+
+    const onNotification = (payload) => {
+        getQuantityPostNotificationCheck()
+    }
+
+    const sendPostNotification = (senderName, receiverName) => {
+        if (stompClient) {
+            var chatMessage = {
+                senderName: senderName,
+                receiverName: receiverName,
+                message: 'Post notification'
+            }
+            stompClient.send("/app/notification", {}, JSON.stringify(chatMessage));
+        }
+    }
+
+    
+
     return (
         <AppContext.Provider value={{ 
             isLoadingLine, setIsLoadingLine,
@@ -85,6 +130,8 @@ export const AppProvider = ({ children }) => {
 
             quantityMessageNotCheck, setQuantityMessageNotCheck,
             quantityPostNotificationCheck, setQuantityPostNotificationCheck,
+
+            sendPostNotification
         }}>
             {children}
         </AppContext.Provider>

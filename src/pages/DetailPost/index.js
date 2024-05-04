@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './DetailPost.module.css';
 import defaultAvatar from '../../assets/images/default_avatar.jpg';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import * as http from '~/utils/http';
 import { useModalTwo } from '../../Context/ModalTwoContext';
 import ListUserLikePost from '../ListUserLikePost';
@@ -9,10 +9,15 @@ import OptionsComment from './OptionsComment';
 import OptionsPost from './OptionsPost';
 import { useModal } from '../../Context/ModalContext';
 import { useToastMessage } from '../../Context/ToastMessageContext';
+import { AppContext } from '../../Context/AppContext';
 
 const cx = classNames.bind(styles)
 
 function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCreatePost }) {
+    const { 
+        sendPostNotification
+    } = useContext(AppContext)
+
     const timeCreatePost_Date = new Date(timeCreatePost)
 
     const [image, setImage] = useState('')
@@ -57,6 +62,7 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
             setIsLikePost(true)
             getCheckUserLike()
             getCountUserLike()
+            sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
         })
     }
 
@@ -70,6 +76,7 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
             setIsLikePost(false)
             getCheckUserLike()
             getCountUserLike()
+            sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
         })
     }
 
@@ -170,6 +177,8 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
                 .then((res) => {
 
                 })
+
+                sendPostNotification(idUser, idUserOther === undefined ? idUser : idUserOther)
             })
         }
     }
