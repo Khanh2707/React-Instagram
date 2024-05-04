@@ -47,6 +47,13 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
             id_post_user_like_post: idPost
         })
         .then((res) => {
+            http.post(`api/post_notifications`, {
+                "action": "LIKE",
+                "post": idPost,
+                "user1": idUser,
+                "user2": idUserOther === undefined ? idUser : idUserOther,
+                "commentPost": null
+            })
             setIsLikePost(true)
             getCheckUserLike()
             getCountUserLike()
@@ -56,6 +63,10 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
     const handleUnLikePost = () => {
         http.del(`api/user_like_post/${idUser}/${idPost}`)
         .then((res) => {
+            http.del(`api/post_notifications/by_action_like/LIKE/${idPost}/${idUser}/${idUserOther === undefined ? idUser : idUserOther}`)
+            .then((res) => {
+                
+            })
             setIsLikePost(false)
             getCheckUserLike()
             getCountUserLike()
@@ -106,7 +117,7 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
     }, [])
 
     const handleOpenOptionsComment = (idUser, idCommentPost) => {
-        openModalTwo(<OptionsComment idUser={idUser} idCommentPost={idCommentPost} idPost={idPost} getAllUserCommentPostByPost={getAllUserCommentPostByPost} />)
+        openModalTwo(<OptionsComment idUser={idUser} idUserOther={idUserOther} idCommentPost={idCommentPost} idPost={idPost} getAllUserCommentPostByPost={getAllUserCommentPostByPost} />)
     }
 
     const submitInputRef = useRef();
@@ -147,6 +158,17 @@ function DetailPost({ idPost, idUser, avatar, idUserOther, captionPost, timeCrea
                 .then((res) => {
                     console.log(res);
                     setListAllUserCommentPostByPost(prevComments => [res.result, ...prevComments]);
+                })
+
+                http.post(`api/post_notifications`, {
+                    "action": "COMMENT",
+                    "post": idPost,
+                    "user1": idUser,
+                    "user2": idUserOther === undefined ? idUser : idUserOther,
+                    "commentPost": res.result.idCommentPost
+                })
+                .then((res) => {
+
                 })
             })
         }

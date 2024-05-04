@@ -5,16 +5,19 @@ import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
-function OptionsComment({ idUser, idCommentPost, idPost, getAllUserCommentPostByPost }) {
+function OptionsComment({ idUser, idUserOther, idCommentPost, idPost, getAllUserCommentPostByPost }) {
     const { closeModalTwo } = useModalTwo();
 
     const handleDeleteComment = () => {
         http.del(`api/user_comment_post/${idUser}/${idCommentPost}/${idPost}`)
         .then((res) => {
-            http.del(`api/comment_post/${idCommentPost}`)
+            http.del(`api/post_notifications/by_action_comment/COMMENT/${idPost}/${idUser}/${idUserOther}/${idCommentPost}`)
             .then((res) => {
-                getAllUserCommentPostByPost()
-                closeModalTwo()
+                http.del(`api/comment_post/${idCommentPost}`)
+                .then((res) => {
+                    getAllUserCommentPostByPost()
+                    closeModalTwo()
+                })
             })
         })
     }

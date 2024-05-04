@@ -164,7 +164,7 @@ function Message() {
 
     const handleClickItemMessage = (idUserMessage, idUser1, idUser2) => {
         getMessagesWithOtherUser(idUser1, idUser2)
-        updateMessageIsCheck(idUser2, idUser1)
+        updateMessageIsCheck(idUser1, idUser2)
         setActiveItemMessage(idUserMessage)
         getUserById(idUser === idUser1 ? idUser2 : idUser1)
         window.history.pushState({}, "", idUser === idUser1 ? idUser2 : idUser1)

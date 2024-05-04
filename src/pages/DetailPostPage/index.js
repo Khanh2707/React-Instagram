@@ -1,21 +1,64 @@
 import classNames from 'classnames/bind';
-import styles from './DetailPostInExplore.module.css';
+import styles from './DetailPostPage.module.css';
 import * as http from '~/utils/http';
-import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useContext } from 'react';
+import { AppContext } from '../../Context/AppContext';
+import OptionsComment from '../DetailPost/OptionsComment';
 import { useModalTwo } from '../../Context/ModalTwoContext';
+import { useRef } from 'react';
 import ListUserLikePost from '../ListUserLikePost';
 import defaultAvatar from '../../assets/images/default_avatar.jpg';
-import OptionsComment from '../DetailPost/OptionsComment';
 
 const cx = classNames.bind(styles)
 
-function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
+function DetailPostPage() {
+    const { setIsLoadingLine } = useContext(AppContext);
+
+    useEffect(() => {
+        setIsLoadingLine(true);
+    }, [])
+    //
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoadingLine(false);
+        }, 500)
+    }, [])
+
+    useEffect(() => {
+        document.title = 'Bài viết';
+    }, [])
+
+    const { params } = useParams()
+
+    const { 
+        idUser,
+    } = useContext(AppContext)
+
+    const [image, setImage] = useState('')
+    const [caption, setCaption] = useState('')
+    const [dateTimeCreate, setDateTimeCreate] = useState('')
+
+    const getPostById = () => {
+        http.get(`api/posts/${params}`)
+        .then((res) => {
+            setImage(res.result.mediaPosts[0].url)
+            setCaption(res.result.caption)
+            setDateTimeCreate(res.result.dateTimeCreate)
+        })
+    }
+
+    useEffect(() => {
+        getPostById()
+    }, [])
 
     const [idUserOther, setIdUserOther] = useState('')
     const [avatarUserOther, setAvatarUserOther] = useState('')
 
     const getUserByPost = () => {
-        http.get(`api/users/by_post/${idPost}`)
+        http.get(`api/users/by_post/${params}`)
         .then((res) => {
             console.log(res.result);
             setIdUserOther(res.result.idUser)
@@ -38,7 +81,7 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
     const [listAllUserCommentPostByPost, setListAllUserCommentPostByPost] = useState([])
 
     const getAllUserCommentPostByPost = () => {
-        http.get(`api/user_comment_post/by_post/${idPost}`)
+        http.get(`api/user_comment_post/by_post/${params}`)
         .then((res) => {
             console.log(res);
             setListAllUserCommentPostByPost(res.result)
@@ -50,32 +93,33 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
     }, [])
 
     const handleOpenOptionsComment = (idUser, idCommentPost) => {
-        openModalTwo(<OptionsComment idUser={idUser} idUserOther={idUserOther} idCommentPost={idCommentPost} idPost={idPost} getAllUserCommentPostByPost={getAllUserCommentPostByPost} />)
+        openModalTwo(<OptionsComment idUser={idUser} idUserOther={idUserOther} idCommentPost={idCommentPost} idPost={params} getAllUserCommentPostByPost={getAllUserCommentPostByPost} />)
     }
 
 
     const [isLikePost, setIsLikePost] = useState(null);
 
     const getCheckUserLike = () => {
-        http.get(`api/user_like_post/check_like/${idUser}/${idPost}`)
+        http.get(`api/user_like_post/check_like/${idUser}/${params}`)
         .then((res) => {
             setIsLikePost(res.result)
         })
     }
 
     useEffect(() => {
-        getCheckUserLike()
-    }, [])
+        if (idUser !== '')
+            getCheckUserLike()
+    }, [idUser])
 
     const handleLikePost = () => {
         http.post(`api/user_like_post`, {
             id_user_user_like_post: idUser,
-            id_post_user_like_post: idPost
+            id_post_user_like_post: params
         })
         .then((res) => {
             http.post(`api/post_notifications`, {
                 "action": "LIKE",
-                "post": idPost,
+                "post": params,
                 "user1": idUser,
                 "user2": idUserOther === undefined ? idUser : idUserOther,
                 "commentPost": null
@@ -87,9 +131,9 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
     }
 
     const handleUnLikePost = () => {
-        http.del(`api/user_like_post/${idUser}/${idPost}`)
+        http.del(`api/user_like_post/${idUser}/${params}`)
         .then((res) => {
-            http.del(`api/post_notifications/by_action_like/LIKE/${idPost}/${idUser}/${idUserOther === undefined ? idUser : idUserOther}`)
+            http.del(`api/post_notifications/by_action_like/LIKE/${params}/${idUser}/${idUserOther === undefined ? idUser : idUserOther}`)
             .then((res) => {
 
             })
@@ -113,14 +157,14 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
     const { openModalTwo } = useModalTwo();
 
     const handleOpenListUserLikePost = () => {
-        openModalTwo(<ListUserLikePost idPost={idPost} />);
+        openModalTwo(<ListUserLikePost idPost={params} />);
     };
 
 
     const [quantityUser, setQuantityUser] = useState(0)
 
     const getCountUserLike = () => {
-        http.get(`api/user_like_post/count_user/${idPost}`)
+        http.get(`api/user_like_post/count_user/${params}`)
         .then((res) => {
             setQuantityUser(res.result)
         })
@@ -156,7 +200,7 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
                 http.post(`api/user_comment_post`, {
                     id_user_user_comment_post: idUser,
                     id_comment_post_user_comment_post: res.result.idCommentPost,
-                    id_post_user_comment_post: idPost
+                    id_post_user_comment_post: params
                 })
                 .then((res) => {
                     console.log(res);
@@ -165,7 +209,7 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
 
                 http.post(`api/post_notifications`, {
                     "action": "COMMENT",
-                    "post": idPost,
+                    "post": params,
                     "user1": idUser,
                     "user2": idUserOther === undefined ? idUser : idUserOther,
                     "commentPost": res.result.idCommentPost
@@ -185,9 +229,10 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
 
 
     return (
+        <div className={cx("background_detail_post")}>
         <div className={cx("container_detail_post")}>
             <div className={cx("detail_post__img")}>
-                <img src={url} alt='' />
+                <img src={image} alt='' />
             </div>
             <div className={cx("detail_post__engagement")}>
                 <div className={cx("detail_post__engagement__header")}>
@@ -240,7 +285,7 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
                                         <span className={cx("detail_post__engagement__time_create_comment")}>
                                             {new Date(res.commentPost.dateTimeComment).toLocaleString()}
                                         </span>
-                                        <div className={cx("detail_post__engagement__option_comment")} style={{visibility: (hoveredCommentIndex === res.commentPost.idCommentPost) && (idUser === res.user.idUser) ? 'visible' : 'hidden'}} onClick={() => handleOpenOptionsComment(res.user.idUser, res.commentPost.idCommentPost)}>
+                                        <div className={cx("detail_post__engagement__option_comment")} style={{visibility: (hoveredCommentIndex === res.commentPost.idCommentPost) && (idUser === res.user.idUser || idUser === idUserOther) ? 'visible' : 'hidden'}} onClick={() => handleOpenOptionsComment(res.user.idUser, res.commentPost.idCommentPost)}>
                                             <svg aria-label="Tùy chọn bình luận" className="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Tùy chọn bình luận</title><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
                                         </div>
                                     </div>
@@ -275,7 +320,8 @@ function DetailPostInExplore({ idUser, idPost, caption, dateTimeCreate, url }) {
                 </div>
             </div>
         </div>
+        </div>
     );
 }
 
-export default DetailPostInExplore;
+export default DetailPostPage;

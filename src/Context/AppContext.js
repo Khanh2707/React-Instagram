@@ -41,6 +41,33 @@ export const AppProvider = ({ children }) => {
 
     const [quantityMessageNotCheck, setQuantityMessageNotCheck] = useState(0)
 
+    const getQuantityMessageNotCheck = () => {
+        http.get(`api/user_message/count_message_not_check_by_user_1/${idUser}`)
+        .then((res) => {
+            console.log(res);
+            setQuantityMessageNotCheck(res.result)
+        })
+    }
+
+    useEffect(() => {
+        if (idUser !== '')
+            getQuantityMessageNotCheck()
+    }, [idUser])
+
+    const [quantityPostNotificationCheck, setQuantityPostNotificationCheck] = useState(0)
+
+    const getQuantityPostNotificationCheck = () => {
+        http.get(`api/post_notifications/count_by_user/${idUser}`)
+        .then((res) => {
+            setQuantityPostNotificationCheck(res.result)
+        })
+    }
+
+    useEffect(() => {
+        if (idUser !== '')
+            getQuantityPostNotificationCheck()
+    }, [idUser])
+
     return (
         <AppContext.Provider value={{ 
             isLoadingLine, setIsLoadingLine,
@@ -57,6 +84,7 @@ export const AppProvider = ({ children }) => {
             roles, setRoles,
 
             quantityMessageNotCheck, setQuantityMessageNotCheck,
+            quantityPostNotificationCheck, setQuantityPostNotificationCheck,
         }}>
             {children}
         </AppContext.Provider>

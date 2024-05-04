@@ -6,6 +6,7 @@ import Message from '~/pages/Message';
 import Profile from '~/pages/Profile';
 import SettingAccount from '~/pages/SettingAccount';
 import Dashboard from '~/pages/Dashboard';
+import DetailPostPage from '~/pages/DetailPostPage'
 
 const publicRoutes = [
     { path: '/login', component: Login, layout: null },
@@ -18,6 +19,7 @@ const privateRoutes = [
     { path: '/message/:params', component: Message },
     { path: '/:id-user', component: Profile},
     { path: '/accounts/:params', component: SettingAccount},
+    { path: '/p/:params', component: DetailPostPage},
 ]
 
 const dashboardRoutes = [
