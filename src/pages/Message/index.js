@@ -109,8 +109,6 @@ function Message() {
         setInputValue('')
         submitInputRef.current.style.display = 'none'
 
-        updateMessageIsCheck(userTargetMessage.idUser, idUser)
-
         if (idUser !== '') {
             http.post(`api/user_message`, {
                 message: inputValue,
@@ -119,6 +117,7 @@ function Message() {
             })
             .then((res) => {
                 getMessagesWithOtherUser(idUser, userTargetMessage.idUser)
+                updateMessageIsCheck(userTargetMessage.idUser, idUser)
 
                 if (stompClient) {
                     var chatMessage = {
@@ -195,7 +194,7 @@ function Message() {
         if (params !== 'inbox' && idUser !== '') {
             getMessagesWithOtherUser(idUser, params)
             activeDetailInbox()
-            updateMessageIsCheck(idUser, params)
+            updateMessageIsCheck(params, idUser)
         }
     }, [idUser])
 
