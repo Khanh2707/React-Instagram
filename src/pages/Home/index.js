@@ -30,7 +30,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        document.title = 'Trang chủ';
+        document.title = 'Instagram';
     }, [])
 
     function refreshToken() {

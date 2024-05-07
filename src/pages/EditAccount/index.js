@@ -24,7 +24,7 @@ function EditAccount() {
     }, [])
 
     useEffect(() => {
-        document.title = 'Chỉnh sửa trang cá nhân';
+        document.title = 'Chỉnh sửa trang cá nhân | Instagram';
     }, [])
 
     const {

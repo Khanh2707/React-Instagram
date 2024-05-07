@@ -10,7 +10,7 @@ const cx = classNames.bind(styles)
 
 function ResetPass() {
     useEffect(() => {
-        document.title = 'Quên mật khẩu';
+        document.title = 'Quên mật khẩu | Instagram';
     }, [])
 
     const navigate = useNavigate()

@@ -39,6 +39,10 @@ function Profile() {
 
 
     const { 'id-user': userId } = useParams();
+
+    useEffect(() => {
+        document.title = `${userId} | Instagram`;
+    }, [])
    
 
     const [idUserOther, setIdUserOther] = useState(null)

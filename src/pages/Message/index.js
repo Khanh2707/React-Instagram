@@ -80,7 +80,7 @@ function Message() {
     }, [])
 
     useEffect(() => {
-        document.title = 'Tin nhắn';
+        document.title = 'Tin nhắn | Instagram';
     }, [])
 
     

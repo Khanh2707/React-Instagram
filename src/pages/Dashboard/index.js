@@ -63,7 +63,7 @@ function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = 'Trang quản trị';
+        document.title = 'Trang quản trị | Instagram';
     }, [])
 
     const [listAllAccount, setListAllAccount] = useState([])

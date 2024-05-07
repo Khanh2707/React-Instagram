@@ -10,7 +10,7 @@ const cx = classNames.bind(styles)
 
 function Login() {
     useEffect(() => {
-        document.title = 'Đăng nhập';
+        document.title = 'Đăng nhập | Instagram';
     }, [])
 
     const [username, setUsername] = useState('')

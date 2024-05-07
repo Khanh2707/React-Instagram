@@ -20,7 +20,7 @@ function ChangePassword() {
     }, [])
 
     useEffect(() => {
-        document.title = 'Thay đổi mật khẩu';
+        document.title = 'Thay đổi mật khẩu | Instagram';
     }, [])
 
     const {
