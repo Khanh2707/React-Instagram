@@ -1,16 +1,17 @@
-import classNames from 'classnames/bind';
-import styles from './DetailPostPage.module.css';
-import * as http from '~/utils/http';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useContext } from 'react';
-import { AppContext } from '../../Context/AppContext';
-import OptionsComment from '../DetailPost/OptionsComment';
-import { useModalTwo } from '../../Context/ModalTwoContext';
-import { useRef } from 'react';
-import ListUserLikePost from '../ListUserLikePost';
-import defaultAvatar from '../../assets/images/default_avatar.jpg';
+
+import classNames from 'classnames/bind';
+
+import styles from './DetailPostPage.module.css';
+
+import defaultAvatar from '~/assets/images/default_avatar.jpg';
+
+import ListUserLikePost from '~/Components/ListUserLikePost';
+import OptionsComment from '~/Components/OptionsComment';
+import { AppContext } from '~/Context/AppContext';
+import { useModalTwo } from '~/Context/ModalTwoContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 

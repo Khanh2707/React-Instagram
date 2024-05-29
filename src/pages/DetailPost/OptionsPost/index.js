@@ -1,15 +1,18 @@
-import classNames from 'classnames/bind';
-import styles from './OptionsPost.module.css';
-import { useModalTwo } from '../../../Context/ModalTwoContext';
-import * as http from '~/utils/http';
-import { useToastMessage } from '../../../Context/ToastMessageContext';
-import { useModal } from '../../../Context/ModalContext';
 import { useContext } from 'react';
-import { AppContext } from '../../../Context/AppContext';
+
+import classNames from 'classnames/bind';
+
+import styles from './OptionsPost.module.css';
+
+import { useModalTwo } from '~/Context/ModalTwoContext';
+import { useToastMessage } from '~/Context/ToastMessageContext';
+import { useModal } from '~/Context/ModalContext';
+import { AppContext } from '~/Context/AppContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
-function OptionsPost({ idPost }) {
+function OptionsPost({ idPost, idUser, idUserOther }) {
     const {
         isReloadPostProfile, setIsReloadPostProfile,
         isReloadQuantityPost, setIsReloadQuantityPost
@@ -20,6 +23,8 @@ function OptionsPost({ idPost }) {
 
     const handleDeletePost = async () => {
         try {
+            await http.del(`api/post_notifications/all_by_action/LIKE/${idPost}`)
+            await http.del(`api/post_notifications/all_by_action/COMMENT/${idPost}`)
             await http.del(`api/user_comment_post/all_by_post/${idPost}`)
             await http.del(`api/user_like_post/all_by_post/${idPost}`)
             await http.del(`api/media_posts/all_by_post/${idPost}`)

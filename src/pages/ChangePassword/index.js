@@ -1,8 +1,11 @@
-import classNames from 'classnames/bind';
-import styles from './ChangePassword.module.css';
 import { useContext, useEffect } from 'react';
-import { AppContext } from '../../Context/AppContext';
-import { useToastMessage } from '../../Context/ToastMessageContext';
+
+import classNames from 'classnames/bind';
+
+import styles from './ChangePassword.module.css';
+
+import { AppContext } from '~/Context/AppContext';
+import { useToastMessage } from '~/Context/ToastMessageContext';
 import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)

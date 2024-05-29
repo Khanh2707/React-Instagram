@@ -19,28 +19,6 @@ export const AppProvider = ({ children }) => {
     const [idAccount, setIdAccount] = useState('')
     const [account, setAccount] = useState('')
     const [roles, setRoles] = useState('')
-    useEffect(() => {
-        const getMyInfo = async () => {
-            try {
-                const res = await http.get('api/accounts/myAccount')
-                setIdUser(res.result.user.idUser)
-                setNameUser(res.result.user.name)
-                setAvatar(res.result.user.avatar)
-                setDescriptionUser(res.result.user.description)
-                setGenderUser(res.result.user.gender)
-
-                setIdAccount(res.result.idAccount)
-                setAccount(res.result.account)
-
-                setRoles(res.result.roles[0].name)
-                console.log(res)
-            } catch (error) {
-
-            }
-        }
-        getMyInfo()
-    }, [])
-
 
     const [quantityMessageNotCheck, setQuantityMessageNotCheck] = useState(0)
 

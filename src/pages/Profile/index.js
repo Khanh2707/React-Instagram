@@ -1,16 +1,21 @@
-import classNames from 'classnames/bind';
-import styles from './Profile.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import defaultAvatar from '../../assets/images/default_avatar.jpg'
-import { faCamera, faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { AppContext } from '../../Context/AppContext';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import defaultAvatar from '~/assets/images/default_avatar.jpg'
+
+import classNames from 'classnames/bind';
+
+import styles from './Profile.module.css';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCamera, faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
+
+import DetailPost from '~/pages/DetailPost'
+import OptionsAvatar from '~/Components/OptionsAvatar';
+import { useModal } from '~/Context/ModalContext';
+import { AppContext } from '~/Context/AppContext';
+import { useToastMessage } from '~/Context/ToastMessageContext';
 import * as http from '~/utils/http';
-import { useToastMessage } from '../../Context/ToastMessageContext';
-import { useModal } from '../../Context/ModalContext';
-import OptionsAvatar from '../OptionsAvatar';
-import DetailPost from '../DetailPost'
 
 const cx = classNames.bind(styles)
 

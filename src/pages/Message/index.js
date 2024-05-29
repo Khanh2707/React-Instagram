@@ -1,11 +1,17 @@
-import classNames from 'classnames/bind';
-import styles from './Message.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { AppContext } from '../../Context/AppContext';
 import { useParams } from 'react-router-dom';
-import * as http from '~/utils/http';
+
+import defaultAvatar from '~/assets/images/default_avatar.jpg';
+
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
+
+import classNames from 'classnames/bind';
+
+import styles from './Message.module.css';
+
+import { AppContext } from '~/Context/AppContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
@@ -261,7 +267,7 @@ function Message() {
                             return (
                                 <li key={res.idUserMessage} className={cx("list_inbox__content__ul__li", isActive ? "active" : "")} onClick={() => handleClickItemMessage(res.idUserMessage, res.user1.idUser, res.user2.idUser)}>
                                     <div className={cx("list_inbox__content__ul__li-img")}>
-                                        <img src={idUser === res.user1.idUser ? res.user2.avatar : res.user1.avatar} alt="" />
+                                        <img src={idUser === res.user1.idUser ? res.user2.avatar === null ? defaultAvatar : res.user2.avatar : res.user1.avatar === null ? defaultAvatar : res.user1.avatar} alt="" />
                                         <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
                                     </div>
                                     <div className={cx("list_inbox__content__ul__li-name_user_and_active_state_or_new_inbox")}>
@@ -311,7 +317,7 @@ function Message() {
                 <div className={cx("detail_inbox__header")}>
                     <div className={cx("detail_inbox__header__user")}>
                         <div className={cx("detail_inbox__header__user-img")} onClick={() => window.location.href = `/${userTargetMessage.idUser}`}>
-                            <img src={userTargetMessage.avatar} alt="" />
+                            <img src={userTargetMessage.avatar === null ? defaultAvatar : userTargetMessage.avatar} alt="" />
                             <div className={cx("list_inbox__content__ul__li-icon_activing")}></div>
                         </div>
                         <div className={cx("detail_inbox__header__user-name_user_and_active_state")}>

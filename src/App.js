@@ -1,18 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { DefaultLayout } from '~/Components/Layout';
-import { Fragment, useContext } from 'react';
-import { privateRoutes, publicRoutes, dashboardRoutes } from './routes';
-import { AppContext } from './Context/AppContext';
+import { Fragment } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-const isAuthenticated = () => {
-  const token = localStorage.getItem('token');
-  return !!token; // Chuyển đổi thành boolean
-}
+import { privateRoutes, publicRoutes, dashboardRoutes } from './routes';
+import { DefaultLayout } from '~/pages/Layout';
+import ProtectedRoute from '~/routes/ProtectedRoute';
 
 function App() {
-  const {
-    roles,
-  } = useContext(AppContext)
 
   return (
     <BrowserRouter>
@@ -28,36 +21,30 @@ function App() {
             } />
           )
         })}
-        {dashboardRoutes.map((route, index) => {
-          const Layout = route.layout === null ? Fragment : DefaultLayout;
-          const Page = route.component;
-          return (
-            <Route key={index} path={route.path} element={
-              isAuthenticated() && roles === 'ADMIN' ? (
-                <Layout>
-                  <Page />
-                </Layout>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            } 
-            />
-          )
-        })}
         {privateRoutes.map((route, index) => {
           const Layout = route.layout === null ? Fragment : DefaultLayout;
           const Page = route.component;
           return (
             <Route key={index} path={route.path} element={
-              isAuthenticated() ? (
+              <ProtectedRoute>
                 <Layout>
                   <Page />
                 </Layout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            } 
-            />
+              </ProtectedRoute>
+            } />
+          )
+        })}
+        {dashboardRoutes.map((route, index) => {
+          const Layout = route.layout === null ? Fragment : DefaultLayout;
+          const Page = route.component;
+          return (
+            <Route key={index} path={route.path} element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Layout>
+                  <Page />
+                </Layout>
+              </ProtectedRoute>
+            } />
           )
         })}
       </Routes>

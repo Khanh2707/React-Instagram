@@ -1,9 +1,12 @@
-import classNames from 'classnames/bind';
-import styles from './Login.module.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToastMessage } from '../../Context/ToastMessageContext';
-import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
+
+import classNames from 'classnames/bind';
+
+import styles from './Login.module.css';
+
+import { useToastMessage } from '~/Context/ToastMessageContext';
+import ToastMessage from '~/Components/ToastMessage';
 import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
@@ -225,36 +228,37 @@ function Login() {
         }
     }, [isDataReady])
 
-    const login = async () => {
-        try {
-            const res = await http.post('auth/token', data)
-            console.log(res)
+    const login = () => {
+        http.post('auth/token', data)
+        .then((res) => {
             localStorage.setItem('token', res.result.token)
 
             showToastSuccess();
 
             setTimeout(() => {
-                window.location.replace('/');
-            }, 2000)
+                navigate('/');
+            }, 1000)
+
             setIsDataReady(false);
-        } catch (error) {
+        })
+        .catch((error) => {
             setIsDataReady(false);
-            console.log(error)
-            if (error.response.data.code !== 1002 && error.response.data.code !== 1003) 
+
+            if (error.response.data.code !== 1002 && error.response.data.code !== 1003)
                 showToastError(`Tài khoản của bạn đã bị khóa vì: <br>"${error.response.data}"`, 10000);
             else
                 showToastError();
-        }
+        })  
     }
 
     const { setToastMessage } = useToastMessage();
 
-    function showToastSuccess() {
+    function showToastSuccess(message, duration) {
         setToastMessage({
             title: "Thành công!",
-            message: "Chào mừng bạn đến với Instagram.",
+            message: message ? message : "Chào mừng bạn đến với Instagram.",
             type: "success",
-            duration: 3000
+            duration: duration ? duration : 3000
         })
     }
 
@@ -263,7 +267,7 @@ function Login() {
             title: "Thất bại!",
             message: message ? message : "Thông tin đăng nhập không đúng.",
             type: "error",
-            duration: duration ? duration : 3000
+            duration: duration ? duration : 10000000
         })
     }
 

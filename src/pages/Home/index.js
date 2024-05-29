@@ -1,13 +1,16 @@
+import { useContext, useState, useEffect } from 'react';
+
 import classNames from 'classnames/bind';
+
 import styles from './Home.module.css';
-import { useContext, useState } from 'react';
-import { useEffect } from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { AppContext } from '../../Context/AppContext';
+
+import DetailPostInExplore from '~/pages/DetailPostInExplore';
+import { AppContext } from '~/Context/AppContext';
+import { useModal } from '~/Context/ModalContext';
 import * as http from '~/utils/http';
-import { useModal } from '../../Context/ModalContext';
-import DetailPostInExplore from '../DetailPostInExplore';
 
 const cx = classNames.bind(styles)
 

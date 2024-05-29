@@ -1,9 +1,12 @@
-import classNames from 'classnames/bind';
-import styles from './Login.module.css';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { useToastMessage } from '../../Context/ToastMessageContext';
-import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
+import { useNavigate } from 'react-router-dom';
+
+import classNames from 'classnames/bind';
+
+import styles from './Login.module.css';
+
+import { useToastMessage } from '~/Context/ToastMessageContext';
+import ToastMessage from '~/Components/ToastMessage';
 import * as http from '~/utils/http'
 
 const cx = classNames.bind(styles)

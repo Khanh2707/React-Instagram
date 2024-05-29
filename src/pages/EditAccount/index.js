@@ -1,13 +1,15 @@
+import { useContext, useRef, useState, useEffect } from 'react';
+
 import classNames from 'classnames/bind';
+
 import styles from './EditAccount.module.css';
-import { useContext, useRef, useState } from 'react';
-import { AppContext } from '../../Context/AppContext';
-import { useEffect } from 'react';
-import defaultAvatar from '../../assets/images/default_avatar.jpg'
+
+import OptionsAvatar from '~/Components/OptionsAvatar';
+import { AppContext } from '~/Context/AppContext';
+import { useModal } from '~/Context/ModalContext';
+import defaultAvatar from '~/assets/images/default_avatar.jpg'
+import { useToastMessage } from '~/Context/ToastMessageContext';
 import * as http from '~/utils/http';
-import { useToastMessage } from '../../Context/ToastMessageContext';
-import { useModal } from '../../Context/ModalContext';
-import OptionsAvatar from '../OptionsAvatar';
 
 const cx = classNames.bind(styles)
 

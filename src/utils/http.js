@@ -13,6 +13,65 @@ http.interceptors.request.use(config => {
     return config;
 });
 
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+let urlNotRefreshToken = [
+    "api/accounts",
+    "auth/token",
+    "auth/introspect",
+    "auth/logout",
+    "auth/refreshToken",
+    "api/users",
+    "api/verify_email"
+];
+
+http.interceptors.response.use(
+    response => response,
+    async error => {
+        const originalRequest = error.config;
+        if (error.response.status === 401 && !originalRequest._retry && !urlNotRefreshToken.includes(error.config.url)) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    refreshSubscribers.push(token => {
+                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                        resolve(http(originalRequest));
+                    });
+                });
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                const currentToken = localStorage.getItem('token');
+                localStorage.removeItem('token'); // Xóa token hiện tại
+
+                const refreshTokenResponse = await http.post('/auth/refreshToken', {
+                    token: currentToken
+                });
+                const newToken = refreshTokenResponse.data.result.token;
+                localStorage.setItem('token', newToken);
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                refreshSubscribers.forEach(callback => callback(newToken));
+                refreshSubscribers = [];
+
+                return http(originalRequest);
+                
+            } catch (refreshError) {
+                // Xử lý lỗi khi gọi refreshToken
+                console.error('Error refreshing token:', refreshError);
+                // Đăng xuất hoặc xử lý khác tùy thuộc vào yêu cầu
+                // Ví dụ: đăng xuất người dùng
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export const get = async (endpoint, params = {}, requireToken = true) => {
     const response = await http.get(endpoint, { params, requireToken });
     return response.data;

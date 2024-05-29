@@ -1,18 +1,22 @@
-import classNames from 'classnames/bind';
-import styles from './Dashboard.module.css';
-import defaultAvatar from '../../assets/images/default_avatar.jpg'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAnglesLeft, faAnglesRight, faChevronLeft, faChevronRight, faLock, faUnlock, faUser, faUserTie } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+
+import classNames from 'classnames/bind';
+
+import styles from './Dashboard.module.css';
+
+import ConfirmUnLockAccount from './ConfirmUnLockAccount';
+import InputReasonLockAccount from './InputReasonLockAccount'
+import defaultAvatar from '~/assets/images/default_avatar.jpg'
 import { useDebounce } from '~/hooks';
+import { useToastMessage } from '~/Context/ToastMessageContext';
+import ToastMessage from '~/Components/ToastMessage';
+import Modal from "~/Components/Modal"
+import { useModal } from '~/Context/ModalContext';
 import * as http from '~/utils/http'
-import { useNavigate } from 'react-router-dom';
-import { useToastMessage } from '../../Context/ToastMessageContext';
-import ToastMessage from '../../Components/Layout/DefaultLayout/ToastMessage';
-import Modal from "../../Components/Layout/DefaultLayout/Modal"
-import { useModal } from '../../Context/ModalContext';
-import InputTextarea from '../InputTextarea'
-import Confirm from '../Confirm';
 
 const cx = classNames.bind(styles)
 
@@ -26,7 +30,7 @@ function Dashboard() {
             apiLockAccount: lockAccount,
         }
         // Truyền Component B vào modal
-        openModal(<InputTextarea {...props} />);
+        openModal(<InputReasonLockAccount {...props} />);
     };
 
     const lockAccount = (idAccount, content) => {
@@ -47,7 +51,7 @@ function Dashboard() {
             apiUnLockAccount: unLockAccount,
         }
         // Truyền Component B vào modal
-        openModal(<Confirm {...props} />);
+        openModal(<ConfirmUnLockAccount {...props} />);
     };
 
     const unLockAccount = (idAccount) => {

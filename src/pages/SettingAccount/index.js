@@ -1,9 +1,12 @@
-import classNames from 'classnames/bind';
-import styles from './SettingAccount.module.css';
-import { useParams } from 'react-router-dom';
-import EditAccount from '../EditAccount';
 import { useState } from 'react';
-import ChangePassword from '../ChangePassword';
+import { useParams } from 'react-router-dom';
+
+import classNames from 'classnames/bind';
+
+import styles from './SettingAccount.module.css';
+
+import EditAccount from '~/pages/EditAccount';
+import ChangePassword from '~/pages/ChangePassword';
 
 const cx = classNames.bind(styles)
 

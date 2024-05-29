@@ -1,12 +1,15 @@
-import classNames from 'classnames/bind';
-import styles from './DetailPostInExplore.module.css';
-import * as http from '~/utils/http';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useModalTwo } from '../../Context/ModalTwoContext';
-import ListUserLikePost from '../ListUserLikePost';
-import defaultAvatar from '../../assets/images/default_avatar.jpg';
-import OptionsComment from '../DetailPost/OptionsComment';
-import { AppContext } from '../../Context/AppContext';
+
+import classNames from 'classnames/bind';
+
+import styles from './DetailPostInExplore.module.css';
+
+import ListUserLikePost from '~/Components/ListUserLikePost';
+import OptionsComment from '~/Components/OptionsComment';
+import { useModalTwo } from '~/Context/ModalTwoContext';
+import defaultAvatar from '~/assets/images/default_avatar.jpg';
+import { AppContext } from '~/Context/AppContext';
+import * as http from '~/utils/http';
 
 const cx = classNames.bind(styles)
 
