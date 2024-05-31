@@ -133,7 +133,7 @@ function Search({ searchIsActive }) {
                 if (search_input_in_page_searchPC_input.value.length > 0) {
                     pageSearch__recently.style.marginTop = '0';
                     pageSearch__recently.style.borderTop = '0';
-                    pageSearch__recently__header.style.display = 'none';
+                    pageSearch__recently__header.current.style.display = 'none';
                     pageSearch__recently.classList.remove(cx('hiddenResultInput'));
                 } else {
                     removeAllCharacter();
@@ -144,7 +144,7 @@ function Search({ searchIsActive }) {
         function removeAllCharacter() {
             pageSearch__recently.style.marginTop = '24px';
             pageSearch__recently.style.borderTop = '1px solid var(--border-navigation_bar)';
-            pageSearch__recently__header.style.display = 'flex';
+            pageSearch__recently__header.current.style.display = 'flex';
             pageSearch__recently.classList.remove(cx('hiddenResultInput'));
             setSearchValue('');
         }

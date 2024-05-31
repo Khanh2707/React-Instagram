@@ -36,10 +36,10 @@ function ToastMessage() {
                 error: "fas fa-exclamation-circle"
             };
             const icon = icons[type];
-            const delay = (duration / 1000).toFixed(2);
+            // const delay = (duration / 1000).toFixed(2);
 
             toast.classList.add(cx("toast"), `${cx(`toast--${type}`)}`);
-            toast.style.animation = `${cx("slideInLeft")} ease .3s, ${cx("toastFadeOut")} linear 1s ${delay}s forwards`;
+            // toast.style.animation = `${cx("slideInLeft")} ease .3s, ${cx("toastFadeOut")} linear 1s ${delay}s forwards`;
 
             toast.innerHTML = `
                     <div class=${cx("toast__icon")}>

@@ -267,7 +267,7 @@ function Login() {
             title: "Thất bại!",
             message: message ? message : "Thông tin đăng nhập không đúng.",
             type: "error",
-            duration: duration ? duration : 10000000
+            duration: duration ? duration : 3000
         })
     }
 
