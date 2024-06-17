@@ -27,6 +27,8 @@ function Register() {
         account: username,
         password: password,
         code: code,
+        idUser: idUser,
+        name: fullName
     }
 
     const navigate = useNavigate()
@@ -244,12 +246,14 @@ function Register() {
         http.post('api/accounts', dataAccount)
         .then((res) => {
             console.log(res)
-            createUser(res.result.idAccount);
             setIsDataReady(false);
         })
         .catch((error) => {
             if (error.response.data.code === 1001) {
                 showToastError("Email đã tồn tại.");
+            }
+            else if (error.response.data.code === 1005) {
+                showToastError("Id user đã tồn tại.");
             }
             else if (error.response.data.code === 1011) {
                 showToastError("Mã xác nhận chưa chính xác.");
@@ -277,41 +281,6 @@ function Register() {
         else {
             showToastError("Email chưa nhập đúng định dạng.")
         }
-    }
-
-    function createUser(idAccountUser) {
-        fetch('http://localhost:8080/api/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                idUser: idUser,
-                name: fullName,
-                idAccountUser: idAccountUser
-            }),
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Unauthenticated');
-            }
-            return res.json()
-        })
-        .then(res => {
-            if (res.code === 1) {
-
-                showToastSuccess();
-
-                setTimeout(() => {
-                    window.location.replace('/login');
-                }, 2000)
-            }
-            setIsDataReady(false);
-        })
-        .catch(error => {
-            showToastError("Id User đã tồn tại.");
-            setIsDataReady(false);
-        });
     }
 
     const { setToastMessage } = useToastMessage();

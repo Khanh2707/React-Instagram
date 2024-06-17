@@ -222,26 +222,7 @@ function Sidebar() {
 
     useEffect(() => {
         checkNavigationActive()
-
     }, [])
-
-    useEffect(() => {
-        if (currentPath === '/') {
-            navHomeRef.current.click()
-        }
-        else if (currentPath === '/message/inbox') {
-            navMessageRef.current.click()
-        }
-        else if (currentPath.startsWith('/message/')) {
-            navMessageRef.current.click()
-        }
-        else if (currentPath === `/${idUser}`) {
-            navProfileRef.current.click()
-        }
-        else if (currentPath === `/dashboard`) {
-            navDashboardRef.current.click()
-        }
-    }, [currentPath])
 
 
     return (
