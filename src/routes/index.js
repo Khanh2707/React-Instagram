@@ -7,11 +7,13 @@ import Profile from '~/pages/Profile';
 import SettingAccount from '~/pages/SettingAccount';
 import Dashboard from '~/pages/Dashboard';
 import DetailPostPage from '~/pages/DetailPostPage'
+import Authenticate from '~/pages/Authenticate';
 
 const publicRoutes = [
     { path: '/login', component: Login, layout: null },
     { path: '/register', component: Register, layout: null },
-    { path: '/reset-pass', component: ResetPass, layout: null }
+    { path: '/reset-pass', component: ResetPass, layout: null },
+    { path: '/authenticate', component: Authenticate, layout: null }
 ]
 
 const privateRoutes = [

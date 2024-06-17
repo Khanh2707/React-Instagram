@@ -8,6 +8,9 @@ import styles from './Login.module.css';
 import { useToastMessage } from '~/Context/ToastMessageContext';
 import ToastMessage from '~/Components/ToastMessage';
 import * as http from '~/utils/http';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { OAuthConfig } from "~/configurations/configurationLoginGoogle";
 
 const cx = classNames.bind(styles)
 
@@ -251,6 +254,20 @@ function Login() {
         })  
     }
 
+    const handleLoginGoogle = () => {
+        const callbackUrl = OAuthConfig.redirectUri;
+        const authUrl = OAuthConfig.authUri;
+        const googleClientId = OAuthConfig.clientId;
+    
+        const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
+          callbackUrl
+        )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile`;
+    
+        console.log(targetUrl);
+    
+        window.location.href = targetUrl;
+      };
+
     const { setToastMessage } = useToastMessage();
 
     function showToastSuccess(message, duration) {
@@ -294,6 +311,11 @@ function Login() {
                 </div>
 
                 <button className={cx("form-submit")}>Đăng nhập</button>
+
+                <div className={cx("login_google-submit")} onClick={handleLoginGoogle}>
+                    <FontAwesomeIcon icon={faGoogle} />
+                    <span>Đăng nhập với google</span>
+                </div>
 
                 <div className={cx("spacer")}></div>
 
