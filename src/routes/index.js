@@ -8,8 +8,10 @@ import SettingAccount from '~/pages/SettingAccount';
 import Dashboard from '~/pages/Dashboard';
 import DetailPostPage from '~/pages/DetailPostPage'
 import Authenticate from '~/pages/Authenticate';
+import Error from '~/pages/Error';
 
 const publicRoutes = [
+    { path: '*', component: Error, layout: null },
     { path: '/login', component: Login, layout: null },
     { path: '/register', component: Register, layout: null },
     { path: '/reset-pass', component: ResetPass, layout: null },

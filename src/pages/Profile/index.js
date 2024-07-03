@@ -24,6 +24,8 @@ function Profile() {
     useEffect(() => {
         setIsLoadingLine(true);
     }, [])
+
+    const navigate = useNavigate();
     //
     useEffect(() => {
         setTimeout(() => {
@@ -63,6 +65,10 @@ function Profile() {
                 setDescriptionUserOther(res.result.description)
                 setAvatarUserOther(res.result.avatar)
             })
+            .catch(() => {
+                navigate('/')
+                return;
+            })
     }
 
     useEffect(() => {
@@ -70,9 +76,6 @@ function Profile() {
             getUserById()
         }
     }, [userId])
-
-
-    const navigate = useNavigate();
 
     function handleEditProfile() {
         navigate('/accounts/edit')

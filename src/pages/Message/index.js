@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import defaultAvatar from '~/assets/images/default_avatar.jpg';
 
@@ -22,6 +22,8 @@ function Message() {
         quantityMessageNotCheck, setQuantityMessageNotCheck
     } = useContext(AppContext)
 
+    const navigate = useNavigate();
+
     const { params } = useParams();
 
     const [userTargetMessage, setUserTargetMessage] = useState('')
@@ -31,6 +33,10 @@ function Message() {
         .then((res) => {
             console.log(res);
             setUserTargetMessage(res.result)
+        })
+        .catch(() => {
+            navigate('/')
+            return;
         })
     }
 

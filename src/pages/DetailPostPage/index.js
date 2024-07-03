@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import classNames from 'classnames/bind';
 
@@ -21,6 +21,8 @@ function DetailPostPage() {
     useEffect(() => {
         setIsLoadingLine(true);
     }, [])
+
+    const navigate = useNavigate();
     //
     useEffect(() => {
         setTimeout(() => {
@@ -50,6 +52,10 @@ function DetailPostPage() {
             setCaption(res.result.caption)
             setDateTimeCreate(res.result.dateTimeCreate)
         })
+        .catch(() => {
+            navigate('/')
+            return;
+        })
     }
 
     useEffect(() => {
@@ -65,6 +71,10 @@ function DetailPostPage() {
             console.log(res.result);
             setIdUserOther(res.result.idUser)
             setAvatarUserOther(res.result.avatar)
+        })
+        .catch(() => {
+            navigate('/')
+            return;
         })
     }
 
