@@ -1,117 +1,126 @@
 import { createContext, useEffect, useState } from "react";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
-import * as http from '~/utils/http';
+import * as http from "~/utils/http";
 
 export const AppContext = createContext({});
 
 var stompClient = null;
 export const AppProvider = ({ children }) => {
-    const [isLoadingLine, setIsLoadingLine] = useState(false);
-    const [isReloadPostProfile, setIsReloadPostProfile] = useState(false);
-    const [isReloadQuantityPost, setIsReloadQuantityPost] = useState(false);
+  const [isLoadingLine, setIsLoadingLine] = useState(false);
+  const [isReloadPostProfile, setIsReloadPostProfile] = useState(false);
+  const [isReloadQuantityPost, setIsReloadQuantityPost] = useState(false);
 
-    const [idUser, setIdUser] = useState('');
-    const [nameUser, setNameUser] = useState('');
-    const [descriptionUser, setDescriptionUser] = useState('');
-    const [genderUser, setGenderUser] = useState(null);
-    const [avatar, setAvatar] = useState(null);
-    const [idAccount, setIdAccount] = useState('')
-    const [account, setAccount] = useState('')
-    const [roles, setRoles] = useState('')
+  const [idUser, setIdUser] = useState("");
+  const [nameUser, setNameUser] = useState("");
+  const [descriptionUser, setDescriptionUser] = useState("");
+  const [genderUser, setGenderUser] = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const [idAccount, setIdAccount] = useState("");
+  const [account, setAccount] = useState("");
+  const [roles, setRoles] = useState("");
 
-    const [quantityMessageNotCheck, setQuantityMessageNotCheck] = useState(0)
+  const [quantityMessageNotCheck, setQuantityMessageNotCheck] = useState(0);
 
-    const getQuantityMessageNotCheck = () => {
-        http.get(`api/user_message/count_message_not_check_by_user_1/${idUser}`)
-        .then((res) => {
-            console.log(res);
-            setQuantityMessageNotCheck(res.result)
-        })
+  const getQuantityMessageNotCheck = () => {
+    http
+      .get(`api/user_message/count_message_not_check_by_user_1/${idUser}`)
+      .then((res) => {
+        console.log(res);
+        setQuantityMessageNotCheck(res.result);
+      });
+  };
+
+  useEffect(() => {
+    if (idUser !== "") getQuantityMessageNotCheck();
+  }, [idUser]);
+
+  const [quantityPostNotificationCheck, setQuantityPostNotificationCheck] =
+    useState(0);
+
+  const getQuantityPostNotificationCheck = () => {
+    http.get(`api/post_notifications/count_by_user/${idUser}`).then((res) => {
+      setQuantityPostNotificationCheck(res.result);
+    });
+  };
+
+  useEffect(() => {
+    if (idUser !== "") getQuantityPostNotificationCheck();
+  }, [idUser]);
+
+  const connect = () => {
+    let Sock = new SockJS("http://localhost:8080/ws");
+    stompClient = over(Sock);
+    stompClient.connect({}, onConnected, onError);
+  };
+
+  useEffect(() => {
+    if (idUser !== "") connect();
+  }, [idUser]);
+
+  const onConnected = () => {
+    stompClient.subscribe(`/user/${idUser}/private`, onPrivateMessage);
+    stompClient.subscribe(`/user/${idUser}/notification`, onNotification);
+  };
+
+  const onError = () => {};
+
+  const onPrivateMessage = (payload) => {
+    console.log(payload);
+    var payloadData = JSON.parse(payload.body);
+  };
+
+  const onNotification = (payload) => {
+    getQuantityPostNotificationCheck();
+  };
+
+  const sendPostNotification = (senderName, receiverName) => {
+    if (stompClient) {
+      var chatMessage = {
+        senderName: senderName,
+        receiverName: receiverName,
+        message: "Post notification",
+      };
+      stompClient.send("/app/notification", {}, JSON.stringify(chatMessage));
     }
+  };
 
-    useEffect(() => {
-        if (idUser !== '')
-            getQuantityMessageNotCheck()
-    }, [idUser])
+  return (
+    <AppContext.Provider
+      value={{
+        isLoadingLine,
+        setIsLoadingLine,
+        isReloadPostProfile,
+        setIsReloadPostProfile,
+        isReloadQuantityPost,
+        setIsReloadQuantityPost,
 
-    const [quantityPostNotificationCheck, setQuantityPostNotificationCheck] = useState(0)
+        idUser,
+        setIdUser,
+        nameUser,
+        setNameUser,
+        descriptionUser,
+        setDescriptionUser,
+        genderUser,
+        setGenderUser,
+        avatar,
+        setAvatar,
+        idAccount,
+        setIdAccount,
+        account,
+        setAccount,
+        roles,
+        setRoles,
 
-    const getQuantityPostNotificationCheck = () => {
-        http.get(`api/post_notifications/count_by_user/${idUser}`)
-        .then((res) => {
-            setQuantityPostNotificationCheck(res.result)
-        })
-    }
+        quantityMessageNotCheck,
+        setQuantityMessageNotCheck,
+        quantityPostNotificationCheck,
+        setQuantityPostNotificationCheck,
 
-    useEffect(() => {
-        if (idUser !== '')
-            getQuantityPostNotificationCheck()
-    }, [idUser])
-
-    const connect = () => {
-        let Sock = new SockJS('http://localhost:8080/ws');
-        stompClient = over(Sock);
-        stompClient.connect({}, onConnected, onError);
-    }
-
-    useEffect(() => {
-        if (idUser !== '')
-            connect()
-    }, [idUser])
-
-    const onConnected = () => {
-        stompClient.subscribe(`/user/${idUser}/private`, onPrivateMessage);
-        stompClient.subscribe(`/user/${idUser}/notification`, onNotification)
-    }
-
-    const onError = () => {
-
-    }
-
-    const onPrivateMessage = (payload) => {
-        console.log(payload)
-        var payloadData = JSON.parse(payload.body);
-    }
-
-    const onNotification = (payload) => {
-        getQuantityPostNotificationCheck()
-    }
-
-    const sendPostNotification = (senderName, receiverName) => {
-        if (stompClient) {
-            var chatMessage = {
-                senderName: senderName,
-                receiverName: receiverName,
-                message: 'Post notification'
-            }
-            stompClient.send("/app/notification", {}, JSON.stringify(chatMessage));
-        }
-    }
-
-    
-
-    return (
-        <AppContext.Provider value={{ 
-            isLoadingLine, setIsLoadingLine,
-            isReloadPostProfile, setIsReloadPostProfile,
-            isReloadQuantityPost, setIsReloadQuantityPost,
-            
-            idUser, setIdUser,
-            nameUser, setNameUser,
-            descriptionUser, setDescriptionUser,
-            genderUser, setGenderUser,
-            avatar, setAvatar,
-            idAccount, setIdAccount,
-            account, setAccount,
-            roles, setRoles,
-
-            quantityMessageNotCheck, setQuantityMessageNotCheck,
-            quantityPostNotificationCheck, setQuantityPostNotificationCheck,
-
-            sendPostNotification
-        }}>
-            {children}
-        </AppContext.Provider>
-    )
-}
+        sendPostNotification,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
+};
