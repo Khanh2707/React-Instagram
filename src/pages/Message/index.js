@@ -27,16 +27,10 @@ function Message() {
   const [userTargetMessage, setUserTargetMessage] = useState("");
 
   const getUserById = (idUser) => {
-    http
-      .get(`api/users/${idUser}`)
-      .then((res) => {
-        console.log(res);
-        setUserTargetMessage(res.result);
-      })
-      .catch(() => {
-        navigate("/");
-        return;
-      });
+    http.get(`api/users/${idUser}`).then((res) => {
+      console.log(res);
+      setUserTargetMessage(res.result);
+    });
   };
 
   useEffect(() => {

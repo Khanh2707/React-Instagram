@@ -10,24 +10,82 @@ import DetailPostPage from "~/pages/DetailPostPage";
 import Authenticate from "~/pages/Authenticate";
 import Error from "~/pages/Error";
 
-const publicRoutes = [
-  { path: "*", component: Error, layout: null },
-  { path: "/login", component: Login, layout: null },
-  { path: "/register", component: Register, layout: null },
-  { path: "/reset-pass", component: ResetPass, layout: null },
-  { path: "/authenticate", component: Authenticate, layout: null },
-];
+import { createBrowserRouter } from "react-router-dom";
 
-const privateRoutes = [
-  { path: "/", component: Home },
-  { path: "/message/:params", component: Message },
-  { path: "/:id-user", component: Profile },
-  { path: "/accounts/:params", component: SettingAccount },
-  { path: "/p/:params", component: DetailPostPage },
-];
+import { DefaultLayout } from "~/pages/Layout";
+import ProtectedRoute from "~/routes/ProtectedRoute";
 
-const dashboardRoutes = [
-  { path: "/dashboard", component: Dashboard, layout: null },
-];
-
-export { publicRoutes, privateRoutes, dashboardRoutes };
+export default createBrowserRouter([
+  {
+    element: <Login />,
+    path: "/login",
+  },
+  {
+    element: <Register />,
+    path: "/register",
+  },
+  {
+    element: <ResetPass />,
+    path: "/reset-pass",
+  },
+  {
+    element: <Authenticate />,
+    path: "/authenticate",
+  },
+  {
+    element: <ProtectedRoute />,
+    errorElement: <Error />,
+    children: [
+      {
+        element: (
+          <DefaultLayout>
+            <Home />
+          </DefaultLayout>
+        ),
+        path: "/",
+      },
+      {
+        element: (
+          <DefaultLayout>
+            <Message />
+          </DefaultLayout>
+        ),
+        path: "/message/:params",
+      },
+      {
+        element: (
+          <DefaultLayout>
+            <Profile />
+          </DefaultLayout>
+        ),
+        path: "/:id-user",
+      },
+      {
+        element: (
+          <DefaultLayout>
+            <SettingAccount />
+          </DefaultLayout>
+        ),
+        path: "/accounts/:params",
+      },
+      {
+        element: (
+          <DefaultLayout>
+            <DetailPostPage />
+          </DefaultLayout>
+        ),
+        path: "/p/:params",
+      },
+    ],
+  },
+  {
+    element: <ProtectedRoute requiredRole='ADMIN' />,
+    errorElement: <Error />,
+    children: [
+      {
+        element: <Dashboard />,
+        path: "/dashboard",
+      },
+    ],
+  },
+]);

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import Loading from "~/Components/Loading";
 import { AppContext } from "~/Context/AppContext";
 import * as http from "~/utils/http";
 
-const ProtectedRoute = ({ children, requiredRole }) => {
+const ProtectedRoute = ({ requiredRole }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(null);
   const [roleHasAccess, setRoleHasAccess] = useState(null);
@@ -76,7 +76,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     }
   }
 
-  return children;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

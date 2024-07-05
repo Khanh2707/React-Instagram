@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import { RouterProvider } from 'react-router-dom';
+
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from './Components/GlobalStyles';
 import { AppProvider } from './Context/AppContext';
 import { ModalProvider } from './Context/ModalContext';
 import { ToastMessageProvider } from './Context/ToastMessageContext';
 import { ModalTwoProvider } from './Context/ModalTwoContext';
+import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

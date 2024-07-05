@@ -62,18 +62,12 @@ function Profile() {
   const [avatarUserOther, setAvatarUserOther] = useState(null);
 
   const getUserById = () => {
-    http
-      .get(`api/users/${userId}`)
-      .then((res) => {
-        setIdUserOther(res.result.idUser);
-        setNameUserOther(res.result.name);
-        setDescriptionUserOther(res.result.description);
-        setAvatarUserOther(res.result.avatar);
-      })
-      .catch(() => {
-        navigate("/");
-        return;
-      });
+    http.get(`api/users/${userId}`).then((res) => {
+      setIdUserOther(res.result.idUser);
+      setNameUserOther(res.result.name);
+      setDescriptionUserOther(res.result.description);
+      setAvatarUserOther(res.result.avatar);
+    });
   };
 
   useEffect(() => {
