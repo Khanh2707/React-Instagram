@@ -15,8 +15,6 @@ import { createBrowserRouter } from "react-router-dom";
 import { DefaultLayout } from "../pages/Layout";
 import ProtectedRoute from "./ProtectedRoute";
 
-import Error from '../pages/Error';
-
 export default createBrowserRouter([
   {
     element: <Login />,

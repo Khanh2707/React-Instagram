@@ -33,7 +33,7 @@ http.interceptors.response.use(
     if (
       error.response.status === 401 &&
       !originalRequest._retry &&
-      !urlNotRefreshToken.includes(error.config.url)
+      !urlNotRefreshToken.some((url) => originalRequest.url.startsWith(url))
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
